@@ -1,0 +1,42 @@
+#!/bin/sh /etc/rc.common
+START=93
+
+initconf() {
+#DEV
+ a='port_listen'
+ d=$(uci get $a.@displ_tip[0].devPort)
+ b=$(uci get $a.@displ_tip[0].speed)
+ tf=$(uci get $a.@displ_tip[0].t_file)
+ u=$(uci get $a.@displ_tip[0].updateRead)
+}
+
+start() {
+  killall -9 port_listen 2> /dev/null
+  killall -9 port_listen 2> /dev/null
+initconf
+  port_listen -d $d -b $b -f $tf &
+}
+
+stop() {
+  killall -9 port_listen 2> /dev/null
+  killall -9 port_listen 2> /dev/null
+  rm /tmp/$tf 2> /dev/null
+  rm /tmp/Error_log_port_listen 2> /dev/null
+}
+
+restart() {
+  killall -9 port_listen 2> /dev/null
+  killall -9 port_listen 2> /dev/null
+  rm /tmp/$tf 2> /dev/null
+  sleep 1
+initconf
+  port_listen -d $d -b $b -f $tf &
+}
+
+
+
+
+
+
+
+
