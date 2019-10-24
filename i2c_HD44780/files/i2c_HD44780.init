@@ -1,0 +1,150 @@
+#!/bin/sh /etc/rc.common
+
+START=98
+
+start() {
+	rm /tmp/Err_i2c_hd44780.log 2> /dev/null
+	rm /tmp/$flog 2> /dev/null
+	rm /tmp/t_h 2> /dev/null
+	rm /tmp/nick 2> /dev/null
+	rm /tmp/s_d 2> /dev/null
+	rm /tmp/sd 2> /dev/null
+	rm /tmp/d_s 2> /dev/null
+	rm /tmp/t_s 2> /dev/null
+	killall -9 i2c_HD44780 2> /dev/null
+	killall -9 digitemp_dem 2> /dev/null
+	killall -9 w1_dem 2> /dev/null
+flog='dig_log'
+sda_gpio=$(uci get i2c_HD44780.@display[0].sda_gpio)
+scl_gpio=$(uci get i2c_HD44780.@display[0].scl_gpio)
+insmod i2c-dev
+insmod i2c-gpio-custom bus0=0,$sda_gpio,$scl_gpio
+
+
+d=$(uci get i2c_HD44780.@display[0].device)
+a=$(uci get i2c_HD44780.@display[0].address)
+f=$(uci get i2c_HD44780.@display[0].read_file)
+bnr=$(uci get i2c_HD44780.@display[0].info_banner)
+lcd_number=$(uci get i2c_HD44780.@display[0].lcd_number)
+gros_simvol=$(uci get i2c_HD44780.@display[0].gros_simvol)
+
+while=$(uci get i2c_HD44780.@displ_tip[0].while)
+clock=$(uci get i2c_HD44780.@displ_tip[0].clock)
+led_on=$(uci get i2c_HD44780.@displ_tip[0].led_on)
+on_read=$(uci get i2c_HD44780.@displ_tip[0].on_read)
+on_ds18=$(uci get i2c_HD44780.@displ_tip[0].on_ds18)
+
+tip_ds1=$(uci get i2c_HD44780.@displ_tip[0].tip_ds1)
+tip_ds2=$(uci get i2c_HD44780.@displ_tip[0].tip_ds2)
+tip_ds3=$(uci get i2c_HD44780.@displ_tip[0].tip_ds3)
+tip_ds4=$(uci get i2c_HD44780.@displ_tip[0].tip_ds4)
+
+sr1=$(uci get i2c_HD44780.@ds18b20[0].sensor1)
+sr2=$(uci get i2c_HD44780.@ds18b20[0].sensor2)
+sr3=$(uci get i2c_HD44780.@ds18b20[0].sensor3)
+sr4=$(uci get i2c_HD44780.@ds18b20[0].sensor4)
+
+nm1=$(uci get i2c_HD44780.@ds18b20[0].name_snr1)
+nm2=$(uci get i2c_HD44780.@ds18b20[0].name_snr2)
+nm3=$(uci get i2c_HD44780.@ds18b20[0].name_snr3)
+nm4=$(uci get i2c_HD44780.@ds18b20[0].name_snr4)
+
+nGp1=$(uci get i2c_HD44780.@ds18b20[0].nGp1_out)
+nGp2=$(uci get i2c_HD44780.@ds18b20[0].nGp2_out)
+nGp3=$(uci get i2c_HD44780.@ds18b20[0].nGp3_out)
+nGp4=$(uci get i2c_HD44780.@ds18b20[0].nGp4_out)
+
+nGp5=$(uci get i2c_HD44780.@ds18b20[0].alarm1)
+nGp6=$(uci get i2c_HD44780.@ds18b20[0].alarm2)
+nGp7=$(uci get i2c_HD44780.@ds18b20[0].alarm3)
+nGp8=$(uci get i2c_HD44780.@ds18b20[0].alarm4)
+
+nGp9=$(uci get i2c_HD44780.@ds18b20[0].histe1)
+nGp10=$(uci get i2c_HD44780.@ds18b20[0].histe2)
+nGp11=$(uci get i2c_HD44780.@ds18b20[0].histe3)
+nGp12=$(uci get i2c_HD44780.@ds18b20[0].histe4)
+
+nGp5=$(echo $nGp5 | awk '{print $1*10}')
+nGp6=$(echo $nGp6 | awk '{print $1*10}')
+nGp7=$(echo $nGp7 | awk '{print $1*10}')
+nGp8=$(echo $nGp8 | awk '{print $1*10}')
+
+nGp9=$(echo $nGp9 | awk '{print $1*10}')
+nGp10=$(echo $nGp10 | awk '{print $1*10}')
+nGp11=$(echo $nGp11 | awk '{print $1*10}')
+nGp12=$(echo $nGp12 | awk '{print $1*10}')
+
+invers1=$(uci get i2c_HD44780.@ds18b20[0].invers1)
+invers2=$(uci get i2c_HD44780.@ds18b20[0].invers2)
+invers3=$(uci get i2c_HD44780.@ds18b20[0].invers3)
+invers4=$(uci get i2c_HD44780.@ds18b20[0].invers4)
+
+
+if [ "$on_ds18" == 1 ]; then
+w1_gpio=$(uci get i2c_HD44780.@ds18b20[0].w1_gpio)
+insmod w1-gpio-custom bus0=0,$w1_gpio,0 
+fi
+
+if [ "$on_ds18" == 2 ]; then
+us_uart=$(uci get i2c_HD44780.@ds18b20[0].usb_w1_uart)
+digitemp_DS9097 -c /var/digitemp.conf -i -r 500 -s /dev/tty$us_uart > /dev/null
+digitemp_DS9097 -c /var/digitemp.conf -a > /dev/null
+digitemp_DS9097 -c /var/digitemp.conf -a > /dev/null
+sed -i "$(awk '/LOG_FORMAT/{print FNR}' /var/digitemp.conf | awk '(NR==2)') s/LOG_FORMAT.*/LOG_FORMAT \"%.1C\"/" /var/digitemp.conf
+digitemp_DS9097 -c /var/digitemp.conf -a  > /dev/null
+
+	digitemp_dem &
+fi
+
+i2c_HD44780 -n $bnr -d $d -a $a -f $f -u $while$clock$led_on$on_read$on_ds18$tip_ds1$tip_ds2$tip_ds3$tip_ds4 -b $sr1``$sr2``$sr3``$sr4 -c $nm1/$nm2/$nm3/$nm4/ -p $nGp1/$nGp2/$nGp3/$nGp4/$nGp5/$nGp6/$nGp7/$nGp8/$nGp9/$nGp10/$nGp11/$nGp12/$invers1/$invers2/$invers3/$invers4// -s $lcd_number -l $gros_simvol &
+
+}
+
+
+stop() {
+
+flog='dig_log'
+nGp1=$(uci get i2c_HD44780.@ds18b20[0].nGp1_out)
+nGp2=$(uci get i2c_HD44780.@ds18b20[0].nGp2_out)
+nGp3=$(uci get i2c_HD44780.@ds18b20[0].nGp3_out)
+nGp4=$(uci get i2c_HD44780.@ds18b20[0].nGp4_out)
+
+invers1=$(uci get i2c_HD44780.@ds18b20[0].invers1)
+invers2=$(uci get i2c_HD44780.@ds18b20[0].invers2)
+invers3=$(uci get i2c_HD44780.@ds18b20[0].invers3)
+invers4=$(uci get i2c_HD44780.@ds18b20[0].invers4)
+
+if [ "$invers1" == 1 ]; then
+echo 0 > /sys/class/gpio/gpio$nGp1/value
+else
+echo 1 > /sys/class/gpio/gpio$nGp1/value
+fi
+if [ "$invers2" == 1 ]; then
+echo 0 > /sys/class/gpio/gpio$nGp2/value
+else
+echo 1 > /sys/class/gpio/gpio$nGp2/value
+fi
+if [ "$invers3" == 1 ]; then
+echo 0 > /sys/class/gpio/gpio$nGp3/value
+else
+echo 1 > /sys/class/gpio/gpio$nGp3/value
+fi
+if [ "$invers4" == 1 ]; then
+echo 0 > /sys/class/gpio/gpio$nGp4/value
+else
+echo 1 > /sys/class/gpio/gpio$nGp4/value
+fi
+	rm /tmp/Err_i2c_hd44780.log 2> /dev/null
+	rm /tmp/$flog 2> /dev/null
+	rm /tmp/t_h 2> /dev/null
+	rm /tmp/nick 2> /dev/null
+	rm /tmp/s_d 2> /dev/null
+	rm /tmp/sd 2> /dev/null
+	rm /tmp/d_s 2> /dev/null
+	rm /tmp/t_s 2> /dev/null
+	killall -9 i2c_HD44780 2> /dev/null
+	killall -9 digitemp_dem 2> /dev/null
+	killall -9 w1_dem 2> /dev/null
+}
+
+

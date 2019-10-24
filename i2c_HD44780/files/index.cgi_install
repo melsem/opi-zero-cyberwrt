@@ -1,0 +1,109 @@
+#!/bin/sh
+echo "Content-type: text/html; charset=utf-8"
+echo 
+echo "<title>install-12c-LCD</title>"
+echo "<head>
+<style>
+  .b1 {
+	font-size: 15pt;	/*размер текста на кнопках*/
+	font-weight: 600; /*ширина текста на кнопках*/
+	font-family: Arial, Helvetica, sans-serif; /*шрифт*/
+	color: #161616; /*цвет текста на кнопках*/
+//	text-shadow: 0px 1px 2px #7c7c7c; /*цвет и размер тени текста*/
+	text-align: center;
+	width: 200px; /*ширина для всех кнопок*/
+	height: 50px; /*высота для всех кнопок*/
+//	 padding: 5px 30px;
+	margin-left: 10px;
+	cursor: pointer;
+	border-radius:inherit;
+	letter-spacing: 1px;
+}
+
+
+
+.button
+ {
+	width: 200px; /*ширина для всех кнопок*/
+	height: 50px; /*высота для всех кнопок*/
+ text-decoration:none; text-align:center; 
+ padding:11px 32px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:50px;
+ -moz-border-radius:50px; 
+ border-radius: 50px; 
+ font:18px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#e5ffff; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+ }
+ 
+.button:hover{
+ padding:11px 32px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:50px;
+ -moz-border-radius:50px; 
+ border-radius: 50px; 
+ font:18px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#010808; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+ }
+
+.button:active{
+ padding:11px 32px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:50px;
+ -moz-border-radius:50px; 
+ border-radius: 50px; 
+ font:18px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#E5FFFF; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+ opacity:0.5; 
+ -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50); 
+ filter: alpha(opacity=50); 
+ }
+
+
+
+</style>
+
+</head>"
+echo "<table align=center border=0><tr><td>"Продолжить установку модуля "<b>i2c LCD Monitor</b>"?"</td></tr></table>"
+echo "<table align=center border=0><tr><td>"
+
+echo "<a href=/cgi-bin/modules/i2c_hd44780/install.cgi><input title="Продолжить_установку_i2c_LCD_Monitor_???" class="button" type=submit value="OK-INSTALL" name=></a>"
+
+echo "<a href=/cgi-bin/modules/manmod/index.cgi><input title="Отмениить_установку_i2c_LCD_Monitor_???" class="button" type=submit value="EXIT" name=></a>"
+
+
+
+echo "</td></tr></table>"

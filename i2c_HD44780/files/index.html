@@ -1,0 +1,64 @@
+#!/bin/sh
+echo 
+echo "<title>12c-LCD monitor (bonus clock and themperature)</title>"
+echo "<table align=center border=0><tr><td>"
+echo `cat /www/menu.html`
+echo "</td></tr></table>"
+echo "
+<body bgcolor="#f0f0f0">
+<style>
+  .b1 {
+font-size: 15pt;
+text-align: center;
+padding: 20px 40px;
+margin-left: 1px;
+cursor: pointer;
+border-radius:inherit;
+}
+</style><table align="center" border=0 width=>"; flconf="i2c_HD44780"; f=$(uci get $flconf.@display[0].read_file); kollw_str=$(sed -n '$=' /tmp/$f)
+if [ "`uci get $flconf.@displ_tip[0].on_ds18`" == "0" ]; then
+echo "<tr>read file<td align="center"><textarea name="00" rows="$kollw_str" cols="">"; cat /tmp/$f; echo "</textarea></td></tr>"
+elif [ "`uci get $flconf.@displ_tip[0].on_ds18`" == "1" ]; then
+echo read gpio-sensor ds18b20
+echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '1p' /tmp/nick
+echo "</span></span></span></td>"
+echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '1p' /tmp/d_s
+echo "</span></span></span></td></tr>"
+echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '2p' /tmp/nick
+echo "</span></span></span></td>"
+echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '2p' /tmp/d_s
+echo "</span></span></span></td></tr>"
+echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '3p' /tmp/nick
+echo "</span></span></span></td>"
+echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '3p' /tmp/d_s
+echo "</span></span></span></td></tr>"
+echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '4p' /tmp/nick
+echo "</span></span></span></td>"
+echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
+sed -n '4p' /tmp/d_s
+echo "</span></span></span></td></tr>"
+elif [ "`uci get $flconf.@displ_tip[0].on_ds18`" == "2" ]; then
+echo read usb-data sensor ds18b20
+echo "<tr><td align="center">"; sed -n '1,8p' /tmp/t_h; echo "</td></tr>"
+fi
+echo "</table><table align="center" border=0 width=><tr><td><a href=/cgi-bin/modules/i2c_hd44780/Setup.cgi><input title="Желаете_зайти_в_установки ???" class="b1" type=submit value="SETUP_i2c_hd44780" name=></a></td></tr><br></table>"
+echo "<table align="center" border=0 width=><tr><td><b>"
+cat /tmp/Err_i2c_hd44780.log &> /dev/null
+if [ $? = 0 ]; then
+cat /tmp/Err_i2c_hd44780.log
+fi
+echo "</b></td></tr><br><br><br></table>"
+pidof i2c_HD44780 &> /dev/null
+if [ $? = 1 ]; then
+:
+else
+echo "<meta http-equiv="refresh" content="10">"
+fi
+

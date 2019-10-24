@@ -1,0 +1,5 @@
+#!/bin/sh
+sed -i "/i2c_hd44780\/index.cgi/d" /www/menu.html							# delete line module 22222 (name ggggggg)
+sed -i 3i\ '<li><a href=/cgi-bin/modules/i2c_hd44780/index.cgi>'i2c-LCD-monitor'</a></li>' /www/menu.html	# add line module 22222 (name ggggggg)
+#
+

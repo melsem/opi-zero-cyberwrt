@@ -1,0 +1,56 @@
+#!/bin/sh
+conf_DS=$'/tmp/digitemp.conf'
+cnf_term=$'/etc/config/i2c_HD44780'
+kollwo=$(sed -n '/ROM/p' $conf_DS | wc -l)
+if [ "$kollwo" == "0" ]; then
+echo "Sensor error!!" > $t_log
+exit 0
+fi
+cp -f /usr/bin/t_h /tmp/
+# /* add and rw file dig_log
+ trmst=0
+ nomer_ds=1
+ t_log=$'/tmp/dig_log'
+ while [ "$trmst" -ne  "$kollwo" ]; do
+ nic_ds=`uci get $cnf_term.@ds18b20[0].name_snr"$nomer_ds"`
+ if [ "$trmst" == "0" ]; then
+ echo "$nic_ds " > $t_log
+ else
+ echo "$nic_ds " >> $t_log
+ fi
+ : $((trmst = $trmst + 1))
+ : $((nomer_ds = $nomer_ds + 1))
+ done
+#
+#**********
+while true; do
+trmst=0
+nomer_ds=1
+perem=0
+conf_DS=$'/tmp/digitemp.conf'
+cnf_term=$'/etc/config/i2c_HD44780'
+t_log=$'/tmp/dig_log'
+kollwo=$(sed -n '/ROM/p' $conf_DS | wc -l)
+t_h=$'/tmp/t_h'
+conf_rab=$'/tmp/t_s'
+#
+while [ "$trmst" -ne  "$kollwo" ]; do
+ten_sr=$(digitemp_DS9097 -t $trmst -q -c $conf_DS)
+echo tn_sor $ten_sr > $conf_rab
+sen_sor=$(grep -i tn_sor $conf_rab | awk '{print $2}')
+nic_ds=`uci get $cnf_term.@ds18b20[0].name_snr"$nomer_ds"`
+Datata=$(date +%b.%d.%Y)
+Dfdd=$(date +%T)
+sed -i "$(awk '/$nic_ds/{print FNR}' $t_log | awk '(NR==2)') s/${nic_ds}.*/${nic_ds} ${sen_sor}C/" $t_log
+: $((perem = $perem + 1))
+sed -i -r "${perem}s,>[^<]*</,>${nic_ds} - ${Datata} ${Dfdd}</," $t_h
+: $((perem = $perem + 1))
+sed -i -r "${perem}s,>[^<]*</,>${sen_sor}\&deg;C</," $t_h
+: $((trmst = $trmst + 1))
+: $((nomer_ds = $nomer_ds + 1))
+done
+#
+sleep 1
+done
+exit 0
+
