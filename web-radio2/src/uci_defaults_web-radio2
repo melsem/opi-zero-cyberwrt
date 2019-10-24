@@ -1,0 +1,39 @@
+#!/bin/sh
+/etc/init.d/web-radio2.init disable
+
+uci -q show system.@button[0] || {
+	uci add system button
+	uci set system.@button[0].button=wps
+	uci set system.@button[0].action=released
+	uci set system.@button[0].handler="killall -9 madplay 2>/dev/null; killall -9 curl 2> /dev/null"
+	uci set system.@button[0].min=0
+	uci set system.@button[0].max=2
+	uci commit
+}
+
+uci -q show system.@button[1] || {
+	uci add system button
+	uci set system.@button[1].button=wps
+	uci set system.@button[1].action=released
+	uci set system.@button[1].handler="/etc/init.d/web-radio2.init start &"
+	uci set system.@button[1].min=3
+	uci set system.@button[1].max=7
+	uci commit
+}
+
+uci -q show system.@button[2] || {
+	uci add system button
+	uci set system.@button[2].button=wps
+	uci set system.@button[2].action=released
+	uci set system.@button[2].handler="/etc/init.d/web-radio2.init stop"
+	uci set system.@button[2].min=8
+	uci set system.@button[2].max=15
+	uci commit
+}
+
+sed -i "/web-radio2\/index.cgi/d" /www/menu.html 2> /dev/null
+	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
+sed -i 3i\ '<li><a href=/cgi-bin/modules/web-radio2/index.cgi>'Радио-2'</a></li>' /www/menu.html 2> /dev/null
+	# К вебке cyberwrt - закомментировть если НЕ будет использоваться ####
+#sed -i 3i\ '<a href=/cgi-bin/modules/web-radio2/index.cgi><div class=left>'Радио-2'</div></a>' /www/menu.html 2> /dev/null
+

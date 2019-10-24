@@ -1,0 +1,35 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=99
+
+
+
+start() {
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killall -9 curl &> /dev/null > /dev/null
+	killall -9 wget &> /dev/null > /dev/null
+	killall -9 madplay &> /dev/null > /dev/null
+
+web-radio2 &
+
+}
+
+stop() {
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killall -9 curl &> /dev/null > /dev/null
+	killall -9 wget &> /dev/null > /dev/null
+	killall -9 madplay &> /dev/null > /dev/null
+}
+
+restart() {
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killall -9 curl &> /dev/null > /dev/null
+	killall -9 wget &> /dev/null > /dev/null
+	killall -9 madplay &> /dev/null > /dev/null
+
+web-radio2 &
+
+}
+
+
