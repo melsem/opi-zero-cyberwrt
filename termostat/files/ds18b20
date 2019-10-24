@@ -1,0 +1,327 @@
+#!/bin/sh
+cnf_term=$'/etc/config/ds18b20'
+kollwo=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n '$=')
+if [ "$kollwo" == "0" ]; then
+exit 0
+fi
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/Gpio1Wr/!d;/enabled0/!d' $cnf_term | sed -n '/enabled0/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+enabl=$(echo ${ertf:1:$ertf12})
+if [ "$enabl" == "1" ]; then
+init18b20
+ln -sf /tmp/tstatgpio.html /www/tstatgpio.html
+sdf=0
+echo -e ds0 1'\n'ds1 1'\n'ds2 1'\n'ds3 1'\n'ds4 1'\n'ds5 1'\n'ds6 1'\n'ds7 1'\n'ds8 1'\n'ds9 1'\n' > /var/hrzs
+#
+while true; do
+cp -f /etc/config/ds18b20 /tmp/
+rm /tmp/thermgpio &> /dev/null
+rm $conf_rab &> /dev/null
+kollwo=$(cat $cnf_term | sed '/id_sensor/!d; /"*-00*/!d' | awk '{print $3}' | sed -n '$=')
+nomer_ds=0
+perem=16
+conf_rab=$'/tmp/gpiotemp'
+cnf_term=$'/tmp/ds18b20'
+while [ "$nomer_ds" -ne  "$kollwo" ]; do
+rm /etc/config/.ds18* &> /dev/null
+####
+outOff () {
+cnf_term=$'/tmp/ds18b20'
+out_power=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].pwout)
+oInvert=$(uci get $cnf_term.@Gpio1Wr[0].oInvert)
+if [ "$oInvert" == "0" ]; then
+echo 0 > /sys/class/gpio/gpio"$out_power"/value
+else
+echo 1 > /sys/class/gpio/gpio"$out_power"/value
+fi
+}
+outOn () {
+cnf_term=$'/tmp/ds18b20'
+out_power=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].pwout)
+oInvert=$(uci get $cnf_term.@Gpio1Wr[0].oInvert)
+if [ "$oInvert" == "0" ]; then
+echo 1 > /sys/class/gpio/gpio"$out_power"/value
+else
+echo 0 > /sys/class/gpio/gpio"$out_power"/value
+fi
+}
+testAllarm () {
+Tsn_sor=$(grep -i sn_sor $conf_rab | awk '{print $2*1000}')
+if [ "$tips_p1" == "$term_on" ]; then
+outOff
+else
+if [ "$tips_p1" == "$t_stat" ]; then
+hrzs=$(sed -n '/ds'$nomer_ds'/p' /var/hrzs | awk '{print $2}')
+if [ "$hrzs" == 1 ]; then	
+if [ "$Tsn_sor" -le "$conf_Totkl1" ]; then
+outOn
+else
+sed 's/ds'$nomer_ds' 1/ds'$nomer_ds' 0/' /var/hrzs > /var/hrzsuuu
+cat /var/hrzsuuu > /var/hrzs
+outOff
+fi
+else
+if [ "$Tsn_sor" -le "$t_alarm" ]; then
+outOn
+sed 's/ds'$nomer_ds' 0/ds'$nomer_ds' 1/' /var/hrzs > /var/hrzsuuu
+cat /var/hrzsuuu > /var/hrzs
+fi
+fi
+else
+sed 's/ds'$nomer_ds' 0/ds'$nomer_ds' 1/' /var/hrzs > /var/hrzsuuu
+cat /var/hrzsuuu > /var/hrzs
+hrzs=$(sed -n '/ds'$nomer_ds'/p' /var/hrzs | awk '{print $2}')
+if [ "$hrzs" == 1 ]; then			
+if [ "$Tsn_sor" -ge "$conf_Totkl1" ]; then
+outOn
+else
+outOff
+sed 's/ds'$nomer_ds' 1/ds'$nomer_ds' 0/' /var/hrzs > /var/hrzsuuu
+cat /var/hrzsuuu > /var/hrzs
+fi
+else
+if [ "$Tsn_sor" -ge "$t_alarm" ]; then
+outOn
+sed 's/ds'$nomer_ds' 0/ds'$nomer_ds' 1/' /var/hrzs > /var/hrzsuuu
+cat /var/hrzsuuu > /var/hrzs
+fi
+fi
+fi
+fi
+}
+####
+sed -e '/./{H;$!d;}' -e 'x;/Gpio1Wr/b' -e '/ds18b20_s'$nomer_ds'/b' -e d $cnf_term > $conf_rab
+out_power=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].pwout)
+#
+nedel=$(date +%u)
+if [ "$nedel" == "1" ]; then
+imDenNed=""
+elif [ "$nedel" == "2" ]; then
+imDenNed="Tue_"
+elif [ "$nedel" == "3" ]; then
+imDenNed="Wed_"
+elif [ "$nedel" == "4" ]; then
+imDenNed="Thu_"
+elif [ "$nedel" == "5" ]; then
+imDenNed="Fri_"
+elif [ "$nedel" == "6" ]; then
+imDenNed="Sat_"
+elif [ "$nedel" == "7" ]; then
+imDenNed="Sun_"
+fi
+gradus0="$imDenNed"gra0dus
+gradus1="$imDenNed"gradus
+gradus2="$imDenNed"gra2dus
+gradus3="$imDenNed"gra3dus
+hourT1="$imDenNed"t1ime
+minuteT1="$imDenNed"m1ime
+hourT2="$imDenNed"t2ime
+minuteT2="$imDenNed"m2ime
+hourT3="$imDenNed"t3ime
+minuteT3="$imDenNed"m3ime
+hourTime1=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$hourT1)
+minuteTime1=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$minuteT1)
+hourTime2=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$hourT2)
+minuteTime2=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$minuteT2)
+hourTime3=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$hourT3)
+minuteTime3=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$minuteT3) 
+dadatt=$(date +%H%M)
+if [ "$dadatt" -ge "$hourTime3$minuteTime3" ]; then
+gradusOff=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$gradus3)
+elif [ "$dadatt" -ge "$hourTime2$minuteTime2" ]; then
+gradusOff=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$gradus2)
+elif [ "$dadatt" -ge "$hourTime1$minuteTime1" ]; then
+gradusOff=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$gradus1)
+elif [ "$dadatt" -ge "0" ]; then
+gradusOff=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].$gradus0)
+fi
+
+tips_p1=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].tipsensr)
+term_on="termometr"
+t_stat="termostat"
+kondc="kondicioner"
+s_off="send"
+if [ "$tips_p1" == "$term_on" ]; then
+outOff
+else
+sdsd_sr=$(cat /sys/class/gpio/gpio"$out_power"/value)
+if [ -n "$sdsd_sr" ]; then
+Hist=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].hister)
+conf_Hist=$(echo $Hist | awk '{print $1*1000}')
+conf_Totkl1=$(echo $gradusOff | awk '{print $1*1000}')
+if [ "$tips_p1" == "$t_stat" ]; then
+let t_alarm=$(( ${conf_Totkl1} - ${conf_Hist} ))
+else
+let t_alarm=$(( ${conf_Totkl1} + ${conf_Hist} ))
+fi
+else
+cnf_tosn=$'/etc/config/ds18b20'
+uci set $cnf_tosn.@ds18b20_s"$nomer_ds"[0].tipsensr="termometr"
+uci commit $cnf_tosn
+fi
+fi
+####
+####
+ID_hex=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].id_sensor)
+ten_sr=$(awk -F= '/t=/ {printf "%.1f\n", $2/1000}' /sys/bus/w1/drivers/w1_slave_driver/"$ID_hex"/w1_slave)
+echo $'\n'sn_sor$nomer_ds $ten_sr >> $conf_rab
+sen_sor=$(grep -i sn_sor $conf_rab | awk '{print $2}')
+testAllarm
+lcd_on=$(uci get $cnf_term.@Gpio1Wr[0].pu_Skryp)
+if [ "$lcd_on" == "1" ]; then
+echo t_sn"$nomer_ds" ${sen_sor:0:5} >> /tmp/d_x
+fi
+#
+if [ -n "$sen_sor" ]; then
+:
+else
+outOff
+fi
+##
+DATa=$(date +%d/%m/%Y-%H:%M:%S)
+D_minuta=$(date +%M)
+echo $'\n'dateM $D_minuta >> $conf_rab
+Datata=$(date +%b.%d.%Y)
+Dfdd=$(date +%T)
+vizual_html='/tmp/tstatgpio.html'
+ttestt=$'/var/zawis.gp'
+#
+logns=$(uci get $cnf_term.@ds18b20_s$nomer_ds[0].logns)
+if [ "$nomer_ds" -lt "$kollwo" ]; then
+echo "zwser 1" > $ttestt
+: $((perem = $perem + 1))
+sed -i -r "${perem}s,>[^<]*</,>${logns}: ${Datata} ${Dfdd}</," $vizual_html
+: $((perem = $perem + 1))
+sed -i -r "${perem}s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+#####
+en=$(grep times $conf_rab | awk '{print $3}') && en2=$(echo "${en} = ${#en}" | awk '{print $3}') && en23=$(echo $(( ${en2} - 2 ))) && interv=$(echo ${en:1:$en23})
+if [ "$interv" == "$s_off" ]; then
+:					
+else	
+if [ "$interv" == "2" ]; then	
+Filter="00|02|04|06|08|10|12|14|16|18|20|22|24|26|28|30|32|34|36|38|40|42|44|46|48|50|52|54|56|58"
+fi
+if [ "$interv" == "5" ]; then	
+Filter="00|05|10|15|20|25|30|35|40|45|50|55"
+fi
+if [ "$interv" == "10" ]; then	
+Filter="00|10|20|30|40|50"			
+fi
+if [ "$interv" == "15" ]; then	
+Filter="00|15|30|45"			
+fi
+if [ "$interv" == "20" ]; then	
+Filter="00|20|40"			
+fi
+if [ "$interv" == "30" ]; then	
+Filter="00|30"				
+fi
+if [ "$interv" == "60" ]; then	
+Filter="00"					
+fi
+fi
+D_al=$(date +%b.%d.%Y-%T)
+Datata=$(date +%b.%d.%Y)
+D_time=$(date +%T)
+TimT="dateM"
+log=$(grep dateM $conf_rab | awk '{print $2}')
+if  echo $Filter | grep -qE $log; then
+if   [ "$nomer_ds" == "$sdf" ]; then
+sen_sor=$(grep -i sn_sor $conf_rab | awk '{print $2}')
+#
+cnf_term=$'/etc/config/ds18b20'
+if [ "`uci get $cnf_term.@Gpio1Wr[0].ftp_svr`" = "1" ] ; then
+FldDr1=$(grep folder $conf_rab | awk '{print $3}')
+bbbb1=$(echo "${FldDr1} = ${#FldDr1}" | awk '{print $3}')
+aaaa1=$(echo $(( ${bbbb1} - 2 )))
+ALL_string=$(echo ${FldDr1:1:$aaaa1})
+ALL_2=$(echo ${ALL_string##\/*\/})					# покажем остаток символов а удалим все между крайними / /
+konec=$(echo "${ALL_2} = ${#ALL_2}" | awk '{print $3}')			# подщет коллич. оставшихся символов
+rsrd=$(echo $(( ${aaaa1} - ${konec} )))					# от общего колличества символов без кавычек отнимем *оставшиеся символы*
+NacaloFold_Dir1=$(echo ${FldDr1:1:$rsrd})				# покажем все что между  крайними / /
+KonecFold_Dir1=$ALL_2
+addFold_Dir1=$(mkdir -p $NacaloFold_Dir1"$Datata"; nevFold=$NacaloFold_Dir1"$Datata"; chmod 777 $nevFold; chmod 777 $NacaloFold_Dir1)
+Fold_Dir1=$(echo $NacaloFold_Dir1"$Datata"\/"$tips_p1"$KonecFold_Dir1)
+echo $addFold_Dir1
+echo $D_time "	" T\: $sen_sor\*"C" >> $Fold_Dir1			# Это будет строка с текстом даты и сама температура такого вида: 03/02/2014-18:20:00 	 T: 17.63*C
+cp -f /tmp/tstatgpio.html "$ALL_string"\.html
+fi
+#
+ifconfig | grep HWaddr | awk '{FS=" "; if(NR==1) {print "#"$5}};' > /var/log/narodgpiomon.Dev"$nomer_ds"
+echo \#$ID_hex\#"$sen_sor">> /var/log/narodgpiomon.Dev"$nomer_ds"
+echo "##" >> /var/log/narodgpiomon.Dev"$nomer_ds"
+dir_nard=$'/var/log/narodgpiomon'
+cnf_term=$'/etc/config/ds18b20'
+dsfg=$(sed '/enab_nar/!d' $cnf_term)
+echo $dsfg
+if [ -n "$dsfg" ]; then
+if   [ "$sdf" == "0" ]; then
+stst=0
+kollwo=$(cat $cnf_term | sed '/id_sensor/!d; /"*-00*/!d' | awk '{print $3}' | sed -n '$=')
+nar_all=$'/var/log/narodgpiomon_all'
+mac_narod=$(ifconfig | grep HWaddr | awk '{FS=" "; if(NR==1) {print "#"$5}};')
+echo $mac_narod > $nar_all	#  MAK #xx:xx:xx:xx:xx:xx
+while [ "$stst" -ne  "$kollwo" ]; do
+cnf_term=$'/tmp/ds18b20'
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$stst'/!d;/enab_nar/!d' $cnf_term | sed -n '/enab_nar/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+ends=$(echo ${ertf:1:$ertf12})
+if   [ "$ends" == "1" ]; then
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$stst'/!d;/enab_nar/!d' $cnf_term | sed -n '/id_sensor/p' | awk '{print $3}')
+ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}')
+ertf12=$(echo $(( ${ertf1} - 2 )))
+ends=$(echo ${ertf:1:$ertf12})
+IDk_h_C=$(grep $ends /var/log/narodgpiomon.Dev"$stst" | awk '{print $1}')
+#echo $IDk_h_C >> $nar_all
+echo $IDk_h_C >> $nar_all
+fi
+: $((stst = $stst + 1))
+done
+echo "##" >> $nar_all	#  KONEC - ##
+gotwn=$(sed -n '$=' $nar_all)
+fhfh=2
+if [ "$gotwn" -ne  "$fhfh" ]; then
+mrd=$(grep serv_d $cnf_term | awk '{print $3}') && mrd1=$(echo "${mrd} = ${#mrd}" | awk '{print $3}') && mrd12=$(echo $(( ${mrd1} - 2 ))); serv_down=$(echo ${mrd:1:$mrd12})
+ard=$(grep serv_port $cnf_term | awk '{print $3}') && ard1=$(echo "${ard} = ${#ard}" | awk '{print $3}') && ard12=$(echo $(( ${ard1} - 2 ))); serv_port=$(echo ${ard:1:$ard12})
+nar_all=$'/var/log/narodgpiomon_all'
+log_nard=$'/var/log/narodgpiomon.log'
+sleep 1
+cat $nar_all | nc $serv_down $serv_port > $log_nard
+### 5-попыток отправки при неудаче
+tssst_cycl=0
+tssst=$(grep O* $log_nard | awk '{print $1}')
+while [ "$tssst" != "OK" ] && [ "$tssst_cycl" -ne "5" ]; do
+cat $nar_all | nc $serv_down $serv_port > $log_nard
+sleep 1
+let "tssst_cycl += 1"
+tssst=$(grep O* $log_nard | awk '{print $1}')
+done
+###
+fi
+fi
+fi
+: $((sdf = $sdf + 1))
+fi
+else
+sdf=0
+fi
+: $((nomer_ds = $nomer_ds + 1))
+done
+
+##SKR##
+cnf_term=$'/etc/config/ds18b20'
+lcd_on=$(uci get $cnf_term.@Gpio1Wr[0].pu_Skryp)
+cmd=$(uci get $cnf_term.@Gpio1Wr[0].imya_skript)
+if [ "$lcd_on" == "1" ]; then
+sh /usr/sbin/$cmd
+fi
+rm /tmp/d_x &> /dev/null
+##SKREND##
+
+done
+else
+echo OFF SENSOR DS18B20
+exit 0
+fi
+exit 0
+
+

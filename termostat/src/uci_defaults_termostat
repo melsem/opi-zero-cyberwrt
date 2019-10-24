@@ -1,0 +1,11 @@
+#!/bin/sh
+/etc/init.d/ds18b20_init disable
+/etc/init.d/dserr18_init disable
+
+sed -i "/termostatGpio\/index.cgi/d" /www/menu.html 2> /dev/null
+
+	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
+sed -i 3i\ '<li><a href=/cgi-bin/modules/termostatGpio/index.cgi>'Термостат-GPIO'</a></li>' /www/menu.html 2> /dev/null
+	# К вебке cyberwrt - закомментировть если НЕ будет использоваться ####
+#sed -i 3i\ '<a href=/cgi-bin/modules/termostatGpio/index.cgi><div class=left>'Термостат-GPIO'</div></a>' /www/menu.html 2> /dev/null
+

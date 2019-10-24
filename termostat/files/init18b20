@@ -1,0 +1,61 @@
+#!/bin/sh
+cnf_term=$'/etc/config/ds18b20'
+awk -F= '/t=/ {printf "%.1f\n", $2/1000}' /sys/bus/w1/drivers/w1_slave_driver/*/w1_slave	# Стартовый опрос всех датчиков для избежания дальнейших ошибок чтения
+gp_addio=$(uci get $cnf_term.@Gpio1Wr[0].pcf8574)
+if [ "$gp_addio" == "1" ]; then
+echo "-- search i2c Device --"
+PnI2c=$(uci get $cnf_term.@Gpio1Wr[0].sda_scl)
+He_ad=$(uci get $cnf_term.@Gpio1Wr[0].hexadr)
+insmod i2c-dev
+insmod i2c-gpio-custom bus0=$PnI2c
+echo pcf8574 0x"$He_ad" > /sys/bus/i2c/devices/i2c-0/new_device
+fgfd=$(uci get $conf_s.@Gpio1Wr[0].hexadr)
+dgp=$(sed '/GPIOs/!d; /pcf8574/!d; /0-00'$fgfd'/!d' /sys/kernel/debug/gpio | awk '{print $2}')
+echo "-- search  i2c Device gpio  --""$dgp"
+fi
+echo 
+echo "-- search sensor --"
+kollwo=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n '$=')
+trmst=0
+trt=1
+while [ "$trmst" -ne  "$kollwo" ]; do
+DsInit=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n "$trt"p)
+Ds_Init=$(echo $DsInit)
+cnf_term=$'/etc/config/ds18b20'
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/Gpio1Wr/!d;/search/!d' $cnf_term | sed -n '/search/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+enabl=$(echo ${ertf:1:$ertf12})
+if [ "$enabl" == "1" ]; then
+uci set $cnf_term.@ds18b20_s"$trmst"[0].id_sensor="$Ds_Init"
+uci commit $cnf_term
+fi
+echo Init Sensor"$trmst" OK ROM $Ds_Init
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$trmst'/!d;/pwout/!d' $cnf_term | sed -n '/pwout/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+gp_conf=$(echo ${ertf:1:$ertf12})
+Wsyst=$(grep gpio-"$gp_conf" /sys/kernel/debug/gpio | awk '{print $1}') && Wsysn1=$(echo ${Wsyst1:5})
+grep gpio-"$gp_conf" /sys/kernel/debug/gpio &> /dev/null
+if [ $? = 1 ]; then
+echo $gp_conf > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio"$gp_conf"/direction
+oInvert=$(uci get $cnf_term.@Gpio1Wr[0].oInvert)
+if [ "$oInvert" == "0" ]; then
+echo 0 > /sys/class/gpio/gpio"$gp_conf"/value
+else
+echo 1 > /sys/class/gpio/gpio"$gp_conf"/value
+fi
+else
+echo Init GPIO-OUT Sensor"$trmst" $Wsyst OK
+fi
+: $((trmst = $trmst + 1))
+: $((trt = $trt + 1))
+done
+while [ "$trmst" -ne "10" ]; do
+uci set $cnf_term.@ds18b20_s"$trmst"[0].id_sensor=""
+uci set $cnf_term.@ds18b20_s"$trmst"[0].pwout=""
+uci commit $cnf_term
+echo Init Sensor"$trmst" Error
+: $((trmst = $trmst + 1))
+done
+echo  "-- search THE END --"
+echo
+
+

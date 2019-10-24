@@ -1,0 +1,25 @@
+#!/bin/sh
+
+ttestt=$'/var/zawis.gp'
+echo "zwser 1" > $ttestt
+while true; do
+mrd=$(grep zwser $ttestt | awk '{print $2}')
+if [ "10" == "$mrd" ]; then
+osb=2
+while [ "1" -ne  "$osb" ]; do
+/etc/init.d/ds18b20_init stop
+sleep 1s
+pidof ds18b20 > /dev/null
+if [ $? = 1 ]; then	# 
+/etc/init.d/ds18b20_init start
+osb=1
+sleep 10s
+fi
+done
+echo "zwser 1" > $ttestt
+else
+: $((mrd = $mrd + 1))
+echo "zwser" $mrd > $ttestt
+fi
+sleep 1s
+done

@@ -1,0 +1,17 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=99
+
+
+
+start() {
+
+	dserr18 &
+
+}
+
+stop() {
+	killall -9 dserr18 >/dev/null 2>/dev/null
+	rm /var/zawis.gp &> /dev/null
+}
