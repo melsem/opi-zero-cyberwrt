@@ -1,0 +1,10 @@
+#!/bin/sh
+/etc/init.d/port_listen.init disable
+
+sed -i "/termostat-serial-arduino\/index.cgi/d" /www/menu.html 2> /dev/null
+
+	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
+sed -i 3i\ '<li><a href=/cgi-bin/modules/termostat-serial-arduino/index.cgi>'Термостат-arduino-serial'</a></li>' /www/menu.html 2> /dev/null
+	# К вебке cyberwrt - закомментировть если НЕ будет использоваться ####
+#sed -i 3i\ '<a href=/cgi-bin/modules/termostat-serial-arduino/index.cgi><div class=left>'Термостат-arduino-serial'</div></a>' /www/menu.html 2> /dev/null
+

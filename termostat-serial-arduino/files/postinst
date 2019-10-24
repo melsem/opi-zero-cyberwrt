@@ -1,0 +1,3 @@
+#!/bin/sh
+sed -i "/termostat-serial-arduino\/index.cgi/d" /www/menu.html
+sed -i 3i\ '<li><a href=/cgi-bin/modules/termostat-serial-arduino/index.cgi>'termostat-serial-arduino'</a></li>' /www/menu.html
