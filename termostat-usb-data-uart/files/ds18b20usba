@@ -1,0 +1,307 @@
+#!/bin/sh
+conf_DS=$'/tmp/digitemp'
+cnf_term=$'/etc/config/ds18b20a_conf'
+kollwo=$(sed -n '/ROM/p' $conf_DS | wc -l)
+if [ "$kollwo" == "0" ]; then
+exit 0
+fi
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/Gpio1Wr/!d;/enabled0/!d' $cnf_term | sed -n '/enabled0/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+enabl=$(echo ${ertf:1:$ertf12})
+if [ "$enabl" == "1" ]; then
+init18b20usba
+ln -sf /tmp/tstatusb.html /www/tstatusb.html
+sdf=0
+echo -e ds0 1'\n'ds1 1'\n'ds2 1'\n'ds3 1'\n'ds4 1'\n'ds5 1'\n'ds6 1'\n'ds7 1'\n'ds8 1'\n'ds9 1'\n' > /var/hs
+while true; do
+rm /etc/config/.ds18* &> /dev/null
+rm $conf_rab &> /dev/null
+conf_DS=$'/tmp/digitemp'
+conf_rab=$'/tmp/Digtemp'
+kollwo=$(sed -n '/ROM/p' $conf_DS | wc -l)
+trmst=0
+nomer_ds=0
+conf_DS=$'/tmp/digitemp'
+conf_rab=$'/tmp/Digtemp'
+cnf_term=$'/etc/config/ds18b20a_conf'
+while [ "$trmst" -ne  "$kollwo" ]; do
+sed -e '/./{H;$!d;}' -e 'x;/Gpio1Wr/b' -e '/ds18b20_s'$nomer_ds'/b' -e d $cnf_term > $conf_rab
+idu=$(grep pwout $conf_rab | awk '{print $3}') && idu1=$(echo "${idu} = ${#idu}" | awk '{print $3}') && idu12=$(echo $(( ${idu1} - 2 )))
+out_power=$(echo ${idu:1:$idu12})
+gru=$(grep gradus $conf_rab | awk '{print $3}') && gru1=$(echo "${gru} = ${#gru}" | awk '{print $3}') && gru12=$(echo $(( ${gru1} - 2 )))
+graus=$(echo ${gru:1:$gru12})
+tips=$(grep tipsensr $conf_rab | awk '{print $3}') && tips2=$(echo "${tips} = ${#tips}" | awk '{print $3}') && tips23=$(echo $(( ${tips2} - 2 )))
+tips_p1=$(echo ${tips:1:$tips23})
+term_on="termometr"
+t_stat="termostat"
+kondc="kondicioner"
+s_off="send"
+if [ "$tips_p1" == "$term_on" ]; then
+:
+else
+sdsd_sr=$(cat /sys/class/gpio/gpio"$out_power"/value)
+if [ -n "$sdsd_sr" ]; then
+Hist=$(grep hister $conf_rab | awk '{print $3}') && Hist1=$(echo "${Hist} = ${#Hist}" | awk '{print $3}') && Hist12=$(echo $(( ${Hist1} - 2 ))) && rr_Hist=$(echo ${Hist:1:$Hist12})
+conf_Hist=$(echo $rr_Hist | awk '{print $1*1000}')
+conf_Totkl1=$(echo $graus | awk '{print $1*1000}')
+if [ "$tips_p1" == "$t_stat" ]; then
+let t_alarm=$(( ${conf_Totkl1} - ${conf_Hist} ))
+else
+let t_alarm=$(( ${conf_Totkl1} + ${conf_Hist} ))
+fi
+else
+uci set $cnf_term.@ds18b20_s"$nomer_ds"[0].tipsensr="termometr"
+uci commit $cnf_term
+fi
+fi
+ida=$(grep id_sensor $conf_rab | awk '{print $3}'); ida1=$(echo "${ida} = ${#ida}" | awk '{print $3}')
+idahex=$(echo $(( ${ida1} - 2 ))) && ID_hex=$(echo ${ida:1:$idahex})
+
+ten_sr=$(digitemp_DS9097 -c /var/digitemp -t "$nomer_ds" | grep -i sensor | awk '{print $7}')
+echo $'\n'sn_sor$nomer_ds $ten_sr >> $conf_rab
+sen_sor=$(grep -i sn_sor $conf_rab | awk '{print $2}')
+#
+cnf_term=$'/etc/config/ds18b20a_conf'
+lcd_on=$(uci get $cnf_term.@Gpio1Wr[0].pu_Skryp)
+if [ "$lcd_on" == "1" ]; then
+echo t_sn"$nomer_ds" ${sen_sor:0:4} >> /tmp/d_x
+fi
+#
+if [ -n "$sen_sor" ]; then
+:
+else
+echo 0 > /sys/class/gpio/gpio"$out_power"/value
+fi
+DATa=$(date +%d/%m/%Y-%H:%M:%S)
+D_minuta=$(date +%M)
+echo $'\n'dateM $D_minuta >> $conf_rab
+Datata=$(date +%b.%d.%Y)
+Dfdd=$(date +%T)
+vizual_html='/tmp/tstatusb.html'
+ttestt=$'/var/zawis.us'
+if [ "$nomer_ds" == "0" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "17s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "18s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "1" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "19s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "20s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "2" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "21s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "22s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "3" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "23s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "24s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "4" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "25s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "26s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "5" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "27s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "28s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "6" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "29s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "30s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "7" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "31s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "32s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "8" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "33s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "34s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+if [ "$nomer_ds" == "9" ]; then
+echo "zwser 1" > $ttestt
+sed -i -r "35s,>[^<]*</,>Sensor${nomer_ds} - ${tips_p1} ${Datata} ${Dfdd}</," $vizual_html
+sed -i -r "36s,>[^<]*</,>${sen_sor}\&deg;C</," $vizual_html
+fi
+ifconfig | grep HWaddr | awk '{FS=" "; if(NR==1) {print "#"$5}};' > /var/log/narodmon.Dev"$nomer_ds"
+echo \#$ID_hex\#"$sen_sor">> /var/log/narodmon.Dev"$nomer_ds"
+echo "##" >> /var/log/narodmon.Dev"$nomer_ds"
+#
+Tsn_sor=$(grep -i sn_sor $conf_rab | awk '{print $2*1000}')
+if [ "$tips_p1" == "$term_on" ]; then
+echo 0 > /sys/class/gpio/gpio"$out_power"/value
+else
+if [ "$tips_p1" == "$t_stat" ]; then
+gru=$(grep gradus $conf_rab | awk '{print $3}') && gru1=$(echo "${gru} = ${#gru}" | awk '{print $3}') && gru12=$(echo $(( ${gru1} - 2 )))
+graus=$(echo ${gru:1:$gru12})
+conf_Totkl1=$(echo $graus | awk '{print $1*1000}')
+hs=$(sed -n '/ds'$nomer_ds'/p' /var/hs | awk '{print $2}')
+if [ "$hs" == 1 ]; then			
+if [ "$Tsn_sor" -le $conf_Totkl1 ]; then
+echo 1 > /sys/class/gpio/gpio"$out_power"/value
+else
+sed 's/ds'$nomer_ds' 1/ds'$nomer_ds' 0/' /var/hs > /var/hsu
+cat /var/hsu > /var/hs
+echo 0 > /sys/class/gpio/gpio"$out_power"/value
+fi
+else
+if [ "$Tsn_sor" -le $t_alarm ]; then
+echo 1 > /sys/class/gpio/gpio"$out_power"/value
+sed 's/ds'$nomer_ds' 0/ds'$nomer_ds' 1/' /var/hs > /var/hsu
+cat /var/hsu > /var/hs
+fi
+fi
+else
+gru=$(grep gradus $conf_rab | awk '{print $3}') && gru1=$(echo "${gru} = ${#gru}" | awk '{print $3}') && gru12=$(echo $(( ${gru1} - 2 )))
+graus=$(echo ${gru:1:$gru12})
+conf_Totkl1=$(echo $graus | awk '{print $1*1000}')
+sed 's/ds'$nomer_ds' 0/ds'$nomer_ds' 1/' /var/hs > /var/hsu
+cat /var/hsu > /var/hs
+hs=$(sed -n '/ds'$nomer_ds'/p' /var/hs | awk '{print $2}')	# поиск от номера ds18
+if [ "$hs" == 1 ]; then			
+if [ "$Tsn_sor" -ge $conf_Totkl1 ]; then
+echo 1 > /sys/class/gpio/gpio"$out_power"/value
+else
+echo 0 > /sys/class/gpio/gpio"$out_power"/value
+sed 's/ds'$nomer_ds' 1/ds'$nomer_ds' 0/' /var/hs > /var/hsu
+cat /var/hsu > /var/hs
+fi
+else
+if [ "$Tsn_sor" -ge $t_alarm ]; then
+echo 1 > /sys/class/gpio/gpio"$out_power"/value
+sed 's/ds'$nomer_ds' 0/ds'$nomer_ds' 1/' /var/hs > /var/hsu
+cat /var/hsu > /var/hs
+fi
+fi
+fi
+fi
+#
+en=$(grep times $conf_rab | awk '{print $3}') && en2=$(echo "${en} = ${#en}" | awk '{print $3}') && en23=$(echo $(( ${en2} - 2 ))) && interv=$(echo ${en:1:$en23})
+if [ "$interv" == "$s_off" ]; then
+:					
+else	
+if [ "$interv" == "2" ]; then	
+Filter="00|02|04|06|08|10|12|14|16|18|20|22|24|26|28|30|32|34|36|38|40|42|44|46|48|50|52|54|56|58"
+fi
+if [ "$interv" == "5" ]; then	
+Filter="00|05|10|15|20|25|30|35|40|45|50|55"
+fi
+if [ "$interv" == "10" ]; then	
+Filter="00|10|20|30|40|50"			
+fi
+if [ "$interv" == "15" ]; then	
+Filter="00|15|30|45"			
+fi
+if [ "$interv" == "20" ]; then	
+Filter="00|20|40"			
+fi
+if [ "$interv" == "30" ]; then	
+Filter="00|30"				
+fi
+if [ "$interv" == "60" ]; then	
+Filter="00"					
+fi
+fi
+D_al=$(date +%b.%d.%Y-%T)
+Datata=$(date +%b.%d.%Y)
+D_time=$(date +%T)
+TimT="dateM"
+log=$(grep dateM $conf_rab | awk '{print $2}')
+if echo $Filter | grep -qE $log; then
+if [ "$nomer_ds" == "$sdf" ]; then
+sen_sor=$(grep -i sn_sor $conf_rab | awk '{print $2}')
+
+cnf_term=$'/etc/config/ds18b20a_conf'
+if [ "`uci get $cnf_term.@Gpio1Wr[0].ftp_svr`" = "1" ] ; then
+
+FldDr1=$(grep folder $conf_rab | awk '{print $3}')
+bbbb1=$(echo "${FldDr1} = ${#FldDr1}" | awk '{print $3}')
+aaaa1=$(echo $(( ${bbbb1} - 2 )))
+ALL_string=$(echo ${FldDr1:1:$aaaa1})
+ALL_2=$(echo ${ALL_string##\/*\/})						# покажем остаток символов а удалим все между крайними / /
+konec=$(echo "${ALL_2} = ${#ALL_2}" | awk '{print $3}')			# подщет коллич. оставшихся символов
+rsrd=$(echo $(( ${aaaa1} - ${konec} )))					# от общего колличества символов без кавычек отнимем *оставшиеся символы*
+NacaloFold_Dir1=$(echo ${FldDr1:1:$rsrd})				# покажем все что между  крайними / /
+KonecFold_Dir1=$ALL_2
+addFold_Dir1=$(mkdir -p $NacaloFold_Dir1"$Datata"; nevFold=$NacaloFold_Dir1"$Datata"; chmod 777 $nevFold; chmod 777 $NacaloFold_Dir1)
+Fold_Dir1=$(echo $NacaloFold_Dir1"$Datata"\/"$tips_p1"$KonecFold_Dir1)
+echo $addFold_Dir1
+echo $D_time "	" T\: $sen_sor\*"C" >> $Fold_Dir1			# Это будет строка с текстом даты и сама температура такого вида: 03/02/2014-18:20:00 	 T: 17.63*C
+cp -f /tmp/tstatusb.html "$ALL_string"\.html
+fi
+#
+dir_nard=$'/var/log/narodmon'
+cnf_term=$'/etc/config/ds18b20a_conf'
+dsfg=$(sed '/enab_nar/!d' $cnf_term)
+if [ -n "$dsfg" ]; then
+if [ "$sdf" == "0" ]; then
+stst=0
+kollwo=$(sed -n '/ROM/p' $conf_DS | wc -l)
+nar_all=$'/var/log/narodmon_all'
+mac_narod=$(ifconfig | grep HWaddr | awk '{FS=" "; if(NR==1) {print "#"$5}};')
+echo $mac_narod > $nar_all	#  MAK #xx:xx:xx:xx:xx:xx
+while [ "$stst" -ne "$kollwo" ]; do
+cnf_term=$'/etc/config/ds18b20a_conf'
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$stst'/!d;/enab_nar/!d' $cnf_term | sed -n '/enab_nar/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+ends=$(echo ${ertf:1:$ertf12})
+if [ "$ends" == "1" ]; then
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$stst'/!d;/enab_nar/!d' $cnf_term | sed -n '/id_sensor/p' | awk '{print $3}')
+ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}')
+ertf12=$(echo $(( ${ertf1} - 2 )))
+ends=$(echo ${ertf:1:$ertf12})
+IDk_h_C=$(grep $ends /var/log/narodmon.Dev"$stst" | awk '{print $1}')
+echo $IDk_h_C >> $nar_all
+fi
+: $((stst = $stst + 1))
+done
+echo "##" >> $nar_all	#  KONEC - ##
+gotwn=$(sed -n '$=' $nar_all)
+fhfh=2
+if [ "$gotwn" -ne  "$fhfh" ]; then
+mrd=$(grep serv_d $cnf_term | awk '{print $3}') && mrd1=$(echo "${mrd} = ${#mrd}" | awk '{print $3}') && mrd12=$(echo $(( ${mrd1} - 2 ))); serv_down=$(echo ${mrd:1:$mrd12})
+ard=$(grep serv_port $cnf_term | awk '{print $3}') && ard1=$(echo "${ard} = ${#ard}" | awk '{print $3}') && ard12=$(echo $(( ${ard1} - 2 ))); serv_port=$(echo ${ard:1:$ard12})
+nar_all=$'/var/log/narodmon_all'
+log_nard=$'/var/log/narodgpiomon.log'
+sleep 1
+cat $nar_all | nc $serv_down $serv_port > $log_nard
+### 5-попыток отправки при неудаче
+tssst_cycl=0
+tssst=$(grep O* $log_nard | awk '{print $1}')
+while [ "$tssst" != "OK" ] && [ "$tssst_cycl" -ne "5" ]; do
+cat $nar_all | nc $serv_down $serv_port > $log_nard
+sleep 1
+let "tssst_cycl += 1"
+tssst=$(grep O* $log_nard | awk '{print $1}')
+done
+###
+fi
+fi
+fi
+: $((sdf = $sdf + 1))
+fi
+else
+sdf=0
+fi
+: $((trmst = $trmst + 1))
+: $((nomer_ds = $nomer_ds + 1))
+done
+cnf_term=$'/etc/config/ds18b20a_conf'
+lcd_on=$(uci get $cnf_term.@Gpio1Wr[0].pu_Skryp)
+if [ "$lcd_on" == "1" ]; then
+cmd=$(uci get $cnf_term.@Gpio1Wr[0].imya_skript)
+sh /usr/sbin/$cmd
+d_x=$'/tmp/d_x'
+rm $d_x &> /dev/null
+fi
+done
+else
+echo OFF SENSOR DS18B20
+exit 0
+fi
+exit 0
+

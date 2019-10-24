@@ -1,0 +1,9 @@
+#!/bin/sh
+/etc/init.d/ds18b20usba_init disable
+/etc/init.d/dserr18usba_init disable
+
+sed -i "/termostatUsb\/index.cgi/d" /www/menu.html 2> /dev/null
+	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
+sed -i 3i\ '<li><a href=/cgi-bin/modules/termostatUsb/index.cgi>'Термостат-USB'</a></li>' /www/menu.html 2> /dev/null
+	# К вебке cyberwrt - закомментировть если НЕ будет использоваться ####
+#sed -i 3i\ '<a href=/cgi-bin/modules/termostatUsb/index.cgi><div class=left>'Термостат-USB'</div></a>' /www/menu.html 2> /dev/null

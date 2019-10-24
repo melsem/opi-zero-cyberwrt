@@ -1,0 +1,53 @@
+#!/bin/sh
+digitemp_DS9097 -c /var/digitemp -a &> /dev/null
+digitemp_DS9097 -c /var/digitemp -a &> /dev/null
+conf_DS=$'/tmp/digitemp'
+cnf_term=$'/etc/config/ds18b20a_conf'
+cp -f "$cnf_term" /tmp/
+echo 
+echo "-- search sensor --"
+kollwo=$(sed -n '/ROM/p' $conf_DS | wc -l)
+: $((trmst = $kollwo - 0))
+nomer_ds=0
+trt=1
+while [ "$trmst" -ne  "0" ]; do
+DsInit=$(sed -n '/ROM/p' $conf_DS | sed '/ROM '$nomer_ds'/s/0x//g' | awk '{print $3 $4 $5 $6 $7 $8 $9 $10}' | sed -n "$trt"p)
+Ds_Init=$(echo "$DsInit")
+#ROMhex=$(sed -n '/ROM '$nomer_ds'/p' $conf_DS | awk '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10}')
+cnf_term=$'/etc/config/ds18b20a_conf'
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/Gpio1Wr/!d;/search/!d' $cnf_term | sed -n '/search/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+enabl=$(echo ${ertf:1:$ertf12})
+if [ "$enabl" == "1" ]; then
+#uci set $cnf_term.@ds18b20_s"$nomer_ds"[0].ROMhex="$ROMhex"
+uci set $cnf_term.@ds18b20_s"$nomer_ds"[0].id_sensor="$Ds_Init"
+uci commit $cnf_term
+fi
+echo Init Sensor"$nomer_ds" OK ROM $Ds_Init
+ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$nomer_ds'/!d;/pwout/!d' $cnf_term | sed -n '/pwout/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+gp_conf=$(echo ${ertf:1:$ertf12})
+Wsyst=$(grep gpio-"$gp_conf" /sys/kernel/debug/gpio | awk '{print $1}') && Wsysn1=$(echo ${Wsyst1:5})
+grep gpio-"$gp_conf" /sys/kernel/debug/gpio &> /dev/null
+if [ $? = 1 ]; then
+echo $gp_conf > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio"$gp_conf"/direction
+else
+echo Init GPIO-OUT Sensor"$nomer_ds" $Wsyst OK
+fi
+: $((trt = $trt + 1))
+: $((trmst = $trmst - 1))
+: $((nomer_ds = $nomer_ds + 1))
+done
+: $((trmst = 10 - $kollwo))
+while [ "$trmst" -ne  "0" ]; do
+uci set $cnf_term.@ds18b20_s"$nomer_ds"[0].id_sensor=""
+#uci set $cnf_term.@ds18b20_s"$nomer_ds"[0].enab_nar=""
+uci set $cnf_term.@ds18b20_s"$nomer_ds"[0].pwout=""
+uci commit $cnf_term
+echo Init Sensor"$nomer_ds" Error
+: $((nomer_ds = $nomer_ds + 1))
+: $((trmst = $trmst - 1))
+done
+echo  "-- search THE END --"
+echo
+	rm /tmp/ds18b20a_conf &> /dev/null
+

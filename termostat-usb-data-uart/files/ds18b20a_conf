@@ -1,0 +1,101 @@
+
+config Gpio1Wr
+	option enabled0 '1'
+	option gpio1wr '/dev/ttyUSB0'
+	option times 'send off'
+	option hexadr '27'
+	option sda_scl '0,18,20'
+	option imya_skript 'lcd_usb_hd44780_term'
+	option serv_d 'narodmon.ruK'
+	option serv_port '82h83'
+	option search '1'
+	option pcf8574 '1'
+	option allset '10'
+
+config ds18b20_s0
+	option folder '/home/Termo/Tstat.log'
+	option id_sensor '28C64D4B030000A6'
+	option hister '2'
+	option gradus '30'
+	option gra2dus '28'
+	option pwout '59'
+	option tipsensr 'termostat'
+	option t1ime '8'
+	option t2ime '20'
+
+config ds18b20_s1
+	option folder '/home/Termo/Dom.log'
+	option id_sensor '289E304B030000A8'
+	option pwout '56'
+	option gradus '30.5'
+	option gra2dus '27'
+	option hister '3'
+	option t1ime '8'
+	option t2ime '17'
+	option tipsensr 'termostat'
+
+config ds18b20_s2
+	option gradus '55'
+	option gra2dus '33'
+	option hister '0.2'
+	option t1ime '2'
+	option t2ime '3'
+	option tipsensr 'morozilka'
+
+config ds18b20_s3
+	option tipsensr 'termometr'
+	option t1ime '11'
+	option t2ime '10'
+	option gradus '22'
+	option gra2dus '15'
+	option hister '1'
+
+config ds18b20_s4
+	option tipsensr 'termometr'
+	option t1ime '10'
+	option gradus '44'
+	option t2ime '12'
+	option gra2dus '55'
+	option hister '3'
+
+config ds18b20_s5
+	option tipsensr 'termometr'
+	option t1ime '1'
+	option gradus '2'
+	option t2ime '3'
+	option gra2dus '4'
+	option hister '5'
+
+config ds18b20_s6
+	option tipsensr 'termometr'
+	option t1ime '6'
+	option gradus '7'
+	option t2ime '8'
+	option gra2dus '9'
+	option hister '2'
+
+config ds18b20_s7
+	option tipsensr 'termometr'
+	option t1ime '22'
+	option gradus '33'
+	option t2ime '11'
+	option gra2dus '22'
+	option hister '1'
+
+config ds18b20_s8
+	option tipsensr 'termometr'
+	option t1ime '20'
+	option gradus '10'
+	option t2ime '12'
+	option gra2dus '50'
+	option hister '5'
+
+config ds18b20_s9
+	option tipsensr 'termometr'
+	option gradus '24'
+	option gra2dus '14'
+	option hister '2'
+	option t1ime '12'
+	option t2ime '18'
+
+

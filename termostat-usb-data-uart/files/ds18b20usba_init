@@ -1,0 +1,53 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=99
+
+
+
+start() {
+	killall -9 ds18b20usba >/dev/null 2>/dev/null
+	rm /etc/config/.ds18* &> /dev/null
+
+	dusb=$(sed -n '/gpio1wr/p' /etc/config/ds18b20a_conf)
+			if [ -n "$dusb" ]; then
+	gppwr=$(grep gpio1wr /etc/config/ds18b20a_conf | awk '{print $3}')
+	gppwr1=$(echo "${gppwr} = ${#gppwr}" | awk '{print $3}')
+	gppwr12=$(echo $(( ${gppwr1} - 2 )))
+	gp1Wr=$(echo ${gppwr:1:$gppwr12})
+	digitemp_DS9097 -c /var/digitemp -i -r 500 -s "$gp1Wr" &> /dev/null
+	sleep 1
+
+	cp -f /usr/bin/tstatusb.html /tmp/
+	sleep 1
+
+	ds18b20usba &
+	else
+	killall -9 ds18b20usba >/dev/null 2>/dev/null
+	exit 0
+	fi
+}
+
+stop() {
+printf '\xff\x01' > /dev/hd44780
+
+	rm /etc/config/.ds18* &> /dev/null
+	killall -9 ds18b20usba >/dev/null 2>/dev/null
+	rm /tmp/tstatusb.html &> /dev/null
+	rm /tmp/Digtemp &> /dev/null
+	rm /tmp/zawis.us &> /dev/null
+	rm /tmp/d_x &> /dev/null
+	rm /tmp/log/narodmon.log2 &> /dev/null
+	rm /tmp/log/narodmon_all &> /dev/null
+
+	trmst=0
+	while [ "$trmst" -ne  "10" ]; do
+		ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$trmst'/!d;/pwout/!d' /etc/config/ds18b20a_conf | sed -n '/pwout/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
+		gp_conf=$(echo ${ertf:1:$ertf12})
+		echo 0 > /sys/class/gpio/gpio"$gp_conf"/value
+		rm /tmp/log/narodmon.Dev"$trmst" &> /dev/null
+		: $((trmst = $trmst + 1))
+	done
+}
+
+
