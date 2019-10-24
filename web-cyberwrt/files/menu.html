@@ -1,0 +1,14 @@
+<body onload="startTime()"><ul class="menu">
+<li><a href=/cgi-bin/modules/manmod/index.cgi>Модули</a></li>
+<li><a href=/cgi-bin/modules/filemanager/index.cgi>Файл_менеджер</a></li>
+<li><a href=/cgi-bin/modules/cron/index.cgi>Планировщик</a></li>
+<li><a href=/cgi-bin/modules/backup_rom/index.cgi>Backup_ROM</a></li>
+<li><a href=/cgi-bin/modules/about/index.cgi>О_системе</a></li>
+<li><a href=/cgi-bin/modules/authorization/index.cgi>Авторизация</a></li>
+<li><a href="/cgi-bin/recovery.cgi" title="Перезагрузить или восстановить"><b><span id="txt"></span></b></a></li>
+<div style=clear:left;></div>
+<link rel=stylesheet type=text/css href=/modules/style.css>
+<script type="text/javascript">function startTime(){ var tm=new Date(); var h=tm.getHours(); var m=tm.getMinutes(); var s=tm.getSeconds(); m=checkTime(m); s=checkTime(s);document.getElementById('txt').innerHTML=h+":"+m+":"+s; t=setTimeout('startTime()',500); }
+function checkTime(i){ if (i<10) { i="0" + i;} return i; } </script>
+</ul></body>
+<br><br><br><br>
