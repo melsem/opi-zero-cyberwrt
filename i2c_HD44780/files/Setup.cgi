@@ -278,7 +278,7 @@ echo "></td></tr>
 
 
 
-<tr><td align=center bgcolor="#90f1f1" $hien> file name:</td><td align=center bgcolor="#90f1f1" $hien> "/temp/"<input type=text name="read_file" size=20 value="
+<tr><td align=center bgcolor="#90f1f1" $hien> file name:</td><td align=center bgcolor="#90f1f1" $hien> "/tmp/"<input type=text name="read_file" size=20 value="
 echo $f
 echo "></td></tr><tr><td align=center bgcolor="#90f1f1" $hien>LCD: info banner</td><td class="b0" align=center bgcolor="#90f1f1" $hien><input type="radio" name="info_banner" value="0" $no_banner>Off<input type="radio" name="info_banner" value="1" $ok_banner>ON</td></tr><tr><td align=center bgcolor="#90f1f1" $hien>file /temp/<b>$f</b> (read)</td><td class="b0" align=center bgcolor="#90f1f1" $hien><input type="radio" name="on_read" value="0" $no_on_read>Off<input type="radio" name="on_read" value="1" $ok_on_read>ON</td></tr><tr><td align=center bgcolor="#90f1f1">clock</td><td class="b0" align=center bgcolor="#90f1f1"><input type="radio" name="clock" value="0" $no_clock>Off<input type="radio" name="clock" value="1" $ok_clock>ON</td></tr><tr><td align=center bgcolor="#90f1f1">"led - "</td><td class="b0" align=center bgcolor="#90f1f1"><input type="radio" name="led_on" value="0" $no_led_on>Off<input type="radio" name="led_on" value="1" $ok_led_on>ON</td></tr><tr><td align="right"><b>sensor</b></td><td><b>setup</b></td></tr><tr><td align=center bgcolor="#90f1f1">"sensor ds18"</td><td class="b0" align=center bgcolor="#90f1f1"><input type="radio" name="on_ds18" value="0" $no_ds18>Off<input type="radio" name="on_ds18" value="1" $w1gpio>w1-gpio<input type="radio" name="on_ds18" value="2" $digitemp>usb-uart</td></tr>"
 if [ "$sens_or" == "0" ] ; then
