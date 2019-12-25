@@ -1,18 +1,42 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2006 OpenWrt.org
 
 START=99
 
 
+/etc/init.d/ev-irc stop &> /dev/null
 
-start() {
+reload() {
+
+ if [ $1 == "0" ]; then
+	killall -9 curl &> /dev/null &> /dev/null
+	killall -9 wget &> /dev/null &> /dev/null
+	killall -9 madplay &> /dev/null &> /dev/null
+ else
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
+    web-radio2 -p $1&
+ fi
+sleep 1
+}
 
-web-radio2 &
+start() {
 
+pidof web-radio2 &> /dev/null
+if [ $? == 1 ]; then
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killall -9 curl &> /dev/null > /dev/null
+	killall -9 wget &> /dev/null > /dev/null
+	killall -9 madplay &> /dev/null > /dev/null
+web-radio2  -p 1&
+else
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killall -9 curl &> /dev/null > /dev/null
+	killall -9 wget &> /dev/null > /dev/null
+	killall -9 madplay &> /dev/null > /dev/null
+fi
+sleep 1
 }
 
 stop() {
@@ -29,7 +53,11 @@ restart() {
 	killall -9 madplay &> /dev/null > /dev/null
 
 web-radio2 &
+sleep 1
 
 }
+
+/etc/init.d/ev-irc start &> /dev/null
+
 
 
