@@ -4,9 +4,15 @@ echo "Content-type: text/html; charset=utf-8"
 echo
 echo "<title>О системе</title>"
 echo `cat /www/menu.html`
-echo "<br><br><h3>Доступно: `df -h | sed '/root/!d' | awk '{print $4}'`</h3>"
-echo "<h3>`awk '{printf "Themperature: " "%.01f°C\n", $1/1000}' /sys/devices/virtual/thermal/thermal_zone0/temp`</h3>"
-echo "<h3>`awk '{printf "Clock: " "%.03f GHz\n", $1/1000000}' /sys/bus/cpu/devices/cpu0/cpufreq/scaling_cur_freq`</h3>"
+board=$(cat /tmp/sysinfo/board_name)
+boardname="${board##*,}"
+echo "<br><br><b>$boardname</b><br>Free mem:<b> `df -h | sed '/root/!d' | awk '{print $4}'`</b><br>"
+if [ "$boardname" == "orangepi-zero-lts" ]; then
+echo "<b>`awk '{printf "Themperature: " "%.01f°C\n", $1/500}' /sys/devices/virtual/thermal/thermal_zone0/temp`</b><br>"
+else
+echo "<b>`awk '{printf "Themperature: " "%.01f°C\n", $1/1000}' /sys/devices/virtual/thermal/thermal_zone0/temp`</b><br>"
+fi
+echo "<h3>`awk '{printf "Cpufreq: " "%.03f GHz\n", $1/1000000}' /sys/bus/cpu/devices/cpu0/cpufreq/scaling_cur_freq`</h3>"
 echo "<h1>Текущая Дата и время</h1><pre>`date`</pre>"
 echo "<h1>Версия прошивки</h1><pre>`cat /proc/version`</pre>"
 echo "<h1>Информация о CPU</h1><pre>`cat /proc/cpuinfo`</pre>"
