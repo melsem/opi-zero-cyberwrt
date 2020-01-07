@@ -31,4 +31,11 @@ cat /tmp/tstatgpio.html &> /dev/null
 if [ $? = 0 ]; then
 sed -n '17,36p' /tmp/tstatgpio.html
 fi
-echo "</table><table align="center" border=0 width=><tr><td><a href=/cgi-bin/modules/termostatGpio/Sset.cgi><input title="Желаете_зайти_в_установки ???" class="b1" type=submit value="Termostat_ALL_SETTING" name=></a></td></tr><br></table><meta http-equiv="refresh" content="5">"
+echo "</table><table align="center" border=0 width=><tr><td><a href=/cgi-bin/modules/termostatGpio/Sset.cgi><input title="Желаете_зайти_в_установки ???" class="b1" type=submit value="Termostat_ALL_SETTING" name=></a></td></tr><br></table>"
+ps > /tmp/1.ds18
+grep -q ds18b20 /tmp/1.ds18
+if [ $? -eq 0 ]; then
+echo "<meta http-equiv="refresh" content="5">"
+fi
+rm /tmp/1.ds18
+

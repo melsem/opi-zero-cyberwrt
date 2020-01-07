@@ -1,6 +1,5 @@
 #!/bin/sh
 /etc/init.d/ds18b20_init disable
-/etc/init.d/dserr18_init disable
 
 sed -i "/termostatGpio\/index.cgi/d" /www/menu.html 2> /dev/null
 

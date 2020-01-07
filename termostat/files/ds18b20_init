@@ -6,27 +6,24 @@ START=99
 
 
 start() {
-	rm /etc/config/.ds18* &> /dev/null
-	dgpio=$(sed -n '/gpio1wr/p' /etc/config/ds18b20)
-			if [ -n "$dgpio" ]; then
-	gppwr=$(grep gpio1wr /etc/config/ds18b20 | awk '{print $3}')
-	gppwr1=$(echo "${gppwr} = ${#gppwr}" | awk '{print $3}')
-	gppwr12=$(echo $(( ${gppwr1} - 2 )))
-	gp1Wr=$(echo ${gppwr:1:$gppwr12})
-	insmod w1-gpio-custom bus0=$gp1Wr &> /dev/null
-	sleep 1
-	cp -f /usr/bin/tstatgpio.html /tmp/
 
-	ds18b20 &
-			else
-				killall -9 ds18b20 >/dev/null 2>/dev/null
-				exit 0
-			fi
+ps > /tmp/1.ds18
+sleep 1
+grep -q ds18b20 /tmp/1.ds18
+if [ $? -eq 1 ]; then
+ dserr18=$(awk -F" " '/dserr18/ {print $1}' /tmp/1.ds18)
+ ds18b20=$(awk -F" " '/ds18b20/ {print $1}' /tmp/1.ds18)
+ kill $dserr18 &>/dev/null
+ kill $ds18b20 &>/dev/null
+fi
+ rm /tmp/1.ds18
+ cp -f /usr/bin/tstatgpio.html /tmp/
+ ds18b20 &
+ dserr18 &
 
 }
 
 stop() {
-	killall -9 ds18b20 >/dev/null 2>/dev/null
 
 	rm /tmp/zawis.gp &> /dev/null
 	rm /etc/config/.ds18* &> /dev/null
@@ -39,6 +36,7 @@ stop() {
 	rm /tmp/thermgpio &> /dev/null
 	rm /tmp/log/narodgpiomon.log2 &> /dev/null
 	rm /tmp/log/narodgpiomon_all &> /dev/null
+	rm /var/zawis.gp &> /dev/null
 
 				trmst=0
 			while [ "$trmst" -ne  "10" ]; do
@@ -48,4 +46,11 @@ stop() {
 				rm /tmp/log/narodmon.Dev"$trmst" &> /dev/null
 				: $((trmst = $trmst + 1))
 			done
+ps > /tmp/1.ds18
+dserr18=$(awk -F" " '/dserr18/ {print $1}' /tmp/1.ds18)
+ds18b20=$(awk -F" " '/ds18b20/ {print $1}' /tmp/1.ds18)
+kill $dserr18 &>/dev/null
+kill $ds18b20 &>/dev/null
+rm /tmp/1.ds18
 }
+

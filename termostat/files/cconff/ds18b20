@@ -1,7 +1,7 @@
 
 config Gpio1Wr
 	option enabled0 '1'
-	option gpio1wr '0,471,0'
+	option gpio1wr 'gpio-6'
 	option hexadr '38'
 	option sda_scl '0,18,20'
 	option imya_skript 'skript_term'

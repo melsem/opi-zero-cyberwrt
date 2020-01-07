@@ -86,13 +86,11 @@ print ""
 	}
 	if($1 == "staron")
 	{
-	system("/etc/init.d/dserr18_init enable")
 	system("/etc/init.d/ds18b20_init enable")
 	print "<br>AUTO-START ENABLE"
 	}
 	if($1 == "staroff")
 	{
-	system("/etc/init.d/dserr18_init disable")
 	system("/etc/init.d/ds18b20_init disable")
 	print "<br>AUTO-START DISABLE"
 	}
@@ -104,7 +102,6 @@ print ""
 	}
 	if($1 == "cozapusk")
 	{
-	system("/etc/init.d/dserr18_init restart")
 	system("/etc/init.d/ds18b20_init restart")
 	print "<br><b>START - OK.</b><br>"
 	print "<b>search sensor:<b><br> >>"
@@ -112,7 +109,6 @@ print ""
 	}
 	if($1 == "coostanov")
 	{
-	system("/etc/init.d/dserr18_init stop")
 	system("/etc/init.d/ds18b20_init stop")
 	print "STOP - OK."
 	}
@@ -127,5 +123,6 @@ END
 {
 print "<br><br><br><table align=center border=0 size=18 width=><tr><td align=center bgcolor=#8891f1><b><a href=/cgi-bin/modules/termostatGpio/Sset.cgi>In settings</a></b></td></tr><tr><td></td></tr><tr><td align=center bgcolor=#90f1f1><b><a href=/cgi-bin/modules/termostatGpio/index.cgi>Exit settings</a></b></td></tr></table>"
 }
+
 
 

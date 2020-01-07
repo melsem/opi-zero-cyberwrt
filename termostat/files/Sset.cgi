@@ -152,12 +152,14 @@ fi
 echo "</td></tr></form></table><br><br><table align=center border=0 width=550><form method="POST" action="Setup.cgi"><tr><td align=center>"
 gppwr=$(grep gpio1wr /etc/config/ds18b20 | awk '{print $3}'); gppwr1=$(echo "${gppwr} = ${#gppwr}" | awk '{print $3}'); gppwr12=$(echo $(( ${gppwr1} - 2 ))); gp1Wr=$(echo ${gppwr:1:$gppwr12})
 kwod=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n '$=')
-pidof ds18b20 &> /dev/null
-if [ $? = 1 ]; then
+ps > /tmp/1.ds18
+grep -q ds18b20 /tmp/1.ds18
+if [ $? -eq 1 ]; then
 echo "<h3 align="center">The program does not work<br><button name="cozapusk" class="b1" type=submit title="Желаете_запусить_модуль_???"><img src="/modules/termostatGpio/b.jpg" alt= style="vertical-align: middle">Termostat START</button></h3>"
 else
 echo "<h3 align="center">The program works with temperature. Number of found sensors - $kwod pieces.  Init.Port-"$gp1Wr"<br> <button name="coostanov" class="b1" type=submit title="Желаете_остановить_модуль_???"><img src="/modules/termostatGpio/r.jpg" alt= style="vertical-align: middle">Termostat STOP</button></h3>"
 fi
+rm /tmp/1.ds18
 echo "<td><tr></form></table><br><br>"
 # Вторая таблица
 conf_s="ds18b20"
@@ -273,4 +275,5 @@ echo " </table><table align=center border=0 width=><tr><td align=center><button 
 done
 # Конец второй таблицы
 echo "</body>"
+
 

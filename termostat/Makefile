@@ -4,7 +4,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=termostat
 PKG_VERSION:=1.8
-PKG_RELEASE:=27.11.2016-CyberWrt-GPIOx_1Wire
+PKG_RELEASE:=08.01.2020-CyberWrt-GPIOx_1Wire
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -22,8 +22,12 @@ endef
 
 define Package/termostat/prerm
 #!/bin/sh
-	killall -9 ds18b20 2> /dev/null > /dev/null
-	killall -9 dserr18 2> /dev/null > /dev/null
+ ps > /tmp/1.ds18
+ dserr18=$(awk -F" " '/dserr18/ {print $1}' /tmp/1.ds18)
+ ds18b20=$(awk -F" " '/ds18b20/ {print $1}' /tmp/1.ds18)
+ kill $dserr18 &>/dev/null
+ kill $ds18b20 &>/dev/null
+ rm /tmp/1.ds18
 endef
 
 define Package/termostat/postrm
@@ -48,7 +52,6 @@ define Package/termostat/install
 	$(INSTALL_DATA) -m 0755 ./files/init18b20 $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DATA) -m 0755 ./files/ds18b20_init $(1)/etc/init.d/
-	$(INSTALL_DATA) -m 0755 ./files/dserr18_init $(1)/etc/init.d/
 
 	$(INSTALL_DIR) $(1)/www/cgi-bin/modules/termostatGpio
 	$(INSTALL_DATA) -m 0777 ./files/Sset.cgi $(1)/www/cgi-bin/modules/termostatGpio/
