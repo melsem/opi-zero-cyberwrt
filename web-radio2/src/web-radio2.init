@@ -2,44 +2,49 @@
 
 START=99
 
-
 /etc/init.d/ev-irc stop &> /dev/null
 
 reload() {
+amixer -c 0 -q set "Line Out" off
 
- if [ $1 == "0" ]; then
+  if [ $1 == "0" ]; then
 	killall -9 curl &> /dev/null &> /dev/null
 	killall -9 wget &> /dev/null &> /dev/null
 	killall -9 madplay &> /dev/null &> /dev/null
+  else
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killall -9 curl &> /dev/null > /dev/null
+	killall -9 wget &> /dev/null > /dev/null
+	killall -9 madplay &> /dev/null > /dev/null
+    web-radio2 -p $1 &
+  fi
+sleep 1
+amixer -c 0 -q set "Line Out" on
+}
+
+start() {
+amixer -c 0 -q set "Line Out" off
+
+   pidof web-radio2 &> /dev/null
+ if [ $? == 1 ]; then
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killall -9 curl &> /dev/null > /dev/null
+	killall -9 wget &> /dev/null > /dev/null
+	killall -9 madplay &> /dev/null > /dev/null
+   web-radio2  -p 1 &
+sleep 1
+amixer -c 0 -q set "Line Out" on
+
  else
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
-    web-radio2 -p $1&
  fi
-sleep 1
-}
-
-start() {
-
-pidof web-radio2 &> /dev/null
-if [ $? == 1 ]; then
-	killall -9 web-radio2 &> /dev/null > /dev/null
-	killall -9 curl &> /dev/null > /dev/null
-	killall -9 wget &> /dev/null > /dev/null
-	killall -9 madplay &> /dev/null > /dev/null
-web-radio2  -p 1&
-else
-	killall -9 web-radio2 &> /dev/null > /dev/null
-	killall -9 curl &> /dev/null > /dev/null
-	killall -9 wget &> /dev/null > /dev/null
-	killall -9 madplay &> /dev/null > /dev/null
-fi
-sleep 1
 }
 
 stop() {
+amixer -c 0 -q set "Line Out" off
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
@@ -47,13 +52,15 @@ stop() {
 }
 
 restart() {
+amixer -c 0 -q set "Line Out" off
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
 
-web-radio2 &
+    web-radio2 &
 sleep 1
+amixer -c 0 -q set "Line Out" on
 
 }
 
