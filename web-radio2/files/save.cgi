@@ -27,13 +27,19 @@ print ""
 	if($1 == "nameURL") nameUrlStroki=dannie($2)
 	if($1 == "URL2")
 	{
+		system("amixer -c 0 -q set 'Line Out' off")
+		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -u "dannie($2)" -n "nameUrlStroki" -p "nomerstroki" &")
+		system("amixer -c 0 -q set 'Line Out' on")
 	}
 #	===================================
 	if($1 == "next") {
+		system("amixer -c 0 -q set 'Line Out' off")
+		system("sleep 1")
 		system("killall -9 madplay 2> /dev/null")
 		system("killall -9 curl 2> /dev/null")
+		system("amixer -c 0 -q set 'Line Out' on")
 	}
 	if($1 == "zapusk") system("/etc/init.d/web-radio2.init start")
 	if($1 == "ostanov") system("/etc/init.d/web-radio2.init stop")
@@ -43,22 +49,31 @@ print ""
 #	========= play-new-URL ============
 	if($1 == "URL")
 	{
+		system("amixer -c 0 -q set 'Line Out' off")
+		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -u "dannie($2)" &")
+		system("amixer -c 0 -q set 'Line Out' on")
 	}
 
 #	========= play-file ============
 	if($1 == "file")
 	{
+		system("amixer -c 0 -q set 'Line Out' off")
+		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -f "dannie($2)" &")
+		system("amixer -c 0 -q set 'Line Out' on")
 	}
 
 #	========= play-folder ==========
 	if($1 == "folder")
 	{
+		system("amixer -c 0 -q set 'Line Out' off")
+		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -l "dannie($2)" &")
+		system("amixer -c 0 -q set 'Line Out' on")
 	}
 
 #	========= edit play-list =========
@@ -91,4 +106,5 @@ END
 		system("/www/cgi-bin/modules/web-radio2/setup.cgi")
 	}
 }
+
 
