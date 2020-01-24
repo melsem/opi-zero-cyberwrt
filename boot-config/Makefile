@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/boot-config
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=@TARGET_sunxi +mount-utils +uhttpd +dtc
+  DEPENDS:=@TARGET_sunxi +mount-utils +uhttpd
   TITLE:=boot-config
   PKGARCH:=all
 endef
