@@ -151,7 +151,7 @@ fi
 #
 echo "</td></tr></form></table><br><br><table align=center border=0 width=550><form method="POST" action="Setup.cgi"><tr><td align=center>"
 gppwr=$(grep gpio1wr /etc/config/ds18b20 | awk '{print $3}'); gppwr1=$(echo "${gppwr} = ${#gppwr}" | awk '{print $3}'); gppwr12=$(echo $(( ${gppwr1} - 2 ))); gp1Wr=$(echo ${gppwr:1:$gppwr12})
-kwod=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n '$=')
+kwod=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*28-*/!d' | awk '{print $9}' | sed -n '$=')
 ps > /tmp/1.ds18
 grep -q ds18b20 /tmp/1.ds18
 if [ $? -eq 1 ]; then
@@ -166,7 +166,7 @@ conf_s="ds18b20"
 if [ "`uci get $conf_s.@Gpio1Wr[0].allset`" = "10" ] ; then
 kwod=10
 else
-kwod=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n '$=')
+kwod=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*28-*/!d' | awk '{print $9}' | sed -n '$=')
 fi
 kolllw=0
 while [ "$kolllw" -ne  "$kwod" ]; do

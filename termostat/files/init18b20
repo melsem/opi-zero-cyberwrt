@@ -15,11 +15,11 @@ echo "-- search  i2c Device gpio  --""$dgp"
 fi
 echo 
 echo "-- search sensor --"
-kollwo=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n '$=')
+kollwo=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*28-*/!d' | awk '{print $9}' | sed -n '$=')
 trmst=0
 trt=1
 while [ "$trmst" -ne  "$kollwo" ]; do
-DsInit=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n "$trt"p)
+DsInit=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*28-*/!d' | awk '{print $9}' | sed -n "$trt"p)
 Ds_Init=$(echo $DsInit)
 cnf_term=$'/etc/config/ds18b20'
 ertf=$(sed -e '/./{H;$!d;}' -e 'x;/Gpio1Wr/!d;/search/!d' $cnf_term | sed -n '/search/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))

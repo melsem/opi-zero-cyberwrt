@@ -1,6 +1,6 @@
 #!/bin/sh
 cnf_term=$'/etc/config/ds18b20'
-kollwo=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*-00*/!d' | awk '{print $9}' | sed -n '$=')
+kollwo=$(ls -l /sys/devices/w1_bus_master1 | sed '/drw/!d; /"*28-*/!d' | awk '{print $9}' | sed -n '$=')
 if [ "$kollwo" == "0" ]; then
 exit 0
 fi
@@ -16,7 +16,7 @@ while true; do
 cp -f /etc/config/ds18b20 /tmp/
 rm /tmp/thermgpio &> /dev/null
 rm $conf_rab &> /dev/null
-kollwo=$(cat $cnf_term | sed '/id_sensor/!d; /"*-00*/!d' | awk '{print $3}' | sed -n '$=')
+kollwo=$(cat $cnf_term | sed '/id_sensor/!d; /"*28-*/!d' | awk '{print $3}' | sed -n '$=')
 nomer_ds=0
 perem=16
 conf_rab=$'/tmp/gpiotemp'
@@ -257,7 +257,7 @@ echo $dsfg
 if [ -n "$dsfg" ]; then
 if   [ "$sdf" == "0" ]; then
 stst=0
-kollwo=$(cat $cnf_term | sed '/id_sensor/!d; /"*-00*/!d' | awk '{print $3}' | sed -n '$=')
+kollwo=$(cat $cnf_term | sed '/id_sensor/!d; /"*28-*/!d' | awk '{print $3}' | sed -n '$=')
 nar_all=$'/var/log/narodgpiomon_all'
 mac_narod=$(ifconfig | grep HWaddr | awk '{FS=" "; if(NR==1) {print "#"$5}};')
 echo $mac_narod > $nar_all	#  MAK #xx:xx:xx:xx:xx:xx

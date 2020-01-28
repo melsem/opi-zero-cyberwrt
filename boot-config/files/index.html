@@ -8,7 +8,8 @@ echo "</td></tr></table>"
 echo "
 <body bgcolor="#f0f0f0">
 <style>
-.button{text-decoration:none; text-align:center; 
+.button {
+ text-decoration:none; text-align:center; 
  padding:5px 10px; 
  border:solid 1px #004F72; 
  -webkit-border-radius:20px;
@@ -136,8 +137,10 @@ if [[ "$ehci" == "okay" && "$ohci" == "okay" ]]; then
 checusb=checked
 checusb1=""
 sostusb1=disabled
+usbcolor="#76cc00"
 sostusb2=okay
 else
+usbcolor=""
 checusb=""
 checusb1=checked
 sostusb1=okay
@@ -146,9 +149,11 @@ fi
 }
 
 if [ "$1" == "1" ]; then
-echo "The device reboots.  And will be available in <b><span id="time"></span></b> seconds.
+echo "<table align="center" border=0 width=><tr><td>
+The device reboots.  And will be available in <b><span id="time"></span></b> seconds.
 <script type="text/javascript">var i = 30; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/index.html\"; }
-time(); setInterval(time, 1000); </script>"
+time(); setInterval(time, 1000); </script>
+</td></tr></table>"
 reboot
 fi
 
@@ -160,13 +165,14 @@ fi
 
 cat $dts &> /dev/null
 if [ $? = 1 ]; then
-echo "<table align="center" border=0 width=><tr><td>"
-echo "Not mounted <b>/dev/mmcblk0p1 in /boot.</b><br>"
-echo "You must install <b>mount-utils.</b><br>"
-echo "Reboot device. And make changes to the config.<br><br>"
-echo "uci set fstab.@mount[0].target=/boot<br>"
+echo "<table class="b2" align="center" border=0 width=><tr><td>"
+echo "Not mounted <b>/dev/mmcblk0p1</b> in <b>/boot</b><br>"
+echo "You must install <b>mount-utils block-mount dtc</b><br>"
+echo "And make changes to the config:<br><br>"
+echo "<b>uci set fstab.@mount[0].target=/boot<br>"
 echo "uci set fstab.@mount[0].enabled=1<br>"
-echo "uci commit fstab<br><br>"
+echo "uci commit fstab</b><br>"
+echo "Reboot device.<br>"
 echo "</td></tr></table>"
 nomount='disabled'
 fi
@@ -188,11 +194,9 @@ echo "</td>
 #***************************************************************
 
 echo "<form method="POST" action="Save.cgi" $nomount>"
-echo "
-<table align=center>"
+echo "<table align=center>"
 
-#*************
-
+#****** xr819 *******
 if [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" ]]; then
 echo "<tr><td align="center"><table class="b2" border="1" cols="4" bgcolor="#ffffff" cellspacing="10">
 <caption>$model</br>"Turn on/off the power of the xr819 radio module."</caption>"
@@ -200,10 +204,11 @@ echo "<tr><td>"
 mod=$(cat $dts | sed -n '/'$wifi'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="wifi" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="wifi" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="wifi" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="wifi" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"Wifi: xradio, xr819"</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"Wifi: xradio, xr819"</td>
+<td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td bgcolor="$bgcolor">"
 if [ "$sost2" == "disabled" ]; then
 echo "vcc-wifi: disabled"
@@ -213,18 +218,18 @@ fi
 echo "</td></tr>
 </table></td></tr>"
 fi
-#*************
+#****** xr819 *******
 
-echo "<tr><td><table class="b2" border=2 cols="4" bgcolor="#ffffff" cellspacing="10">
+echo "<tr><td><table class="b2" border="1" bgcolor="#ffffff" cellspacing="2">
 <caption>sun8i: Allwinner H2+, H3. General U-boot settings.</caption>
 <tr><td>"
 mod=$(cat $dts | sed -n '/'$i2c0'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="i2c0" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="i2c0" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="i2c0" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="i2c0" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"i2c0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"i2c0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
 cat $dts | sed -n '/i2c0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
@@ -234,10 +239,10 @@ echo "<tr><td>"
 mod=$(cat $dts | sed -n '/'$i2c1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="i2c1" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="i2c1" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="i2c1" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="i2c1" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"i2c1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"i2c1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
 cat $dts | sed -n '/i2c1 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
@@ -248,9 +253,9 @@ echo "</td></tr>
 mod=$(cat $dts | sed -n '/'$i2c2'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="i2c2" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="i2c2" value="okay" $sost1 $checked>ON
-<td align="center">"i2c2: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<input type="checkbox" name="i2c2" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="i2c2" value="okay" $sost1 $checked>ON
+<td align="center" bgcolor="$bgcolor">"i2c2: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
 cat $dts | sed -n '/i2c2 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
@@ -258,16 +263,38 @@ echo "</td></tr>
 
 <tr>
 <td>"
-mod=$(cat $dts | sed -n '/'$w1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+mod=$(cat $dts | sed -n '/w1 {/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="w1" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="w1" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="w1" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="w1" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"w1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"w1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/w1_pins {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p'
+case "`sed -n '/w1_pins {/,/\};/ s/.*pins.*\"\(.*\)\".*/\1/p' $dts`" in
+"PA0") pins0=selected; aa="uart2_tx";;
+"PA1") pins1=selected; aa="uart2_rx";;
+"PA2") pins2=selected; aa="uart2_rts";;
+"PA3") pins3=selected; aa="uart2_cts";;
+"PA4") pins4=selected; aa="uart0_tx";;
+"PA5") pins5=selected; aa="uart0_rx";;
+"PA6") pins6=selected; aa="";;
+"PA7") pins7=selected; aa="";;
+"PA10") pins10=selected; aa="";;
+"PA11") pins11=selected; aa="i2c0_scl";;
+"PA12") pins12=selected; aa="i2c0_sda";;
+"PA13") pins13=selected; aa="spi1_CS";;
+"PA14") pins14=selected; aa="spi1_CLK";;
+"PA15") pins15=selected; aa="spi1_MOSI";;
+"PA16") pins16=selected; aa="spi1_MISO";;
+"PA18") pins18=selected; aa="i2c1_scl";;
+"PA19") pins19=selected; aa="i2c1_sda";;
+"PG6") pinsg6=selected; aa="uart1_tx";;
+"PG7") pinsg7=selected; aa="uart1_rx";;
+esac
+echo "<select class="button" name="w1pin"><option $pins0>PA0</option><option $pins1>PA1</option><option $pins2>PA2</option><option $pins3>PA3</option><option $pins4>PA4</option><option $pins5>PA5</option><option $pins6>PA6</option><option $pins7>PA7</option><option $pins10>PA10</option><option $pins11>PA11</option><option $pins12>PA12</option><option $pins13>PA13</option><option $pins14>PA14</option><option $pins15>PA15</option><option $pins16>PA16</option><option $pins18>PA18</option><option $pins19>PA19</option><option $pinsg6>PG6</option><option $pinsg7>PG7</option></select>"
+echo $aa
 echo "</td></tr>
 
 <tr>
@@ -275,10 +302,10 @@ echo "</td></tr>
 mod=$(cat $dts | sed -n '/'$ir'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="ir" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="ir" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="ir" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="ir" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"irc: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"irc: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
 cat $dts | sed -n '/ir {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p'
@@ -289,9 +316,9 @@ echo "</td></tr>
 mod=$(cat $dts | sed -n '/'$uart0'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="uart0" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="uart0" value="okay" $sost1 $checked>ON
-<td align="center">"uart0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<input type="checkbox" name="uart0" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="uart0" value="okay" $sost1 $checked>ON
+<td align="center" bgcolor="$bgcolor">"uart0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td bgcolor="#f0a0f0">"
 echo "Gpio: "
 cat $dts | sed -n '/uart0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
@@ -302,10 +329,10 @@ echo "</td></tr>
 mod=$(cat $dts | sed -n '/'$uart1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="uart1" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="uart1" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="uart1" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="uart1" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"uart1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"uart1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
 cat $dts | sed -n '/uart1 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
@@ -316,10 +343,10 @@ echo "</td></tr>
 mod=$(cat $dts | sed -n '/'$uart2'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="uart2" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="uart2" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="uart2" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="uart2" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"uart2: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"uart2: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
 cat $dts | sed -n '/uart2 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
@@ -334,10 +361,10 @@ echo "
 mod=$(cat $dts | sed -n '/'$pwm'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="pwm" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="pwm" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="pwm" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="pwm" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"pwm0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td>
+<td align="center" bgcolor="$bgcolor">"pwm0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td bgcolor="#f0a0f0">"
 echo "Gpio: "
 cat $dts | sed -n '/pwm0@0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p'
@@ -349,10 +376,10 @@ echo "<tr><td>"
 mod=$(cat $dts | sed -n '/'$spi0'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="spi0" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="spi0" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="spi0" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="spi0" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"spi0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>"
+<td align="center" bgcolor="$bgcolor">"spi0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
 echo "Flash: "
 cat $dts | sed -n '/spi0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
 echo "</td></tr>"
@@ -361,10 +388,10 @@ echo "<tr><td>"
 mod=$(cat $dts | sed -n '/'$spi1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="spi1" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="spi1" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="spi1" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="spi1" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"spi1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>"
+<td align="center" bgcolor="$bgcolor">"spi1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
 echo "Gpio: "
 cat $dts | sed -n '/spi1 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
 echo "</td></tr>"
@@ -376,19 +403,19 @@ echo "<tr>
 mod=$(cat $dts | sed -n '/'$audcodec'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="audcodec" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="audcodec" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="audcodec" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="audcodec" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"Analog-audio-codec: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>Soc-IN/Out</td></tr>
+<td align="center" bgcolor="$bgcolor">"Analog-audio-codec: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>Soc-IN/Out</td></tr>
 
 <tr><td>"
 mod=$(cat $dts | sed -n '/'$usb_otg'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
-<input type=radio name="usb_otg" value="disabled" $sost2 $checked1>OFF
-<input type=radio name="usb_otg" value="okay" $sost1 $checked>ON
+<input type="checkbox" name="usb_otg" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="usb_otg" value="okay" $sost1 $checked>ON
 </td>
-<td align="center">"usb_otg: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>---</td></tr>"
+<td align="center" bgcolor="$bgcolor">"usb_otg: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>---</td></tr>"
 #***************************************************************
 
 
@@ -399,10 +426,10 @@ ehci=$(cat $dts | sed -n '/'$ehci0'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/
 ohci=$(cat $dts | sed -n '/'$ohci0'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stausb
 echo "
-<input type=radio name="usb0" value="disabled" $sostusb2 $checusb1>OFF
-<input type=radio name="usb0" value="okay" $sostusb1 $checusb>ON
+<input type="checkbox" name="usb0" value="disabled" $sostusb2 $checusb1>OFF
+<input type="checkbox" name="usb0" value="okay" $sostusb1 $checusb>ON
 </td>
-<td align="center">"usb0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>---</td></tr>"
+<td align="center" bgcolor="$usbcolor">"usb0: "</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
 #***************************************************************
 
 
@@ -412,10 +439,10 @@ ehci=$(cat $dts | sed -n '/'$ehci1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/
 ohci=$(cat $dts | sed -n '/'$ohci1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stausb
 echo "
-<input type=radio name="usb1" value="disabled" $sostusb2 $checusb1>OFF
-<input type=radio name="usb1" value="okay" $sostusb1 $checusb>ON
+<input type="checkbox" name="usb1" value="disabled" $sostusb2 $checusb1>OFF
+<input type="checkbox" name="usb1" value="okay" $sostusb1 $checusb>ON
 </td>
-<td align="center">"usb1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>---</td></tr>"
+<td align="center" bgcolor="$usbcolor">"usb1: "</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
 #***************************************************************
 
 
@@ -425,37 +452,43 @@ ehci=$(cat $dts | sed -n '/'$ehci2'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/
 ohci=$(cat $dts | sed -n '/'$ohci2'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stausb
 echo "
-<input type=radio name="usb2" value="disabled" $sostusb2 $checusb1>OFF
-<input type=radio name="usb2" value="okay" $sostusb1 $checusb>ON
+<input type="checkbox" name="usb2" value="disabled" $sostusb2 $checusb1>OFF
+<input type="checkbox" name="usb2" value="okay" $sostusb1 $checusb>ON
 </td>
-<td align="center">"usb2: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>---</td></tr>"
+<td align="center" bgcolor="$usbcolor">"usb2: "</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
 #***************************************************************
 
 
 echo "
-<tr><td>"
+<tr>
+<td>"
 ehci=$(cat $dts | sed -n '/'$ehci3'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 ohci=$(cat $dts | sed -n '/'$ohci3'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stausb
 echo "
-<input type=radio name="usb3" value="disabled" $sostusb2 $checusb1>OFF
-<input type=radio name="usb3" value="okay" $sostusb1 $checusb>ON
+<input type="checkbox" name="usb3" value="disabled" $sostusb2 $checusb1>OFF
+<input type="checkbox" name="usb3" value="okay" $sostusb1 $checusb>ON
 </td>
-<td align="center">"usb3: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td></td><td>---</td></tr>"
+<td align="center" bgcolor="$usbcolor">"usb3"</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
 
-echo "</table></td></tr>
-<table align="center" border=0 width=><tr><td>
+
+#*****************************************************************
+echo "</table></td></tr>"
+
+
+echo "<table align="center" border=0 width=><tr><td>
 <a href=/cgi-bin/modules/boot-config/Save.cgi>
 <button class="button" type=submit value="Save" $nomount name=>"Save changes."</button></a>
-</td></tr></table>
+</td></tr></table>"
 
-</table></form>"
+echo "</table></form>"
 
+#*****************************************************************
 echo "<table align="center" border=0 width=>
-<form method="POST" action="conv.cgi"><tr>
-<td>
+<form method="POST" action="conv.cgi"><tr><td>
 <a href=/cgi-bin/modules/boot-config/conv.cgi>
 <button class="button" $nomount type=submit name="reconv" value="dtb" title="Compile_of_device_tree.">"Apply changes, and reboot device."</button></a>
 </td>
 </tr></form></table></body>"
+
 
