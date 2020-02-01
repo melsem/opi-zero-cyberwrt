@@ -115,12 +115,14 @@ elif [ "$1" == "ir" ]; then
 	sed -i '/'$ir'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "uart0" ]; then
 	sed -i '/'$uart0'/,/\};/ {s/'$on_off'/}' $dts
+	sed -i '/'$pwm'/,/\};/ {s/okay/disabled/}' $dts
 elif [ "$1" == "uart1" ]; then
 	sed -i '/'$uart1'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "uart2" ]; then
 	sed -i '/'$uart2'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "pwm" ]; then
 	sed -i '/'$pwm'/,/\};/ {s/'$on_off'/}' $dts
+	sed -i '/'$uart0'/,/\};/ {s/okay/disabled/}' $dts
 elif [ "$1" == "audcodec" ]; then
 	sed -i '/'$audcodec'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "usb_otg" ]; then
