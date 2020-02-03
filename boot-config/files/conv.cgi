@@ -23,10 +23,21 @@ rebut=0
 {
 
 	if($1 == "backup") {
-		value=unescape($2)
-	print "<b>backup - OK</b><br>"
-	system("dtc -I dtb -O dts -o /boot/dts.backup /boot/dtb")
-	system("dtc -I dts -O dtb -o /boot/dtb.backup /boot/dts.backup")
+	    value=unescape($2)
+	    if(value == "backdtb") {
+		print "<b>backup - OK</b><br>"
+		system("dtc -I dtb -O dts -o /boot/dts.backup /boot/dtb")
+		system("dtc -I dts -O dtb -o /boot/dtb.backup /boot/dts.backup")
+	    }
+	}
+
+	if($1 == "resback") {
+	    value=unescape($2)
+	    if(value == "resdtb") {
+		print "<b>Restore u-boot from backup - OK</b><br>"
+		system("rm /tmp/t-dts")
+		system("cp /boot/dtb.backup /boot/dtb")
+	    }
 	}
 
 	if($1 == "conv") {
@@ -43,7 +54,7 @@ rebut=0
 }
 END
 {
-		system("sleep 1s")
+		if(rebut == "1") system("sleep 1s")
 		system("/www/cgi-bin/modules/boot-config/index.html "rebut"")
 }
 

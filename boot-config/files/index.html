@@ -187,7 +187,10 @@ echo "<table align="center" border=0 width=>
 cat $backup &> /dev/null
 if [ $? = 1 ]; then
 echo "<a href=/cgi-bin/modules/boot-config/conv.cgi>
-<button class="button" $nomount type=submit name="backup" value="dtb">"Create a backup of u-boot, dtb-file"</button></a>"
+<button class="button" $nomount type=submit name="backup" value="backdtb">"Create a backup of u-boot \(dtb-file\)."</button></a>"
+else
+echo "<a href=/cgi-bin/modules/boot-config/conv.cgi>
+<button class="button" $nomount type=submit name="resback" value="resdtb">"Restore u-boot \(dtb-file\) from backup."</button></a>"
 fi
 echo "</td>
 </tr></form></table>"

@@ -2,8 +2,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=boot-config
-PKG_VERSION:=1.1
-PKG_RELEASE:=2020.01.23
+PKG_VERSION:=1.2
+PKG_RELEASE:=2020.01.31
 
 include $(INCLUDE_DIR)/package.mk
 
