@@ -42,6 +42,8 @@ ehci3='usb@1c1d000'
 ohci3='usb@1c1d400'
 spi0='spi@1c68000'
 spi1='spi@1c69000'
+ethernet0='ethernet@1c30000'
+spdif='spdif@1c21000'
 xradio='/etc/modules.d/xradio'
 board=$(cat /tmp/sysinfo/board_name)
 boardname="${board##*,}"
@@ -109,6 +111,10 @@ elif [ "$1" == "i2c1" ]; then
 	sed -i '/'$i2c1'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "i2c2" ]; then
 	sed -i '/'$i2c2'/,/\};/ {s/'$on_off'/}' $dts
+elif [ "$1" == "spdif" ]; then
+	sed -i '/'$spdif'/,/\};/ {s/'$on_off'/}' $dts
+elif [ "$1" == "ethernet0" ]; then
+	sed -i '/'$ethernet0'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "w1" ]; then
 	sed -i '/w1 {/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "ir" ]; then
@@ -145,6 +151,4 @@ elif [ "$1" == "usb3" ]; then
 	sed -i '/'$ohci3'/,/\};/ {s/'$on_off'/}' $dts
 fi
 exit 0
-
-
 

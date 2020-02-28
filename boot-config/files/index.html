@@ -106,6 +106,9 @@ ehci3='usb@1c1d000'
 ohci3='usb@1c1d400'
 spi0='spi@1c68000'
 spi1='spi@1c69000'
+ethernet0='ethernet@1c30000'
+spdif='spdif@1c21000'
+ledspin=''
 #***************************************************************
 
 stachec () {
@@ -218,6 +221,7 @@ echo "vcc-wifi: disabled"
 elif [ "$sost2" == "okay" ]; then
 echo "vcc-wifi: enabled"
 fi
+ledspin='Leds-red'
 echo "</td></tr>
 </table></td></tr>"
 fi
@@ -387,6 +391,7 @@ echo "Flash: "
 cat $dts | sed -n '/spi0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
 echo "</td></tr>"
 
+#****************************************************************
 echo "<tr><td>"
 mod=$(cat $dts | sed -n '/'$spi1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
@@ -474,6 +479,33 @@ echo "
 </td>
 <td align="center" bgcolor="$usbcolor">"usb3"</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
 
+
+#*****************************************************************
+echo "<tr><td>"
+mod=$(cat $dts | sed -n '/'$spdif'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+stachec
+echo "
+<input type="checkbox" name="spdif" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="spdif" value="okay" $sost1 $checked>ON
+</td>
+<td align="center" bgcolor="$bgcolor">"Spdif: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
+echo "Spdif:"
+cat $dts | sed -n '/spdif {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+echo "$ledspin"
+echo "</td></tr>"
+
+#***************************************************************
+echo "<tr><td>"
+mod=$(cat $dts | sed -n '/'$ethernet0'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+stachec
+echo "
+<input type="checkbox" name="ethernet0" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="ethernet0" value="okay" $sost1 $checked>ON
+</td>
+<td align="center" bgcolor="$bgcolor">"Ethernet0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
+echo "Ethernet0"
+#cat $dts | sed -n '/ethernet0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+echo "</td></tr>"
 
 #*****************************************************************
 echo "</table></td></tr>"
