@@ -40,6 +40,9 @@ ehci2='usb@1c1c000'
 ohci2='usb@1c1c400'
 ehci3='usb@1c1d000'
 ohci3='usb@1c1d400'
+gpio-keys-user='gpio-keys-user'
+rotary_button='rotary_button'
+rotary_axis='rotary_axis'
 spi0='spi@1c68000'
 spi1='spi@1c69000'
 ethernet0='ethernet@1c30000'
@@ -63,10 +66,10 @@ if [ "$1" == "wifi" ]; then
 	    rm $xradio
 	fi
   fi
-elif [ "$1" == "w1pin" ]; then
+elif [[ "$1" == "w1pin" || "$1" == "ppspin" ]]; then
  	if [ "$2" == "PG6" ]; then
 		gpiosA='0x06'; gpiosN='0x06'
-	elif [ "$2" == "PG6" ]; then
+	elif [ "$2" == "PG7" ]; then
 		gpiosA='0x06'; gpiosN='0x07'
 	elif [ "$2" == "PA0" ]; then
 		gpiosA='0x00'; gpiosN='0x00'
@@ -103,8 +106,13 @@ elif [ "$1" == "w1pin" ]; then
 	elif [ "$2" == "PA19" ]; then
 		gpiosA='0x00'; gpiosN='0x13'
 	fi
-	sed -i '/w1_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-	sed -i '/w1 {/,/\};/ {s/0x0a\ .*\ 0x00/0x0a\ '$gpiosA'\ '$gpiosN'\ 0x00/}' $dts
+	if [ "$1" == "w1pin" ]; then
+		sed -i '/w1_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
+		sed -i '/w1 {/,/\};/ {s/0x0a\ .*\ 0x00/0x0a\ '$gpiosA'\ '$gpiosN'\ 0x00/}' $dts
+	elif [ "$1" == "ppspin" ]; then
+		sed -i '/pps_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
+		sed -i '/pps {/,/\};/ {s/0x0a\ .*\ 0x00/0x0a\ '$gpiosA'\ '$gpiosN'\ 0x00/}' $dts
+	fi
 elif [ "$1" == "i2c0" ]; then
 	sed -i '/'$i2c0'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "i2c1" ]; then
@@ -117,6 +125,8 @@ elif [ "$1" == "ethernet0" ]; then
 	sed -i '/'$ethernet0'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "w1" ]; then
 	sed -i '/w1 {/,/\};/ {s/'$on_off'/}' $dts
+elif [ "$1" == "pps" ]; then
+	sed -i '/pps {/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "ir" ]; then
 	sed -i '/'$ir'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "uart0" ]; then
@@ -149,6 +159,11 @@ elif [ "$1" == "usb2" ]; then
 elif [ "$1" == "usb3" ]; then
 	sed -i '/'$ehci3'/,/\};/ {s/'$on_off'/}' $dts
 	sed -i '/'$ohci3'/,/\};/ {s/'$on_off'/}' $dts
+elif [ "$1" == "gpio-keys-user" ]; then
+	sed -i '/'$gpio-keys-user'/,/\};/ {s/'$on_off'/}' $dts
+elif [ "$1" == "rotary" ]; then
+	sed -i '/'$rotary_button'/,/\};/ {s/'$on_off'/}' $dts
+	sed -i '/'$rotary_axis'/,/\};/ {s/'$on_off'/}' $dts
 fi
 exit 0
 

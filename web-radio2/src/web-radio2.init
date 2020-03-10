@@ -2,7 +2,7 @@
 
 START=99
 
-/etc/init.d/ev-irc stop &> /dev/null
+#/etc/init.d/ev-irc stop &> /dev/null
 
 reload() {
 amixer -c 0 -q set "Line Out" off
@@ -64,7 +64,7 @@ amixer -c 0 -q set "Line Out" on
 
 }
 
-/etc/init.d/ev-irc start &> /dev/null
+#/etc/init.d/ev-irc start &> /dev/null
 
 
 
