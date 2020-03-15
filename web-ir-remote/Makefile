@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=web-ir-remote
 PKG_VERSION:=1.0
-PKG_RELEASE:=05.03.2020
+PKG_RELEASE:=16.03.2020
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -51,9 +51,11 @@ define Package/web-ir-remote/install
 	$(INSTALL_BIN) ./files/Save.cgi $(1)/www/cgi-bin/modules/web-ir-remote/
 	$(INSTALL_BIN) ./files/Setup.cgi $(1)/www/cgi-bin/modules/web-ir-remote/
 	$(INSTALL_BIN) ./files/Setup.html $(1)/www/cgi-bin/modules/web-ir-remote/
-	$(INSTALL_DIR) $(1)/www/modules/web-ir-remote
-	$(INSTALL_DATA) ./files/b.jpg $(1)/www/modules/web-ir-remote/
-	$(INSTALL_DATA) ./files/r.jpg $(1)/www/modules/web-ir-remote/
+	$(INSTALL_BIN) ./files/Setuptryg.cgi $(1)/www/cgi-bin/modules/web-ir-remote/
+	$(INSTALL_BIN) ./files/Setuptryg.html $(1)/www/cgi-bin/modules/web-ir-remote/
+#	$(INSTALL_DIR) $(1)/www/modules/web-ir-remote
+#	$(INSTALL_DATA) ./files/b.jpg $(1)/www/modules/web-ir-remote/
+#	$(INSTALL_DATA) ./files/r.jpg $(1)/www/modules/web-ir-remote/
 endef
 
 $(eval $(call BuildPackage,web-ir-remote))

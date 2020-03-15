@@ -20,6 +20,7 @@ print "Content-type: text/html; charset=utf-8"
 print ""
 rckeymaps="/etc/rc_keymaps/keyes"
 triggerhappy="/etc/triggerhappy/triggers.d/example.conf"
+sost = 0
 }
 {
 
@@ -54,8 +55,17 @@ triggerhappy="/etc/triggerhappy/triggers.d/example.conf"
 		system("echo "add_nev_ircode" "add_nev_keyname" >> "rckeymaps)
 		system("echo -e "add_nev_keyname"'\t'"add_nev_keysost"'\t'"add_nev_command" >> "triggerhappy)
 	}
+
+	if($1 == "exampleconf") exampleconf = unescape($2)
+	if($1 == "text")
+	{
+		sost = 1
+		system("echo '"exampleconf"' | sed 's/\r//;/^$/d' > /etc/triggerhappy/triggers.d/example.conf")
+		#print "<b> Save example.conf OK</b><br>"
+	}
 }
 END
 {
-		system("/www/cgi-bin/modules/web-ir-remote/Setup.cgi")
+	if(sost == 0) system("/www/cgi-bin/modules/web-ir-remote/Setup.cgi")
+	else if(sost == 1) system("/www/cgi-bin/modules/web-ir-remote/Setuptryg.cgi")
 }

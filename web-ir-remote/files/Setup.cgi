@@ -43,10 +43,10 @@ while [ "$a" -le "$kollw_strok" ]; do
   command=$(sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p' $triggerhappy)
   echo "<form method="POST" action="Save.cgi">
 <tr>
- <td valign="vertical">
+ <td align="vertical">
   <input name="nomerstroki" hidden value="$a">"$a."
  </td>
- <td valign="vertical">
+ <td align="vertical">
   <input name="ircodestar" hidden value="$ircode">
   <input name="keynamestar" hidden value="$keyname">
   <input name="keysoststar" hidden value="$keysost">
@@ -70,9 +70,9 @@ while [ "$a" -le "$kollw_strok" ]; do
    sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p' $triggerhappy
    echo "' required placeholder="список_пуст">
  </td>
- <td valign="vertical">
-<button type=submit name="edit">"edit"</button>
-<button type=submit name="delete">"delete"</button>
+ <td align="vertical">
+<button class="b0" type=submit name="edit">"edit"</button>
+<button class="b0" type=submit name="delete">"delete"</button>
  </td>
 </tr></form>"
 let "a += 1"
@@ -90,11 +90,11 @@ echo "
 <input size="2" hidden name="n_str" value="
 printf $kollw_strok
 echo " required placeholder="add_nev_ircode">
-<input class="b2" size="10" name="add_nev_ircode" required placeholder="add_ircode">
-<input class="b2" size="15" name="add_nev_keyname" required placeholder="add_keyname">
-<input class="b2" size="5" name="add_nev_keysost" required placeholder="add_keysost">
-<input class="b2" size="30" name="add_nev_command" required placeholder="add_command">
-<button type=submit name="Save_nev">"Save_nev"</button>
+<input size="10" name="add_nev_ircode" required placeholder="add_ircode">
+<input size="15" name="add_nev_keyname" required placeholder="add_keyname">
+<input size="5" name="add_nev_keysost" required placeholder="add_keysost">
+<input size="30" name="add_nev_command" required placeholder="add_command">
+<button class="b0" type=submit name="Save_nev">"Save_nev"</button>
 </p></td></tr></table>
 </form></table>"
 

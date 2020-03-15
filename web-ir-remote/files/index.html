@@ -72,7 +72,7 @@ echo "
  }
   .b2 {
 height: 10px;
-text-align: center;
+text-align: left;
 padding: 1px;
 border: 2px solid #0000cc;
 border-radius: 10px;
@@ -97,21 +97,21 @@ while [ "$a" -le "$kollw_strok" ]; do
   keysost=$(sed '/'$keyname'/!d' $triggerhappy | awk '{print $2}')
   command=$(sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p' $triggerhappy)
   echo "<tr>
-  <td valign="vertical">"$a."
+  <td>"$a."
   </td>
-  <td valign="vertical">"
+  <td>"
    echo -e " $ircode"'\t'
    echo "</td>
 <td></td>
-  <td valign="vertical">"
+  <td>"
    echo -e " $keyname"'\t'
    echo "</td>
 <td></td>
-  <td valign="vertical">"
+  <td>"
    echo -e " $keysost"'\t'
    echo "</td>
 <td></td>
-  <td valign="vertical">"
+  <td>"
 
     cat $triggerhappy | sed '/'$keyname'.'$keysost'./!d' | sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p'
 
