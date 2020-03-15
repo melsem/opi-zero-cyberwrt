@@ -1,0 +1,133 @@
+#!/bin/sh
+echo 
+echo "<title>irc-remote-setup</title>"
+echo "<table align=center border=0><tr><td>"
+echo `cat /www/menu.html`
+echo "</td></tr></table>"
+
+echo "
+<body bgcolor="#f0f0f0">
+<style>
+.button {
+ text-decoration:none; text-align:center; 
+ padding:5px 10px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:20px;
+ -moz-border-radius:20px; 
+ border-radius: 20px; 
+ font:15px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#ffffff; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+  
+  }.button:hover{
+ padding:5px 10px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:20px;
+ -moz-border-radius:20px; 
+ border-radius: 20px; 
+ font:15px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#000000; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+  
+ }.button:active{
+ padding:5px 10px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:10px;
+ -moz-border-radius:10px; 
+ border-radius: 10px; 
+ font:15px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#ffffff; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+  
+ }
+  .b2 {
+height: 10px;
+text-align: center;
+padding: 1px;
+border: 2px solid #0000cc;
+border-radius: 10px;
+}
+</style><br>
+<table class="b2" bgcolor="#ffffff" border=0 align=center>
+
+<caption><b>Info ir-remote </b>(rc_keymaps, triggerhappy)</caption>"
+
+rckeymaps='/etc/rc_keymaps/keyes'
+triggerhappy='/etc/triggerhappy/triggers.d/example.conf'
+kollw_str_rc_key=$(sed -n '$=' $rckeymaps)
+kollw_str_trig=$(sed -n '$=' $triggerhappy)
+
+echo "<tr>
+<td>"
+kollw_strok=$(sed -n '$=' $rckeymaps)
+a=1
+while [ "$a" -le "$kollw_strok" ]; do
+  ircode=$(sed -n ''$a'p' $rckeymaps | awk '{print $1}')
+  keyname=$(sed -n ''$a'p' $rckeymaps | awk '{print $2}')
+  keysost=$(sed '/'$keyname'/!d' $triggerhappy | awk '{print $2}')
+  command=$(sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p' $triggerhappy)
+  echo "<tr>
+  <td valign="vertical">"$a."
+  </td>
+  <td valign="vertical">"
+   echo -e " $ircode"'\t'
+   echo "</td>
+<td></td>
+  <td valign="vertical">"
+   echo -e " $keyname"'\t'
+   echo "</td>
+<td></td>
+  <td valign="vertical">"
+   echo -e " $keysost"'\t'
+   echo "</td>
+<td></td>
+  <td valign="vertical">"
+
+    cat $triggerhappy | sed '/'$keyname'.'$keysost'./!d' | sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p'
+
+   echo "</td>
+</tr><tr></tr>"
+let "a += 1"
+done
+echo "</td></tr></table>
+
+<table align="center" border=0 width=>
+<tr>
+<td><a href=/cgi-bin/modules/web-ir-remote/Setup.html>
+<input class="button" title='"Желаете зайти в установки ir-remote?"' class="b1" type=submit value='"Setup ir-remote"' name=></a>
+</td>
+<td><a href=/cgi-bin/modules/web-ir-remote/Setuptryg.html>
+<input class="button" title='"Желаете зайти в установки triggerhappy?"' class="b1" type=submit value='"Setup triggerhappy"' name=></a>
+</td>
+</tr>
+<br></table></body>"

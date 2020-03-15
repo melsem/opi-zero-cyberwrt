@@ -1,0 +1,22 @@
+#!/bin/sh
+
+rckeymaps='/etc/rc_keymaps/keyes'
+triggerhappy='/etc/triggerhappy/triggers.d/example.conf'
+kollw_strok=$(sed -n '$=' $rckeymaps)
+
+if [ "$1" == "rckeymapsdelete" ]; then
+ sed -i ''$3'd' $rckeymaps
+elif [ "$1" == "triggerhappydelete" ]; then
+ sed -i '/'$2'\t'$3'\t'$4'/d' $triggerhappy
+elif [ "$1" == "rckeymaps" ]; then
+ if [ "$3" != "$kollw_strok" ]; then
+  sed -i ''$3'd' $rckeymaps
+  sed -i ''$3'i'\ ''$4'\ '$5'' $rckeymaps
+ else
+  sed -i ''$3'd' $rckeymaps
+  echo -e $4" "$5 >> $rckeymaps
+ fi
+elif [ "$1" == "triggerhappy" ]; then
+ sed -i '/'$2'\t'$3'/d' $triggerhappy
+ echo -e $4'\t'$5'\t'$6 >> $triggerhappy
+fi

@@ -1,0 +1,18 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+ ir-keytable -p nec &
+ ir-keytable -w /etc/rc_keymaps/keyes &
+}
+
+restart() {
+ ir-keytable -p nec &
+ ir-keytable -w /etc/rc_keymaps/keyes &
+}
+
+reload() {
+ ir-keytable -p nec &
+ ir-keytable -w /etc/rc_keymaps/keyes &
+}
