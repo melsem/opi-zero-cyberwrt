@@ -45,6 +45,8 @@ define Package/web-ir-remote/install
 	$(INSTALL_BIN) ./files/web-ir-remote-demon $(1)/usr/sbin/ir-remote
 
 ##		WEB-MORDA_Cyberwrt
+	$(INSTALL_DIR) $(1)/www/irc
+	$(INSTALL_BIN) ./files/irc.html $(1)/www/irc/index.html
 	$(INSTALL_DIR) $(1)/www/cgi-bin/modules/web-ir-remote
 	$(INSTALL_BIN) ./files/index.cgi $(1)/www/cgi-bin/modules/web-ir-remote/
 	$(INSTALL_BIN) ./files/index.html $(1)/www/cgi-bin/modules/web-ir-remote/
