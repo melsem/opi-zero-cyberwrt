@@ -8,8 +8,24 @@ echo "</td></tr></table>"
 
 rckeymaps='/etc/rc_keymaps/keyes'
 triggerhappy='/etc/triggerhappy/triggers.d/example.conf'
-
-#===================================================================================
+cat /etc/rc.d/S99web-ir-remote &> /dev/null
+if [ $? = 1 ]; then
+ontxtoff2='Желаете включить авто-запуск?'
+ontxtoff='Желаете отключить авто-запуск?'
+onoff=staron
+cto=OFF
+clor="ff0000"
+dsd=""
+dsd2=hidden
+else
+dsd=hidden
+dsd2=""
+clor="0000ff"
+ontxtoff2='Желаете отключить авто-запуск?'
+ontxtoff='Желаете включить авто-запуск?'
+onoff=staroff
+cto=ON
+fi
 #===================================================================================
 echo "<body bgcolor="#f0f0f0">
 <style>
@@ -32,8 +48,6 @@ echo "
 <tr><td>
 <table align=center>"
 #===================================================================================
-#===================================================================================
-
 kollw_strok=$(sed -n '$=' $rckeymaps)
 a=1
 while [ "$a" -le "$kollw_strok" ]; do
@@ -58,7 +72,7 @@ while [ "$a" -le "$kollw_strok" ]; do
    printf "$ircode"
    echo " required placeholder="список_пуст">
 
-  <input name="keyname" value="
+  <input readonly name="keyname" value="
    printf "$keyname"
    echo " required placeholder="список_пуст">
 
@@ -78,25 +92,67 @@ while [ "$a" -le "$kollw_strok" ]; do
 let "a += 1"
 done
 echo "</table>"
-
 #===================================================================================
-#===================================================================================
-
-let "kollw_strok += 1"
 echo "<table>
 <form method="POST" action="Save.cgi"><table><tr><td align="left"><p>"
+let "kollw_strok += 1"
 printf $kollw_strok.
 echo "
-<input size="2" hidden name="n_str" value="
+  <input size="2" hidden name="n_str" value="
 printf $kollw_strok
 echo " required placeholder="add_nev_ircode">
-<input size="10" name="add_nev_ircode" required placeholder="add_ircode">
-<input size="15" name="add_nev_keyname" required placeholder="add_keyname">
-<input size="5" name="add_nev_keysost" required placeholder="add_keysost">
-<input size="30" name="add_nev_command" required placeholder="add_command">
+  <input size="10" name="add_nev_ircode" required placeholder="add_ircode">"
+ kollw_comand=$(thd --listevents | sed -n '$=') # 581 - command
+ ac=1
+echo "<select class="button" name="add_nev_keyname">"
+ while [ "$ac" -le "$kollw_comand" ]; do
+  echo "<option>"
+  thd --listevents | sed -n ''$ac'p'
+  echo "</option>"
+  let "ac += 1"
+ done
+echo "</select>"
+echo "
+  <input size="5" name="add_nev_keysost" required placeholder="add_keysost">
+  <input size="30" name="add_nev_command" required placeholder="add_command">
 <button class="b0" type=submit name="Save_nev">"Save_nev"</button>
 </p></td></tr></table>
 </form></table>"
 
 echo "</td></tr>
 </table>"
+#####################################################
+
+echo "<form method="POST" action="Save.cgi">
+<table align=center border=0>
+<tr><td>
+<tr><td align=center><p style="color:#$clor">Auto Startup - <b>$cto</b></p></td></tr>
+
+<tr><td align=center>
+<button $dsd name="$onoff" type=submit title='"$ontxtoff"' class="b1">
+<img src=/modules/web-ir-remote/b.jpg alt= style="vertical-align: middle">"Enable"</button>
+
+<button $dsd2 name="$onoff" type=submit title='"$ontxtoff2"' class="b1">
+<img src=/modules/web-ir-remote/r.jpg alt= style="vertical-align: middle">"Disable"</button>
+</td></tr>
+
+</td></tr></table></form>"
+###*************************************************
+init='/etc/init.d/web-ir-remote'
+n_strok=$(sed -n '$=' $init)
+d_strok=$(wc -L $init)
+  echo "<table align=center>
+<form method="POST" action="Save.cgi">
+<tr>
+ <td class="b1" align="vertical">
+ <textarea name="webirremoteinit" rows="$n_strok" cols="$d_strok" wrap="off">"
+  cat $init
+  echo "</textarea>
+ </td></tr>
+ <tr>
+ <td align=center>
+<button class="b0" type=submit name="textremoteinit">"save"</button>
+ </td>
+</tr></form>
+</table>"
+

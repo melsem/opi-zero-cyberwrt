@@ -1,5 +1,40 @@
 #!/bin/sh
 
+# ***************************************************
+triggerhappy='/etc/triggerhappy/triggers.d/example.conf'
+echo -e "# This is an example configuration for the triggerhappy daemon (thd)" > $triggerhappy
+echo -e "# please note that every file to be processed must end in \".conf\"" >> $triggerhappy
+echo -e "#"'\n'"# To view a list of supported event codes, use \"thd --listevents\" or" >> $triggerhappy
+echo -e "# \"thd --dump /dev/input/event*\""'\n'"#"'\n'"# Format:"'\n'"# <eventcode> <value> <command>" >> $triggerhappy
+echo -e "#"'\n'"# values for key events are 1 (pressed), 0 (released) or 2 (held)" >> $triggerhappy
+echo -e "#"'\n'"## control an mpd instance" >> $triggerhappy
+echo -e "# KEY_NEXTSONG"'\t'"1"'\t'"/usr/bin/mpc next" >> $triggerhappy
+echo -e "# KEY_PREVSONG"'\t'"1"'\t'"/usr/bin/mpc prev" >> $triggerhappy
+echo -e "KEY_1"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 1" >> $triggerhappy
+echo -e "KEY_2"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 2" >> $triggerhappy
+echo -e "KEY_3"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 3" >> $triggerhappy
+echo -e "KEY_4"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 4" >> $triggerhappy
+echo -e "KEY_5"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 5" >> $triggerhappy
+echo -e "KEY_6"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 6" >> $triggerhappy
+echo -e "KEY_7"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 7" >> $triggerhappy
+echo -e "KEY_8"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 8" >> $triggerhappy
+echo -e "KEY_9"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 9" >> $triggerhappy
+echo -e "KEY_0"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 10" >> $triggerhappy
+echo -e "KEY_MUTE"'\t'"1"'\t'"amixer -c 0 -q set \"Line Out\" 100%-" >> $triggerhappy
+echo -e "KEY_VOLUMEDOWN"'\t'"1"'\t'"amixer -c 0 -q set \"Line Out\" 1-" >> $triggerhappy
+echo -e "KEY_VOLUMEUP"'\t'"1"'\t'"amixer -c 0 -q set \"Line Out\" 1+" >> $triggerhappy
+echo -e "KEY_POWER"'\t'"1"'\t'"/etc/init.d/web-radio2.init start" >> $triggerhappy
+echo -e "KEY_CHANNELUP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
+echo -e "KEY_CHANNELDOWN"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
+echo -e "KEY_OK"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 62" >> $triggerhappy
+echo -e "KEY_ENTER"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 62" >> $triggerhappy
+echo -e "KEY_PLAYPAUSE"'\t'"1"'\t'"/etc/init.d/web-radio2.init start" >> $triggerhappy
+echo -e "KEY_NEXTSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
+echo -e "KEY_UP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
+echo -e "KEY_PREVIOUSSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
+echo -e "KEY_TUNER"'\t'"2"'\t'"reboot" >> $triggerhappy
+# ***************************************************
+
 sed -i "/web-ir-remote\/index.cgi/d" /www/menu.html 2> /dev/null
 	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
 sed -i 3i\ '<li><a href=/cgi-bin/modules/web-ir-remote/index.cgi>'Ir-remote-setup'</a></li>' /www/menu.html 2> /dev/null

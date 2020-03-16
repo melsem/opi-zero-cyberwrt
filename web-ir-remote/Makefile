@@ -39,8 +39,8 @@ define Package/web-ir-remote/install
 	$(INSTALL_BIN) ./files/web-ir-remote.init $(1)/etc/init.d/web-ir-remote
 	$(INSTALL_DIR) $(1)/etc/rc_keymaps
 	$(INSTALL_DATA) ./files/keyes $(1)/etc/rc_keymaps/
-	$(INSTALL_DIR) $(1)/etc/triggerhappy/triggers.d
-	$(INSTALL_DATA) ./files/example.conf $(1)/etc/triggerhappy/triggers.d/
+#	$(INSTALL_DIR) $(1)/etc/triggerhappy/triggers.d
+#	$(INSTALL_DATA) ./files/example.conf $(1)/etc/triggerhappy/triggers.d/
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) ./files/web-ir-remote-demon $(1)/usr/sbin/ir-remote
 
@@ -55,9 +55,9 @@ define Package/web-ir-remote/install
 	$(INSTALL_BIN) ./files/Setup.html $(1)/www/cgi-bin/modules/web-ir-remote/
 	$(INSTALL_BIN) ./files/Setuptryg.cgi $(1)/www/cgi-bin/modules/web-ir-remote/
 	$(INSTALL_BIN) ./files/Setuptryg.html $(1)/www/cgi-bin/modules/web-ir-remote/
-#	$(INSTALL_DIR) $(1)/www/modules/web-ir-remote
-#	$(INSTALL_DATA) ./files/b.jpg $(1)/www/modules/web-ir-remote/
-#	$(INSTALL_DATA) ./files/r.jpg $(1)/www/modules/web-ir-remote/
+	$(INSTALL_DIR) $(1)/www/modules/web-ir-remote
+	$(INSTALL_DATA) ./files/b.jpg $(1)/www/modules/web-ir-remote/
+	$(INSTALL_DATA) ./files/r.jpg $(1)/www/modules/web-ir-remote/
 endef
 
 $(eval $(call BuildPackage,web-ir-remote))
