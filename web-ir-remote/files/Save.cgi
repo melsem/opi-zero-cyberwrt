@@ -55,6 +55,8 @@ sost = 0
 		system("echo "add_nev_ircode" "add_nev_keyname" >> "rckeymaps)
 		system("echo -e "add_nev_keyname"'\t'"add_nev_keysost"'\t'"add_nev_command" >> "triggerhappy)
 	}
+	if($1 == "staron") system("/etc/init.d/web-ir-remote enable")
+	if($1 == "staroff") system("/etc/init.d/web-ir-remote disable")
 
 	if($1 == "exampleconf") exampleconf = unescape($2)
 	if($1 == "text")
@@ -62,6 +64,13 @@ sost = 0
 		sost = 1
 		system("echo '"exampleconf"' | sed 's/\r//;/^$/d' > /etc/triggerhappy/triggers.d/example.conf")
 		#print "<b> Save example.conf OK</b><br>"
+	}
+
+	if($1 == "webirremoteinit") webirremoteinit = unescape($2)
+	if($1 == "textremoteinit")
+	{
+		system("echo '"webirremoteinit"' | sed 's/\r//;/^$/d' > /etc/init.d/web-ir-remote")
+	#	print "<b> Save web-ir-remote-init OK</b><br>"
 	}
 }
 END

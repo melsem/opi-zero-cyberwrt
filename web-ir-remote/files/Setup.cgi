@@ -155,4 +155,3 @@ d_strok=$(wc -L $init)
  </td>
 </tr></form>
 </table>"
-
