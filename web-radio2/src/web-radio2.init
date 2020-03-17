@@ -2,69 +2,86 @@
 
 START=99
 
-#/etc/init.d/ev-irc stop &> /dev/null
+volsost=$(amixer -c 0 get 'Line Out' | sed '/Front Left: Playback/!d' | awk '{print $4}')
 
 reload() {
-amixer -c 0 -q set "Line Out" off
 
   if [ $1 == "0" ]; then
+    amixer -c 0 set "DAC" 100%-	# выкл
+    amixer -c 0 set "Line Out" 100%-
 	killall -9 curl &> /dev/null &> /dev/null
 	killall -9 wget &> /dev/null &> /dev/null
 	killall -9 madplay &> /dev/null &> /dev/null
+   sleep 1
+    amixer -c 0 set "Line Out" $volsost
+    amixer -c 0 set "DAC" 100%	# вкл
   else
+    amixer -c 0 set "DAC" 100%-	# выкл
+    amixer -c 0 set "Line Out" 100%-
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
     web-radio2 -p $1 &
+   sleep 1
+    amixer -c 0 set "Line Out" $volsost
+    amixer -c 0 set "DAC" 100%	# вкл
   fi
-sleep 1
-amixer -c 0 -q set "Line Out" on
 }
 
 start() {
-amixer -c 0 -q set "Line Out" off
 
    pidof web-radio2 &> /dev/null
  if [ $? == 1 ]; then
+    amixer -c 0 set "DAC" 100%-	# выкл
+    amixer -c 0 set "Line Out" 100%-
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
    web-radio2  -p 1 &
-sleep 1
-amixer -c 0 -q set "Line Out" on
+   sleep 1
+    amixer -c 0 set "Line Out" $volsost
+   sleep 1
+    amixer -c 0 set "DAC" 100%	# вкл
 
  else
+    amixer -c 0 set "DAC" 100%-	# выкл
+    amixer -c 0 set "Line Out" 100%-
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
+   sleep 1
+    amixer -c 0 set "Line Out" $volsost
  fi
 }
 
 stop() {
-amixer -c 0 -q set "Line Out" off
+    amixer -c 0 set "DAC" 100%-	# выкл
+    amixer -c 0 set "Line Out" 100%-
+
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
+   sleep 1
+    amixer -c 0 set "Line Out" $volsost
 }
 
 restart() {
-amixer -c 0 -q set "Line Out" off
+    amixer -c 0 set "DAC" 100%-	# выкл
+    amixer -c 0 set "Line Out" 100%-
 	killall -9 web-radio2 &> /dev/null > /dev/null
 	killall -9 curl &> /dev/null > /dev/null
 	killall -9 wget &> /dev/null > /dev/null
 	killall -9 madplay &> /dev/null > /dev/null
 
     web-radio2 &
-sleep 1
-amixer -c 0 -q set "Line Out" on
+   sleep 1
+    amixer -c 0 set "Line Out" $volsost
+    amixer -c 0 set "DAC" 100%	# вкл
 
 }
-
-#/etc/init.d/ev-irc start &> /dev/null
-
 
 
