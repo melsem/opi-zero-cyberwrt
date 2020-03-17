@@ -2,8 +2,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=boot-config
-PKG_VERSION:=1.3
-PKG_RELEASE:=2020.03.13
+PKG_VERSION:=1.2
+PKG_RELEASE:=2020.01.31
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -39,6 +39,8 @@ define Package/boot-config/install
 	$(INSTALL_BIN) ./files/uci_defaults_boot-config $(1)/etc/uci-defaults/50-boot-config
 	$(INSTALL_BIN) ./files/add-mount-boot $(1)/etc/uci-defaults/20-boot-config
 
+	$(INSTALL_DIR) $(1)/www/boot
+	$(INSTALL_BIN) ./files/boot.html $(1)/www/boot/index.html
 	$(INSTALL_DIR) $(1)/www/cgi-bin/modules/boot-config
 	$(INSTALL_BIN) ./files/conv.cgi $(1)/www/cgi-bin/modules/boot-config/
 	$(INSTALL_BIN) ./files/index.cgi $(1)/www/cgi-bin/modules/boot-config/
