@@ -129,7 +129,7 @@ echo "<form method="POST" action="Save.cgi">
 <tr><td align=center><p style="color:#$clor">Auto Startup - <b>$cto</b></p></td></tr>
 
 <tr><td align=center>
-<button $dsd name="$onoff" type=submit title='"$ontxtoff"' class="b1">
+<button $dsd name="$onoff" type=submit title='"$ontxtoff2"' class="b1">
 <img src=/modules/web-ir-remote/b.jpg alt= style="vertical-align: middle">"Enable"</button>
 
 <button $dsd2 name="$onoff" type=submit title='"$ontxtoff2"' class="b1">
