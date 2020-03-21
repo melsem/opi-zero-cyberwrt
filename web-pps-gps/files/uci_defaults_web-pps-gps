@@ -1,0 +1,17 @@
+#!/bin/sh
+
+/etc/init.d/sysntpd stop
+/etc/init.d/sysntpd disable
+
+sed -i '/refclock SHM 0/d' /etc/chrony/chrony.conf &> /dev/null
+echo "refclock SHM 0 refid GPS precision 1e-1 offset 0.134 delay 0.2 noselect" >> /etc/chrony/chrony.conf
+
+sed -i '/refclock PPS /d' /etc/chrony/chrony.conf &> /dev/null
+echo "refclock PPS /dev/pps0 lock GPS" >> /etc/chrony/chrony.conf
+
+sed -i "/web-pps-gps\/index.cgi/d" /www/menu.html &> /dev/null
+	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
+sed -i 3i\ '<li><a href=/cgi-bin/modules/web-pps-gps/index.cgi>'setup-pps-gps'</a></li>' /www/menu.html &> /dev/null
+	# К вебке cyberwrt - закомментировть если НЕ будет использоваться ####
+#sed -i 3i\ '<a href=/cgi-bin/modules/web-pps-gps/index.cgi><div class=left>'setup-pps-gps'</div></a>' /www/menu.html 2> /dev/null
+

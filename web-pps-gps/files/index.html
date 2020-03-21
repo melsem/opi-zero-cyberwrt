@@ -1,0 +1,251 @@
+#!/bin/sh
+echo 
+echo "<title>web-pps-gps</title>"
+echo "<table align=center border=0><tr><td>"
+echo `cat /www/menu.html`
+echo "</td></tr></table>"
+
+lang=$(uci get luci.main.lang)
+if [ "$lang" == "ru" ] ; then
+txtppspin="Настройка pps-gpio вывода в boot-config"
+txt1="Хотите включить автозапуск?"
+txt2="Хотите отключить автозапуск?"
+elif [ "$lang" == "en" ] ; then
+txtppspin="Configuring pps-gpio output in boot-config"
+txt1="Want to enable autorun?"
+txt2="Want to disable autorun?"
+else
+txtppspin="Configuring pps-gpio output in boot-config"
+txt1="Want to enable autorun?"
+txt2="Want to disable autorun?"
+fi
+
+confFile="gpsd"
+enabled=$(uci get $confFile.@gpsd[0].enabled)
+device=$(uci get $confFile.@gpsd[0].device)
+devPort=$(uci get $confFile.@gpsd[0].port)
+listen_globally=$(uci get $confFile.@gpsd[0].listen_globally)
+dts='/tmp/t-dts'
+cat $dts &> /dev/null
+if [ $? = 1 ]; then
+dtc -I dtb -O dts -o $dts /boot/dtb
+sleep 1
+fi
+
+if [ "$enabled" == "1" ] ; then
+on_gpsd="checked"
+off_gpsd=""
+else
+on_gpsd=""
+off_gpsd="checked"
+fi
+if [ "$listen_globally" == "1" ] ; then
+on_list="checked"
+off_list=""
+else
+on_list=""
+off_list="checked"
+fi
+stachec () {
+if [ "$mod" == "disabled" ]; then
+sost='Turned OFF'
+elif [ "$mod" == "okay" ]; then
+sost='Turned ON'
+fi
+}
+
+astart () {
+cat /etc/rc.d/$init &> /dev/null
+if [ $? = 1 ]; then
+ontxtoff=$txt1
+onoff='staron_'$devpr
+cto=OFF
+clor="ff0000"
+dsd=""
+dsd2=hidden
+else
+dsd=hidden
+dsd2=""
+clor="0000ff"
+ontxtoff=$txt2
+onoff='staroff_'$devpr
+cto=ON
+fi
+}
+
+echo "
+<body bgcolor="#f0f0f0">
+<style>
+.button {
+ text-decoration:none; text-align:center; 
+ padding:5px 10px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:20px;
+ -moz-border-radius:20px; 
+ border-radius: 20px; 
+ font:15px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#ffffff; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+  
+  }.button:hover{
+ padding:5px 10px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:20px;
+ -moz-border-radius:20px; 
+ border-radius: 20px; 
+ font:15px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#000000; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+  
+ }.button:active{
+ padding:5px 10px; 
+ border:solid 1px #004F72; 
+ -webkit-border-radius:10px;
+ -moz-border-radius:10px; 
+ border-radius: 10px; 
+ font:15px Arial, Helvetica, sans-serif; 
+ font-weight:bold; 
+ color:#ffffff; 
+ background-color:#3BA4C7; 
+ background-image: -moz-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -webkit-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -o-linear-gradient(top, #3BA4C7 0%, #1982A5 100%); 
+ background-image: -ms-linear-gradient(top, #3BA4C7 0% ,#1982A5 100%); 
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1982A5', endColorstr='#1982A5',GradientType=0 ); 
+ background-image: linear-gradient(top, #3BA4C7 0% ,#1982A5 100%);   
+ -webkit-box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff; 
+ -moz-box-shadow: 0px 0px 2px #bababa,  inset 0px 0px 1px #ffffff;  
+ box-shadow:0px 0px 2px #bababa, inset 0px 0px 1px #ffffff;  
+  
+ }
+  .b2 {
+height: 10px;
+text-align: left;
+padding: 1px;
+border: 2px solid #0000cc;
+border-radius: 10px;
+}
+</style><br>"
+#*********************************************
+chrony_conf='/etc/chrony/chrony.conf'
+SHM=$(sed '/refclock SHM 0/!d' $chrony_conf)
+PPS=$(sed '/refclock PPS/!d' $chrony_conf)
+shmsize=$(sed '/refclock SHM 0/!d' $chrony_conf | wc -L)
+ppssize=$(sed '/refclock PPS/!d' $chrony_conf | wc -L)
+
+echo "<table align="center">
+<form method="POST" action="Save.cgi">
+<table class="b2" bgcolor="#ffffff" border=0 align="center">
+<caption>Setup Chrony</caption>"
+
+#****************
+echo "<tr><td>"Refclock SHM"</td><td>
+    <input type=text name="refclock_shm" size="$shmsize" value='"
+echo $SHM
+echo "'></td></tr>"
+
+echo "<tr><td>"Refclock PPS"</td><td>
+    <input type=text name="refclock_pps" size="$ppssize" value='"
+echo $PPS
+echo "'></td></tr>
+
+</table>
+<table align="center">
+<tr>
+<td align="center">
+<button class="button" type=submit name="refclock_setsave">"Save"</button>
+</td>
+</tr>
+</table>
+</form></table>"
+
+#****# S15chronyd
+init='S15chronyd'
+devpr='chronyd'
+astart
+echo "<table align="center"><form method="POST" action="Save.cgi">
+<tr><td align=center><p style="color:#$clor">"Chrony auto startup - "<b>$cto</b></p></td></tr>
+<tr><td align=center>
+ <button $dsd name="$onoff" type=submit title='"$ontxtoff"' class="button">"Auto startup Enable"</button>
+ <button $dsd2 name="$onoff" type=submit title='"$ontxtoff"' class="button">"Auto startup Disable"</button>
+</td></tr>
+</form></table>"
+#*********************************************
+echo "<br><table align="center">
+<form method="POST" action="Save.cgi">
+<table class="b2" bgcolor="#ffffff" border=0 align="center">
+<caption>Setup GPSD</caption>"
+
+echo "<tr><td>"pps-gpio"</td><td>"
+mod=$(cat $dts | sed -n '/pps {/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+stachec
+echo "<input readonly type=text name="pps_pins" title='"$txtppspin"' value='"
+echo "pin: "
+cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p'
+echo " - "$sost
+echo "'></td></tr>"
+
+echo "<tr><td>"GPSD"</td><td>
+    <input type="radio" name="gpsd_enabled" value="0" $off_gpsd>Off
+    <input type="radio" name="gpsd_enabled" value="1" $on_gpsd>ON
+</td></tr>"
+
+echo "<tr><td>"Device"</td><td>
+    <input type=text name="device" value="
+  printf $device
+echo "></td></tr>"
+
+echo "<tr><td>"Device port"</td><td>
+    <input type=text name="devPort" value="
+  printf $devPort
+echo "></td></tr>"
+
+echo "<tr><td>"Listen globally"</td><td>
+    <input type="radio" name="listen_globally" value="0" $off_list>Off
+    <input type="radio" name="listen_globally" value="1" $on_list>ON
+</td></tr>
+</table>
+
+<table align="center">
+<tr>
+<td align="center">
+<button class="button" type=submit name="setsave">"Save"</button>
+</td>
+</tr>
+</table>
+</form></table>"
+
+#****# S50gpsd
+init='S50gpsd'
+devpr='gpsd'
+astart
+echo "<table align="center"><form method="POST" action="Save.cgi">
+<tr><td align=center><p style="color:#$clor">"GPSD auto startup - "<b>$cto</b></p></td></tr>
+<tr><td align=center>
+ <button $dsd name="$onoff" type=submit title='"$ontxtoff"' class="button">"Auto startup Enable"</button>
+ <button $dsd2 name="$onoff" type=submit title='"$ontxtoff"' class="button">"Auto startup Disable"</button>
+</td></tr>
+</form></table>"
+#******
+echo "</body>"
+
