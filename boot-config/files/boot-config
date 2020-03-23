@@ -48,6 +48,7 @@ gpio-keys-user='gpio-keys-user'
 rotary_button='rotary_button'
 rotary_axis='rotary_axis'
 xradio='/etc/modules.d/xradio'
+rtles='/etc/modules.d/50-rtl8189es'
 board=$(cat /tmp/sysinfo/board_name)
 boardname="${board##*,}"
 dts='/tmp/t-dts'
@@ -59,13 +60,19 @@ elif [ "$2" == "okay" ]; then
 fi
 if [ "$1" == "wifi" ]; then
   if [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" ]]; then
-	sed -i '/'$wifi'/,/\};/ {s/'$on_off'/}' $dts
  	if [ "$2" == "okay" ]; then
 	    echo "xradio_wlan" > $xradio
 	elif [ "$2" == "disabled" ]; then
 	    rm $xradio
 	fi
+  elif [ "$boardname" == "orangepi-r1" ]; then
+ 	if [ "$2" == "okay" ]; then
+	    echo -e "8189es"'\n'"cfg80211" > $rtles
+	elif [ "$2" == "disabled" ]; then
+	    rm $rtles
+	fi
   fi
+	sed -i '/'$wifi'/,/\};/ {s/'$on_off'/}' $dts
 elif [[ "$1" == "w1pin" || "$1" == "ppspin" ]]; then
  	if [ "$2" == "PG6" ]; then
 		gpiosA='0x06'; gpiosN='0x06'
