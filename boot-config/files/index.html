@@ -109,7 +109,7 @@ spi0='spi@1c68000\|spi@01c68000'
 spi1='spi@1c69000\|spi@01c69000'
 ethernet0='ethernet@1c30000\|ethernet@01c30000'
 spdif='spdif@1c21000\|spdif@01c21000'
-gpio-keys-user='gpio-keys-user'
+gpio_keys_user='gpio-keys-user'
 rotary_button='rotary_button'
 rotary_axis='rotary_axis'
 ledspin=''
@@ -594,7 +594,7 @@ echo "</td></tr>"
 #************   gpio-keys   **************************
 echo "<tr>
 <td>"
-mod=$(cat $dts | sed -n '/'$gpio-keys-user'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+mod=$(cat $dts | sed -n '/'$gpio_keys_user'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
 echo "
 <input type="checkbox" name="gpio-keys-user" value="disabled" $sost2 $checked1>OFF

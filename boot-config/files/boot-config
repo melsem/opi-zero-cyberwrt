@@ -44,7 +44,7 @@ spi0='spi@1c68000\|spi@01c68000'
 spi1='spi@1c69000\|spi@01c69000'
 ethernet0='ethernet@1c30000\|ethernet@01c30000'
 spdif='spdif@1c21000\|spdif@01c21000'
-gpio-keys-user='gpio-keys-user'
+gpio_keys_user='gpio-keys-user'
 rotary_button='rotary_button'
 rotary_axis='rotary_axis'
 xradio='/etc/modules.d/xradio'
@@ -167,7 +167,7 @@ elif [ "$1" == "usb3" ]; then
 	sed -i '/'$ehci3'/,/\};/ {s/'$on_off'/}' $dts
 	sed -i '/'$ohci3'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "gpio-keys-user" ]; then
-	sed -i '/'$gpio-keys-user'/,/\};/ {s/'$on_off'/}' $dts
+	sed -i '/'$gpio_keys_user'/,/\};/ {s/'$on_off'/}' $dts
 elif [ "$1" == "rotary" ]; then
 	sed -i '/'$rotary_button'/,/\};/ {s/'$on_off'/}' $dts
 	sed -i '/'$rotary_axis'/,/\};/ {s/'$on_off'/}' $dts
