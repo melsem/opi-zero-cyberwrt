@@ -1,0 +1,69 @@
+From 7b5628021a32aefd1c620d1557b9d07721f6896c Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Wed, 27 Sep 2017 23:38:49 +0200
+Subject: activate all backport code
+
+---
+ os_dep/linux/ioctl_cfg80211.c | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
+
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -798,7 +810,7 @@ check_bss:
+ 		struct ieee80211_channel *notify_channel;
+ 		u32 freq;
+ 		u16 channel = cur_network->network.Configuration.DSConfig;
+-		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
++		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0)) || 1
+ 		struct cfg80211_roam_info roam_info = {};
+ 		#endif
+ 
+@@ -807,7 +814,7 @@ check_bss:
+ 		#endif
+ 
+ 		DBG_871X(FUNC_ADPT_FMT" call cfg80211_roamed\n", FUNC_ADPT_ARG(padapter));
+-		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
++		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0)) || 1
+ 		roam_info.channel = notify_channel;
+ 		roam_info.bssid = cur_network->network.MacAddress;
+ 		roam_info.req_ie =
+@@ -1890,7 +1900,7 @@ enum nl80211_iftype {
+ static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
+ 				     struct net_device *ndev,
+ 				     enum nl80211_iftype type,
+-				     #if (LINUX_VERSION_CODE < KERNEL_VERSION(4,12,0))
++				     #if (LINUX_VERSION_CODE < KERNEL_VERSION(4,12,0)) && 0
+ 				     u32 *flags,
+ 				     #endif
+ 				     struct vif_params *params)
+@@ -2043,7 +2060,7 @@ void rtw_cfg80211_indicate_scan_done(_ad
+ 		}
+ 		else
+ 		{
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)) || 1
+ 			struct cfg80211_scan_info info = {
+ 				.aborted = aborted,
+ 			};
+@@ -4008,10 +4025,10 @@ static int
+ 	#else
+ 		char *name,
+ 	#endif
+-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0))
++	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)) || 1
+ 		unsigned char name_assign_type,
+ 	#endif
+-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
++	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0)) || 1
+ 		enum nl80211_iftype type, struct vif_params *params)
+ 	#else
+ 		enum nl80211_iftype type, u32 *flags, struct vif_params *params)
+@@ -6411,7 +6427,7 @@ static void rtw_cfg80211_preinit_wiphy(_
+ #endif
+ 
+ #if defined(CONFIG_PM) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 0, 0))
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,12,0))
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,12,0)) && 0
+ 	wiphy->flags |= WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
+ #else // KERNEL_VERSION >= 4.12
+ 	wiphy->max_sched_scan_reqs = 1;
