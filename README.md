@@ -14,7 +14,8 @@ src-git cyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 http://192.168.10.1/boot
 
     Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master
-    На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1```
+    На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1
+```
 * -------------------------------------------------------------------------------------
 - **[Модуль-прога "termostat-serial-arduino". Управление платой Arduino-termostat](http://cyber-place.ru/showthread.php?t=2752)**
 * -------------------------------------------------------------------------------------
