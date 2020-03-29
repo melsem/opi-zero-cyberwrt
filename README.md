@@ -27,4 +27,14 @@ http://192.168.10.1/cyberwrt
 ```
 http://192.168.10.1/irc
 ```
+* -------------------------------------------------------------------------------------
+- **[Пакет для сборки драйвера rtl8189es к orange-pi-R](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config/boot-config2.png)**
+    Как AP работает нормально. Проверялось на openwrt-18.06 и openwrt-19.07 (kernel-4.14)
+    С openwrt-master (kernel-4.19) не работает. При включении wifi, kernel panic, и уходит в ребут.
+
+    При сканировании "iw" вызывает, kernel panic, и уходит в ребут.
+    А попытки вручную создать "sta" ни к чему не привели.
+    Не коннектится.
+- **[Подправленные исходники](https://github.com/melsem/rtl8189es)**
+
 
