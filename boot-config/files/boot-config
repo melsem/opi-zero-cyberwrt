@@ -52,6 +52,7 @@ rtles='/etc/modules.d/50-rtl8189es'
 board=$(cat /tmp/sysinfo/board_name)
 boardname="${board##*,}"
 dts='/tmp/t-dts'
+mac80211='/lib/netifd/wireless/mac80211.sh'
 
 if [ "$2" == "disabled" ]; then
 	on_off='okay/disabled'
@@ -68,9 +69,14 @@ if [ "$1" == "wifi" ]; then
   elif [ "$boardname" == "orangepi-r1" ]; then
  	if [ "$2" == "okay" ]; then
 	    echo -e "8189es"'\n'"cfg80211" > $rtles
+	    comm=''
+	    nocom='#'
 	elif [ "$2" == "disabled" ]; then
 	    rm $rtles
+	    comm='#'
+	    nocom=''
 	fi
+	sed -i '/mac80211_interface_cleanup() {/,/\}/ {s/'$comm'iw dev/'$nocom'iw dev/}' $mac80211
   fi
 	sed -i '/'$wifi'/,/\};/ {s/'$on_off'/}' $dts
 elif [[ "$1" == "w1pin" || "$1" == "ppspin" ]]; then
@@ -115,10 +121,10 @@ elif [[ "$1" == "w1pin" || "$1" == "ppspin" ]]; then
 	fi
 	if [ "$1" == "w1pin" ]; then
 		sed -i '/w1_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-		sed -i '/w1 {/,/\};/ {s/0x0a\ .*\ 0x00/0x0a\ '$gpiosA'\ '$gpiosN'\ 0x00/}' $dts
+		sed -i '/w1 {/,/\};/ {s/a\ .*\ 0x0/a\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
 	elif [ "$1" == "ppspin" ]; then
 		sed -i '/pps_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-		sed -i '/pps {/,/\};/ {s/0x0a\ .*\ 0x00/0x0a\ '$gpiosA'\ '$gpiosN'\ 0x00/}' $dts
+		sed -i '/pps {/,/\};/ {s/a\ .*\ 0x0/a\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
 	fi
 elif [ "$1" == "i2c0" ]; then
 	sed -i '/'$i2c0'/,/\};/ {s/'$on_off'/}' $dts

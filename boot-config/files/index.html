@@ -261,7 +261,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"i2c0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/i2c0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
+cat $dts | sed -n '/i2c0 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
 
 echo "<tr><td>"
@@ -274,7 +274,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"i2c1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/i2c1 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
+cat $dts | sed -n '/i2c1 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>
 
 <tr>
@@ -287,7 +287,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"i2c2: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/i2c2 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
+cat $dts | sed -n '/i2c2 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>
 
 <tr>
@@ -300,7 +300,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"uart0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td bgcolor="#f0a0f0">"
 echo "Gpio: "
-cat $dts | sed -n '/uart0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
+cat $dts | sed -n '/uart0 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>
 
 <tr>
@@ -314,7 +314,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"uart1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/uart1 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
+cat $dts | sed -n '/uart1 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>
 
 <tr>
@@ -328,7 +328,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"uart2: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/uart2 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /'
+cat $dts | sed -n '/uart2 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
 
 
@@ -342,7 +342,7 @@ echo "
 </td>
 <td align="center" bgcolor="$bgcolor">"spi0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
 echo "Flash: "
-cat $dts | sed -n '/spi0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+cat $dts | sed -n '/spi0 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
 
 #****************************************************************
@@ -355,7 +355,7 @@ echo "
 </td>
 <td align="center" bgcolor="$bgcolor">"spi1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
 echo "Gpio: "
-cat $dts | sed -n '/spi1 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+cat $dts | sed -n '/spi1 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
 
 #*************   usb_otg  **********************
@@ -432,7 +432,7 @@ echo "
 </td>
 <td align="center" bgcolor="$bgcolor">"Spdif: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
 echo "Spdif:"
-cat $dts | sed -n '/spdif {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+cat $dts | sed -n '/spdif {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "$ledspin"
 echo "</td></tr>"
 
@@ -446,7 +446,7 @@ echo "
 </td>
 <td align="center" bgcolor="$bgcolor">"Ethernet0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
 echo "Ethernet0"
-#cat $dts | sed -n '/ethernet0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+#cat $dts | sed -n '/ethernet0 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>
 </table></table></td></tr>"
 
@@ -479,7 +479,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"w1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-case "`sed -n '/w1_pins {/,/\};/ s/.*pins.*\"\(.*\)\".*/\1/p' $dts`" in
+case "`sed -n '/w1_pins {/,/\};/ s/.*pins = \"\(.*\)\".*/\1/p' $dts`" in
 "PA0") pins0=selected; aa="uart2_tx";;
 "PA1") pins1=selected; aa="uart2_rx";;
 "PA2") pins2=selected; aa="uart2_rts";;
@@ -534,7 +534,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"irc: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/ir {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p'
+cat $dts | sed -n '/ir {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p'
 echo "</td></tr>"
 
 #*****************  pwm  *******************************
@@ -549,7 +549,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"pwm0: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td bgcolor="#f0a0f0">"
 echo "Gpio: "
-cat $dts | sed -n '/pwm0 {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p'
+cat $dts | sed -n '/pwm0 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p'
 echo " - UART0_RX"
 echo "</td></tr>"
 
@@ -565,8 +565,8 @@ echo "
 <td align="center" bgcolor="$bgcolor">"pps-gpio: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-#cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p'
-case "`sed -n '/pps_pins {/,/\};/ s/.*pins.*\"\(.*\)\".*/\1/p' $dts`" in
+#cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p'
+case "`sed -n '/pps_pins {/,/\};/ s/.*pins = \"\(.*\)\".*/\1/p' $dts`" in
 "PA0") ppins0=selected; ab="uart2_tx";;
 "PA1") ppins1=selected; ab="uart2_rx";;
 "PA2") ppins2=selected; ab="uart2_rts";;
@@ -603,7 +603,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"gpio-keys-user: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
-cat $dts | sed -n '/gpio_keys {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+cat $dts | sed -n '/gpio_keys {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
 
 #*************    rotary-encoder    ************************
@@ -619,9 +619,9 @@ echo "
 <td align="center" bgcolor="$usbcolor">"rotary-encoder"</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td>
 <td>"
 echo "button: "
-cat $dts | sed -n '/pinctrl_button {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+cat $dts | sed -n '/pinctrl_button {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "rotary-encoder: "
-cat $dts | sed -n '/pinctrl_rotary {/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p' | sed 's/\\0/, /g'
+cat $dts | sed -n '/pinctrl_rotary {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
 
 
