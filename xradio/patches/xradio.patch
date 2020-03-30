@@ -1,18 +1,15 @@
 --- a/ap.c	2020-03-22 10:05:32.000000000 +0200
 +++ b/ap.c	2020-03-27 21:36:07.442219682 +0200
-@@ -1173,11 +1173,11 @@
+@@ -1173,11 +1173,8 @@
  		.rate = 0xFF,
  	};
  
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 17))
 -	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
 -#else
--	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif);
-+	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif
-+#if (LINUX_VERSION_CODE > KERNEL_VERSION(4, 14, 95))
-+							, false
- #endif
-+								);
+ 	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif);
+-#endif
++
  	if (WARN_ON(!frame.skb))
  		return -ENOMEM;
  
