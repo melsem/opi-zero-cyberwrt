@@ -1,8 +1,13 @@
 # package
-* В feeds.conf.default прописать строку:
+* Для xradio (к openwrt-19.07 kernel-4.14, openwrt-master kernel-4.19) в feeds.conf.default прописать строку:
 ```
 src-git cyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
+* А для xradio к openwrt-18.06 kernel-4.14 в feeds.conf.default прописать строку:
+```
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408dfc5cb74235e9abd8d18b8437db2e
+```
+* -------------------------------------------------------------------------------------
 * И в исходниках.
 ```
 ./scripts/feeds update -a
