@@ -55,11 +55,10 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408d
 ```
 * -------------------------------------------------------------------------------------
 - **[Модуль-прога "boot-config". Редактор dtb фала uboot](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config/boot-config2.png)**
+-    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master
+    На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1
 ```
 http://192.168.10.1/boot
-
-    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master
-    На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1
 ```
 * -------------------------------------------------------------------------------------
 - **[Модуль-прога "termostat-serial-arduino". Управление платой Arduino-termostat](http://cyber-place.ru/showthread.php?t=2752)**
@@ -92,11 +91,12 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408dfc5cb74235e9abd8d18b8437db2e
 ```
 -    Как AP работает нормально. Проверялось на openwrt-18.06 и openwrt-19.07 (kernel-4.14)
--    С openwrt-master (kernel-4.19) не работает. При включении wifi, kernel panic, и уходит в ребут.
--
--    При сканировании "iw" вызывает, kernel panic, и уходит в ребут.
--    А попытки вручную создать "sta" ни к чему не привели.
+-    Клиент не работает!!!
+-    При сканировании, "iw" вызывает kernel panic, и уходит в ребут.
+-    А попытки вручную создать "sta", без сканирования, ни к чему не привели.
 -    Не коннектится.
+-
+-    С openwrt-master (kernel-4.19) не работает!!! При включении wifi, kernel panic, и уходит в ребут.
 -
     Включить/выключить wifi в:
 ```
