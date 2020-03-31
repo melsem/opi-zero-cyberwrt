@@ -1,3 +1,41 @@
+# Патчи для включения поддержки разного рода оборудования.
+Список:
+```
+/target/linux/sunxi/config-4.xx
+/target/linux/sunxi/modules.mk
+/target/linux/sunxi/patches-4.xx/202-add0-pinctrl_wifi-xr819-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/203-add-enable-soc_audio-routing-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/204-add-IR-pinctrl-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/205-add-w1-gpio_pinctrl-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/206-add-PA5-pwm_pin-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/207-add0-cpu-freg-ths.patch
+/target/linux/sunxi/patches-4.xx/207-add1-thermal_sensor-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/207-add2-thermal_zone-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/207-add3-sunxi-ths_linux.patch
+/target/linux/sunxi/patches-4.xx/207-add4-sunxi-iio_gpadc_linux.patch
+/target/linux/sunxi/patches-4.xx/207-add5-sunxi-iio_gpadc_linux.patch
+/target/linux/sunxi/patches-4.xx/208-add-vdd-cpux-regulator-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/209-dts-add-orangepi-zero-lts.patch
+/target/linux/sunxi/patches-4.xx/210-add-spdif-PA17-red_led-opi-zero.patch
+/target/linux/sunxi/patches-4.xx/211-add-button-opi-zero.patch
+/target/linux/sunxi/image/cortex-a7.mk # Добавит профиль orangepi-zero и orangepi-zero-lts
+/target/linux/sunxi/base-files/etc/rc.local
+/package/boot/uboot-sunxi/patches/001-add-orangepi-zero-lts.patch
+/package/boot/uboot-sunxi/Makefile
+/package/kernel/mac80211/files/lib/wifi
+```
+**[Для openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
+```
+ все в одном
+patch -p1 < All_openwrt-18.06.8.patch
+```
+**[Для openwrt-19.07.2](https://github.com/openwrt/openwrt/archive/v19.07.2.tar.gz)**
+```
+ все в одном
+patch -p1 < All_openwrt-19.07.2.patch
+```
+* ------------------------------------- 
+
 # package
 * Для xradio (к *openwrt-19.07 kernel-4.14, openwrt-master kernel-4.19*) в *feeds.conf.default* прописать строку:
 ```
