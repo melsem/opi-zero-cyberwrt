@@ -25,11 +25,14 @@
 /package/kernel/mac80211/files/lib/wifi
 ```
 **[Для openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
+**[patch](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
+
 ```
  все в одном
 patch -p1 < All_openwrt-18.06.8.patch
 ```
 **[Для openwrt-19.07.2](https://github.com/openwrt/openwrt/archive/v19.07.2.tar.gz)**
+**[patch](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
 ```
  все в одном
 patch -p1 < All_openwrt-19.07.2.patch
