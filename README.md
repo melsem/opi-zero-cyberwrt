@@ -34,10 +34,6 @@ make menuconfig
 ```
 make
 ```
-Run "make" to build your firmware. This will download all sources, build
-the cross-compile toolchain and then cross-compile the Linux kernel & all
-chosen applications for your target system.
--
 - После сборки, записи образа на флэшку.
 - При первой загрузке Orange Pi надо войти в утилиту boot-config для настройки конфигурации начальной загрузки
 ```
