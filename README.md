@@ -26,15 +26,14 @@
 ```
 - **[Для openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
 - **[patch](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
-
+-  все в одном
 ```
- все в одном
 patch -p1 < All_openwrt-18.06.8.patch
 ```
 - **[Для openwrt-19.07.2](https://github.com/openwrt/openwrt/archive/v19.07.2.tar.gz)**
 - **[patch](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
+-  все в одном
 ```
- все в одном
 patch -p1 < All_openwrt-19.07.2.patch
 ```
 * ------------------------------------- 
@@ -92,15 +91,15 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408dfc5cb74235e9abd8d18b8437db2e
 ```
-```
-    Как AP работает нормально. Проверялось на openwrt-18.06 и openwrt-19.07 (kernel-4.14)
-    С openwrt-master (kernel-4.19) не работает. При включении wifi, kernel panic, и уходит в ребут.
-
-    При сканировании "iw" вызывает, kernel panic, и уходит в ребут.
-    А попытки вручную создать "sta" ни к чему не привели.
-    Не коннектится.
-
+-    Как AP работает нормально. Проверялось на openwrt-18.06 и openwrt-19.07 (kernel-4.14)
+-    С openwrt-master (kernel-4.19) не работает. При включении wifi, kernel panic, и уходит в ребут.
+-
+-    При сканировании "iw" вызывает, kernel panic, и уходит в ребут.
+-    А попытки вручную создать "sta" ни к чему не привели.
+-    Не коннектится.
+-
     Включить/выключить wifi в:
+```
     http://192.168.10.1/boot
 ```
 * -------------------------------------------------------------------------------------
