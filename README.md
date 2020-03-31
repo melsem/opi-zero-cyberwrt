@@ -104,10 +104,11 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408d
 ```
 * -------------------------------------------------------------------------------------
 # Как всем этим воспользоваться.
-- [1.] Скачать исходники к openwrt-18.06.8 или openwrt-19.07.2
+- [1.] Скачать исходники к **[openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
+ или **[openwrt-19.07.2](https://github.com/openwrt/openwrt/archive/v19.07.2.tar.gz)** . Распаковать..
 - [2.] Скачать патч к **[openwrt-18.06.8](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
  или **[openwrt-19.07.2](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
-- [3.] Применить патч к openwrt-18.06.8 или openwrt-19.07.2
+- [3.] Распаковать патч с архива в openwrt-18.06.8 или openwrt-19.07.2. И применить
 ```
 patch -p1 < All_openwrt-18.06.8.patch
 ```
@@ -116,10 +117,11 @@ patch -p1 < All_openwrt-18.06.8.patch
 patch -p1 < All_openwrt-19.07.2.patch
 ```
 - [4.] Прописать строку в *feeds.conf.default*:
+ openwrt-18.06.8
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408dfc5cb74235e9abd8d18b8437db2e
 ```
-Или
+ openwrt-19.07.2
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
@@ -127,7 +129,16 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
 ./scripts/feeds update -a
 ./scripts/feeds install -a
+make menuconfig
 ```
+Run "make menuconfig" to select your preferred configuration for the
+toolchain, target system & firmware packages.
+```
+make
+```
+Run "make" to build your firmware. This will download all sources, build
+the cross-compile toolchain and then cross-compile the Linux kernel & all
+chosen applications for your target system.
 
 
 
