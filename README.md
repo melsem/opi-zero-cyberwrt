@@ -1,9 +1,9 @@
 # package
-* Для xradio (к openwrt-19.07 kernel-4.14, openwrt-master kernel-4.19) в feeds.conf.default прописать строку:
+* Для xradio (к *openwrt-19.07 kernel-4.14, openwrt-master kernel-4.19*) в *feeds.conf.default* прописать строку:
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
-* А для xradio к openwrt-18.06 kernel-4.14 в feeds.conf.default прописать строку:
+* А для xradio к *openwrt-18.06* kernel-4.14 в *feeds.conf.default* прописать строку:
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408dfc5cb74235e9abd8d18b8437db2e
 ```
@@ -42,6 +42,15 @@ http://192.168.10.1/irc
 * -------------------------------------------------------------------------------------
 - **[Пакет для сборки драйвера rtl8189es к orange-pi-R1](https://github.com/melsem/opi-zero-cyberwrt/tree/master/rtl8189es)**
 - **[Подправленные исходники rtl8189es](https://github.com/melsem/rtl8189es)**
+* Для rtl8189es (к *openwrt-19.07* kernel-4.14 и *openwrt-18.06* kernel-4.14) в *feeds.conf.default* надо, что бы была
+ прописана строка:
+```
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
+```
+или
+```
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408dfc5cb74235e9abd8d18b8437db2e
+```
 ```
     Как AP работает нормально. Проверялось на openwrt-18.06 и openwrt-19.07 (kernel-4.14)
     С openwrt-master (kernel-4.19) не работает. При включении wifi, kernel panic, и уходит в ребут.
