@@ -27,14 +27,22 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ./scripts/feeds install -a
 make menuconfig
 ```
-Run "make menuconfig" to select your preferred configuration for the
-toolchain, target system & firmware packages.
+- Run "make menuconfig" to select your preferred configuration for the toolchain, target system & firmware packages. 
+- Be sure to select web-cyberwrt and boot-config in utils. The rest as needed.
+- Запустите «make menuconfig», чтобы выбрать предпочитаемую конфигурацию для цепочки инструментов, целевой системы и пакетов прошивки.
+- Обязательно выберите web-cyberwrt и boot-config в utils. Остальное по мере необходимости.
 ```
 make
 ```
 Run "make" to build your firmware. This will download all sources, build
 the cross-compile toolchain and then cross-compile the Linux kernel & all
 chosen applications for your target system.
+-
+- После сборки, записи образа на флэшку.
+- При первой загрузке Orange Pi надо войти в утилиту boot-config для настройки конфигурации начальной загрузки
+```
+http://192.168.10.1/boot
+```
 
 * ---------------------------------------
 
