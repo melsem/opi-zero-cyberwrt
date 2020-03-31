@@ -25,13 +25,13 @@
 /package/kernel/mac80211/files/lib/wifi
 ```
 - **[Для openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
-- **[patch](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
+- **[patch openwrt-18.06.8](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
 -  все в одном
 ```
 patch -p1 < All_openwrt-18.06.8.patch
 ```
 - **[Для openwrt-19.07.2](https://github.com/openwrt/openwrt/archive/v19.07.2.tar.gz)**
-- **[patch](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
+- **[patch openwrt-19.07.2](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
 -  все в одном
 ```
 patch -p1 < All_openwrt-19.07.2.patch
@@ -55,7 +55,7 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408d
 ```
 * -------------------------------------------------------------------------------------
 - **[Модуль-прога "boot-config". Редактор dtb фала uboot](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config/boot-config2.png)**
--    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master
+-    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master. 
     На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1
 ```
 http://192.168.10.1/boot
@@ -103,5 +103,31 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408d
     http://192.168.10.1/boot
 ```
 * -------------------------------------------------------------------------------------
+# Как всем этим воспользоваться.
+- [1.] Скачать исходники к openwrt-18.06.8 или openwrt-19.07.2
+- [2.] Скачать патч к **[openwrt-18.06.8](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
+ или [openwrt-19.07.2](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip
+- [3.] Применить патч к openwrt-18.06.8 или openwrt-19.07.2
+```
+patch -p1 < All_openwrt-18.06.8.patch
+```
+Или
+```
+patch -p1 < All_openwrt-19.07.2.patch
+```
+- [4.] Прописать строку в *feeds.conf.default*:
+```
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408dfc5cb74235e9abd8d18b8437db2e
+```
+Или
+```
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
+```
+- [5.] Обновить сырцы пакетов и установить ярлыки.
+```
+./scripts/feeds update -a
+./scripts/feeds install -a
+```
+
 
 
