@@ -106,7 +106,7 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^2d7ef9a0408d
 # Как всем этим воспользоваться.
 - [1.] Скачать исходники к openwrt-18.06.8 или openwrt-19.07.2
 - [2.] Скачать патч к **[openwrt-18.06.8](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
- или [openwrt-19.07.2](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip
+ или **[openwrt-19.07.2](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
 - [3.] Применить патч к openwrt-18.06.8 или openwrt-19.07.2
 ```
 patch -p1 < All_openwrt-18.06.8.patch
