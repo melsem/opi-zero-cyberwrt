@@ -53,6 +53,7 @@ board=$(cat /tmp/sysinfo/board_name)
 boardname="${board##*,}"
 dts='/tmp/t-dts'
 mac80211='/lib/netifd/wireless/mac80211.sh'
+phandle=$(sed -n '/pinctrl@1c20800 {/,/\};/p' $dts | sed -n 's/.*phandle = .\(.*\).\;.*/\1/p')
 
 if [ "$2" == "disabled" ]; then
 	on_off='okay/disabled'
@@ -121,10 +122,10 @@ elif [[ "$1" == "w1pin" || "$1" == "ppspin" ]]; then
 	fi
 	if [ "$1" == "w1pin" ]; then
 		sed -i '/w1_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-		sed -i '/w1 {/,/\};/ {s/a\ .*\ 0x0/a\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
+		sed -i '/w1 {/,/\};/ {s/'$phandle'\ .*\ 0x0/'$phandle'\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
 	elif [ "$1" == "ppspin" ]; then
 		sed -i '/pps_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-		sed -i '/pps {/,/\};/ {s/a\ .*\ 0x0/a\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
+		sed -i '/pps {/,/\};/ {s/'$phandle'\ .*\ 0x0/'$phandle'\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
 	fi
 elif [ "$1" == "i2c0" ]; then
 	sed -i '/'$i2c0'/,/\};/ {s/'$on_off'/}' $dts
@@ -179,4 +180,5 @@ elif [ "$1" == "rotary" ]; then
 	sed -i '/'$rotary_axis'/,/\};/ {s/'$on_off'/}' $dts
 fi
 exit 0
+
 
