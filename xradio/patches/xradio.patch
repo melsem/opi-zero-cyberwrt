@@ -5,9 +5,9 @@
  	};
  
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 17))
- 	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
+-	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
 -#else
--	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif);
+ 	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif);
 -#endif
 +
  	if (WARN_ON(!frame.skb))
