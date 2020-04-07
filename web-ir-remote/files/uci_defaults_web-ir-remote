@@ -33,6 +33,10 @@ echo -e "KEY_NEXTSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $trig
 echo -e "KEY_UP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
 echo -e "KEY_PREVIOUSSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
 echo -e "KEY_TUNER"'\t'"2"'\t'"reboot" >> $triggerhappy
+echo -e "BTN_RIGHT"'\t'"1"'\t'"tda7313 volume 63" >> $triggerhappy
+echo -e "BTN_LEFT"'\t'"1"'\t'"tda7313 volume 50" >> $triggerhappy
+echo -e "KEY_PAGEUP"'\t'"0"'\t'"tda7313 init" >> $triggerhappy
+echo -e "KEY_PAGEDOWN"'\t'"0"'\t'"tda7313 treble 15" >> $triggerhappy
 # ***************************************************
 
 sed -i "/web-ir-remote\/index.cgi/d" /www/menu.html 2> /dev/null
