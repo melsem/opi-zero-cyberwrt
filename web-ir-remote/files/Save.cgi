@@ -38,12 +38,14 @@ sost = 0
 	{
 		system("ir-remote rckeymaps '"ircodestar"' '"nomerstroki"' '"ircode"' '"keyname"'")
 		system("ir-remote triggerhappy '"keynamestar"' '"keysoststar"' '"keyname"' '"keysost"' '"command"'")
+		system("/etc/init.d/web-ir-remote restart")
 	}
 	if($1 == "delete")
 	{
 		system("ir-remote rckeymapsdelete '"ircodestar"' '"nomerstroki"'")
 		system("ir-remote triggerhappydelete '"keynamestar"' '"keysoststar"' '"commandstar"'")
 		#print "DELETE-2<br>"
+		system("/etc/init.d/web-ir-remote restart")
 	}
 
 	if($1 == "add_nev_ircode") add_nev_ircode = unescape($2)
@@ -54,6 +56,7 @@ sost = 0
 	{
 		system("echo "add_nev_ircode" "add_nev_keyname" >> "rckeymaps)
 		system("echo -e "add_nev_keyname"'\t'"add_nev_keysost"'\t'"add_nev_command" >> "triggerhappy)
+		system("/etc/init.d/web-ir-remote restart")
 	}
 	if($1 == "staron") system("/etc/init.d/web-ir-remote enable")
 	if($1 == "staroff") system("/etc/init.d/web-ir-remote disable")
@@ -64,6 +67,7 @@ sost = 0
 		sost = 1
 		system("echo '"exampleconf"' | sed 's/\r//;/^$/d' > /etc/triggerhappy/triggers.d/example.conf")
 		#print "<b> Save example.conf OK</b><br>"
+		system("/etc/init.d/web-ir-remote restart")
 	}
 
 	if($1 == "webirremoteinit") webirremoteinit = unescape($2)

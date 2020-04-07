@@ -3,16 +3,22 @@
 START=99
 
 start() {
+ /etc/init.d/triggerhappy stop &
  ir-keytable -p nec &
  ir-keytable -w /etc/rc_keymaps/keyes &
+ /etc/init.d/triggerhappy start &
 }
 
 restart() {
+ /etc/init.d/triggerhappy stop &
  ir-keytable -p nec &
  ir-keytable -w /etc/rc_keymaps/keyes &
+ /etc/init.d/triggerhappy start &
 }
 
 reload() {
+ /etc/init.d/triggerhappy stop &
  ir-keytable -p nec &
  ir-keytable -w /etc/rc_keymaps/keyes &
+ /etc/init.d/triggerhappy start &
 }
