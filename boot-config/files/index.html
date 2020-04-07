@@ -202,6 +202,43 @@ fi
 echo "</td>
 </tr></form></table>"
 #***************************************************************
+#*************   CPU-FREQ  **********************
+echo "<table align="center" class="b2" bgcolor="#ffffff" cellspacing="2">
+<form method="POST" action="conv.cgi">"
+cat /etc/rc.d/S30cpufreq_scaling &> /dev/null
+if [ $? != 1 ]; then
+works='astarok'
+astcolor="#76cc00"
+else
+works='noastar'
+astcolor=""
+fi
+disbl=''
+echo "<tr><td bgcolor="$astcolor">"Max cpu-freq: "</td><td>"
+case "`cat /sys/bus/cpu/devices/cpu0/cpufreq/scaling_max_freq`" in
+"480000" ) maxfreq0=selected; set_cpu_freq="480000";;
+"648000" ) maxfreq1=selected; set_cpu_freq="648000";;
+"816000" ) maxfreq2=selected; set_cpu_freq="816000";;
+"1008000" ) maxfreq3=selected; set_cpu_freq="1008000";;
+*) maxfreq4=selected; disbl="disabled";;
+esac
+echo "<select $disbl class="button" name="max_freq">
+<option $maxfreq0>"480MHz"</option>
+<option $maxfreq1>"648MHz"</option>
+<option $maxfreq2>"816MHz"</option>
+<option $maxfreq3>"1008MHz"</option>
+<option disabled $maxfreq4>"Not supported."</option>
+</select>
+<input name="astart" hidden value="$works">
+<button class="button" $disbl type=submit name="set_cpu_freq" value="$set_cpu_freq">"Set cpu-freq"</button>"
+echo "</td></tr>"
+
+
+
+echo "</form></table>"
+
+
+#***************************************************************
 
 echo "<form method="POST" action="Save.cgi" $nomount>"
 echo "<table align=center>"
@@ -451,10 +488,13 @@ echo "</td></tr>
 </table></table></td></tr>"
 
 #*******************************************************************************
+
+
+#*******************************************************************************
 #*************   Sun8i-DT-overlays  **********************
+#**************************************************
 echo "<tr><td align="center"><table class="b2" border="1" bgcolor="#ffffff" cellspacing="2">
 <caption>Allwinner H2+, H3. Sun8i-DT-overlays.</caption>"
-
 #*************   Analog-audio-codec  **********************
 echo "<tr>
 <td>"

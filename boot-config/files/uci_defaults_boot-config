@@ -1,4 +1,21 @@
 #!/bin/sh
+/etc/init.d/cpufreq_scaling disable
+
+uci -q show cpufreq_scaling.@cpufreq[0] || {
+echo > /etc/config/cpufreq_scaling
+uci -q add cpufreq_scaling cpufreq
+uci -q commit cpufreq_scaling
+}
+
+uci -q show cpufreq_scaling.@cpufreq[0].min_freq || {
+uci -q set cpufreq_scaling.@cpufreq[0].min_freq="480000"
+uci -q commit cpufreq_scaling
+}
+
+uci -q show cpufreq_scaling.@cpufreq[0].max_freq || {
+uci -q set cpufreq_scaling.@cpufreq[0].max_freq="1008000"
+uci -q commit cpufreq_scaling
+}
 
 sed -i "/boot-config\/index.cgi/d" /www/menu.html 2> /dev/null
 	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####

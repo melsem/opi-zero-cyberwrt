@@ -40,6 +40,25 @@ rebut=0
 	    }
 	}
 
+#	************  max_freq  ***********
+	if($1 == "max_freq") { set_max_freq=unescape($2)
+		if(unescape($2) == "480MHz") max_freq=480000
+		else if(unescape($2) == "648MHz") max_freq=648000
+		else if(unescape($2) == "816MHz") max_freq=816000
+		else if(unescape($2) == "1008MHz") max_freq=1008000
+	}
+	if($1 == "astart") if(unescape($2) == "noastar") system("/etc/init.d/cpufreq_scaling enable")
+	if($1 == "set_cpu_freq") {
+		if(max_freq != unescape($2)) {
+			system("uci set cpufreq_scaling.@cpufreq[0].max_freq='"max_freq"'")
+			system("uci commit cpufreq_scaling")
+			print "<b>Scaling max_freq: "set_max_freq" changed.</b><br>"
+			system("/etc/init.d/cpufreq_scaling start")
+		}
+		else print "<b>max_freq unchanged.</b><br>"
+	}
+#	************  end-max_freq  **********
+
 	if($1 == "conv") {
 		value=unescape($2)
 	if(value == "dts") system("dtc -I dtb -O dts -o /tmp/t-dts /boot/dtb")
@@ -57,6 +76,4 @@ END
 		if(rebut == "1") system("sleep 1s")
 		system("/www/cgi-bin/modules/boot-config/index.html "rebut"")
 }
-
-
 

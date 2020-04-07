@@ -35,6 +35,8 @@ define Package/boot-config/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) ./files/boot-config $(1)/usr/sbin/
 
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/cpufreq_scaling.init $(1)/etc/init.d/cpufreq_scaling
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/uci_defaults_boot-config $(1)/etc/uci-defaults/50-boot-config
 	$(INSTALL_BIN) ./files/add-mount-boot $(1)/etc/uci-defaults/20-boot-config
