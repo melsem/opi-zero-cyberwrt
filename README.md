@@ -15,7 +15,7 @@ patch -p1 < All_openwrt-19.07.2.patch
 - [4.] Прописать строку в *feeds.conf.default*:
  openwrt-18.06.8
 ```
-src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^00ab6954b72de4dde1ba90a3dd2052bced552b09
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0f330c0b5398d772167c30732e67a
 ```
  openwrt-19.07.2
 ```
@@ -90,7 +90,7 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
 * А для xradio к *openwrt-18.06* kernel-4.14 в *feeds.conf.default* прописать строку:
 ```
-src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^00ab6954b72de4dde1ba90a3dd2052bced552b09
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0f330c0b5398d772167c30732e67a
 ```
 * -------------------------------------------------------------------------------------
 * И в исходниках.
@@ -133,7 +133,7 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
 или
 ```
-src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^00ab6954b72de4dde1ba90a3dd2052bced552b09
+src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0f330c0b5398d772167c30732e67a
 ```
 -    Как AP работает нормально. Проверялось на openwrt-18.06 и openwrt-19.07 (kernel-4.14)
 -    Клиент не работает!!!
