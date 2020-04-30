@@ -1,0 +1,5 @@
+#!/bin/sh
+uci set fstab.@mount[0].target=/boot
+uci set fstab.@mount[0].enabled=1
+uci commit fstab
+exit 0
