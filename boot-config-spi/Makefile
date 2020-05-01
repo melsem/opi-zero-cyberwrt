@@ -38,7 +38,7 @@ define Package/boot-config-spi/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/cpufreq_scaling.init $(1)/etc/init.d/cpufreq_scaling
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/uci_defaults_boot-config-spi $(1)/etc/uci-defaults/50-boot-config-spi
+	$(INSTALL_BIN) ./files/uci_defaults_boot-config $(1)/etc/uci-defaults/50-boot-config-spi
 
 	$(INSTALL_DIR) $(1)/www/boot
 	$(INSTALL_BIN) ./files/boot.html $(1)/www/boot/index.html
