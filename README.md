@@ -28,14 +28,14 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 make menuconfig
 ```
 - Run "make menuconfig" to select your preferred configuration for the toolchain, target system & firmware packages. 
-- Be sure to select web-cyberwrt and boot-config in utils. The rest as needed.
+- Be sure to select web-cyberwrt and boot-config-mmc in utils. The rest as needed.
 - Запустите «make menuconfig», чтобы выбрать предпочитаемую конфигурацию для цепочки инструментов, целевой системы и пакетов прошивки.
-- Обязательно выберите web-cyberwrt и boot-config в utils. Остальное по мере необходимости.
+- Обязательно выберите web-cyberwrt и boot-config-mmc в utils. Остальное по мере необходимости.
 ```
 make
 ```
 - После сборки, записи образа на флэшку.
-- При первой загрузке Orange Pi надо войти в утилиту boot-config для настройки конфигурации начальной загрузки
+- При первой загрузке Orange Pi надо войти в утилиту boot-config-mmc для настройки конфигурации начальной загрузки
 ```
 http://192.168.10.1/boot
 ```
@@ -99,7 +99,7 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0
 ./scripts/feeds install -a
 ```
 * -------------------------------------------------------------------------------------
-- **[Модуль-прога "boot-config". Редактор dtb фала uboot](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config/boot-config2.png)**
+- **[Модуль-прога "boot-config-mmc". Редактор dtb фала uboot](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config-mmc/boot-config-mmc2.png)**
 -    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master. 
     На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1
 ```
