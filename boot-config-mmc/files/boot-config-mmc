@@ -53,7 +53,7 @@ board=$(cat /tmp/sysinfo/board_name)
 boardname="${board##*,}"
 dts='/tmp/t-dts'
 mac80211='/lib/netifd/wireless/mac80211.sh'
-phandle=$(sed -n '/pinctrl@1c20800 {/,/\};/p' $dts | sed -n 's/.*\x09phandle = \x3c\(.*\)\x3e\;/\1/p')
+phandle=$(sed -n '/pinctrl@1c20800 {/,/\phandle/p' $dts | sed -n 's/.*\x09phandle = \x3c\(.*\)\x3e\;/\1/p')
 
 if [ "$2" == "disabled" ]; then
 	on_off='okay/disabled'
