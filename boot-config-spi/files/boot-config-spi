@@ -61,7 +61,7 @@ elif [ "$2" == "okay" ]; then
 	on_off='disabled/okay'
 fi
 if [ "$1" == "wifi" ]; then
-  if [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" ]]; then
+  if [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" || "$boardname" == "orangepi-zero-spi" ]]; then
  	if [ "$2" == "okay" ]; then
 	    echo "xradio_wlan" > $xradio
 	elif [ "$2" == "disabled" ]; then
