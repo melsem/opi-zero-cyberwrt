@@ -2,6 +2,7 @@
 
 # ***************************************************
 triggerhappy='/etc/triggerhappy/triggers.d/example.conf'
+triggerhappy='/etc/rc_keymaps/keyes'
 echo -e "# This is an example configuration for the triggerhappy daemon (thd)" > $triggerhappy
 echo -e "# please note that every file to be processed must end in \".conf\"" >> $triggerhappy
 echo -e "#"'\n'"# To view a list of supported event codes, use \"thd --listevents\" or" >> $triggerhappy
@@ -33,10 +34,23 @@ echo -e "KEY_NEXTSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $trig
 echo -e "KEY_UP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
 echo -e "KEY_PREVIOUSSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
 echo -e "KEY_TUNER"'\t'"2"'\t'"reboot" >> $triggerhappy
-echo -e "BTN_RIGHT"'\t'"1"'\t'"tda7313 volume 63" >> $triggerhappy
-echo -e "BTN_LEFT"'\t'"1"'\t'"tda7313 volume 50" >> $triggerhappy
-echo -e "KEY_PAGEUP"'\t'"0"'\t'"tda7313 init" >> $triggerhappy
-echo -e "KEY_PAGEDOWN"'\t'"0"'\t'"tda7313 treble 15" >> $triggerhappy
+echo -e "BTN_RIGHT"'\t'"1"'\t'"tda7313 volume 60" >> $triggerhappy
+echo -e "BTN_RIGHT"'\t'"2"'\t'"tda7313 volume 63" >> $triggerhappy
+echo -e "BTN_LEFT"'\t'"1"'\t'"tda7313 volume 56" >> $triggerhappy
+echo -e "BTN_LEFT"'\t'"2"'\t'"tda7313 volume 50" >> $triggerhappy
+echo -e "KEY_PAGEUP"'\t'"1"'\t'"tda7313 init" >> $triggerhappy
+echo -e "KEY_PAGEDOWN"'\t'"1"'\t'"tda7313 treble 15" >> $triggerhappy
+echo -e "KEY_PAGEDOWN"'\t'"2"'\t'"tda7313 streble 15" >> $triggerhappy
+echo -e "BTN_PINKIE"'\t'"1"'\t'"tda7313 streble 20" >> $triggerhappy
+echo -e "BTN_PINKIE"'\t'"2"'\t'"tda7313 streble 25" >> $triggerhappy
+echo -e "BTN_BASE"'\t'"1"'\t'"tda7313 sbass 25" >> $triggerhappy
+echo -e "KEY_RIGHT_UP"'\t'"1"'\t'"tda7313 sbass 20" >> $triggerhappy
+echo -e "KEY_RIGHT_UP"'\t'"2"'\t'"tda7313 sbass 15" >> $triggerhappy
+echo -e "KEY_RIGHT_DOWN"'\t'"1"'\t'"tda7313 sbass 13" >> $triggerhappy
+echo -e "KEY_RIGHT_DOWN"'\t'"2"'\t'"tda7313 sbass 10" >> $triggerhappy
+echo -e "KEY_KBDINPUTASSIST_PREV"'\t'"1"'\t'"tda7313 input 1" >> $triggerhappy
+echo -e "KEY_KBDINPUTASSIST_NEXT"'\t'"1"'\t'"tda7313 input 0" >> $triggerhappy
+echo -e "KEY_KBDINPUTASSIST_PREVGROUP"'\t'"1"'\t'"tda7313 input 2" >> $triggerhappy
 # ***************************************************
 
 sed -i "/web-ir-remote\/index.cgi/d" /www/menu.html 2> /dev/null
