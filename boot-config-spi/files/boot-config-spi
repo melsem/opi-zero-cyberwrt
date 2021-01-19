@@ -122,10 +122,10 @@ elif [[ "$1" == "w1pin" || "$1" == "ppspin" ]]; then
 	fi
 	if [ "$1" == "w1pin" ]; then
 		sed -i '/w1_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-		sed -i '/w1 {/,/\};/ {s/'$phandle'\ .*\ 0x0/'$phandle'\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
+		sed -i '/w1 {/,/\};/ {s/gpios = <'$phandle'\ .*\ 0x0/gpios = <'$phandle'\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
 	elif [ "$1" == "ppspin" ]; then
 		sed -i '/pps_pins {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-		sed -i '/pps {/,/\};/ {s/'$phandle'\ .*\ 0x0/'$phandle'\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
+		sed -i '/pps {/,/\};/ {s/gpios = <'$phandle'\ .*\ 0x0/gpios = <'$phandle'\ '$gpiosA'\ '$gpiosN'\ 0x0/}' $dts
 	fi
 elif [ "$1" == "i2c0" ]; then
 	sed -i '/'$i2c0'/,/\};/ {s/'$on_off'/}' $dts

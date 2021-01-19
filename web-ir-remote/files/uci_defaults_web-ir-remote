@@ -2,7 +2,6 @@
 
 # ***************************************************
 triggerhappy='/etc/triggerhappy/triggers.d/example.conf'
-triggerhappy='/etc/rc_keymaps/keyes'
 echo -e "# This is an example configuration for the triggerhappy daemon (thd)" > $triggerhappy
 echo -e "# please note that every file to be processed must end in \".conf\"" >> $triggerhappy
 echo -e "#"'\n'"# To view a list of supported event codes, use \"thd --listevents\" or" >> $triggerhappy
