@@ -1,5 +1,5 @@
 #!/bin/sh
-/etc/init.d/cpufreq_scaling disable
+#/etc/init.d/cpufreq_scaling disable
 
 uci -q show cpufreq_scaling.@cpufreq[0] || {
 echo > /etc/config/cpufreq_scaling
