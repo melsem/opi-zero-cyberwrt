@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/web-pps-gps
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=@TARGET_sunxi +chrony +gpsd +gpsd-clients +pps-tools +kmod-pps +kmod-pps-gpio +boot-config
+  DEPENDS:=@TARGET_sunxi +chrony +gpsd +gpsd-clients +pps-tools +kmod-pps +kmod-pps-gpio
   TITLE:=web-pps-gps setup
 endef
 
