@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+START=98
+
+start() {
+
+i2c_adres=$(uci get tda7313.@tda7313[0].i2c_adres)
+i2c_dev=$(uci get tda7313.@tda7313[0].i2c_dev)
+
+sda_gpio=$(uci get tda7313.@tda7313[0].sda_gpio)
+scl_gpio=$(uci get tda7313.@tda7313[0].scl_gpio)
+insmod i2c-dev
+insmod i2c-gpio-custom bus0=0,$sda_gpio,$scl_gpio
+
+  tda7313 init &
+
+}
+
+
+

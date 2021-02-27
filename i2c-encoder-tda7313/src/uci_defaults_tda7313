@@ -1,0 +1,17 @@
+#!/bin/sh
+
+
+touch /etc/config/tda7313
+sleep 1
+
+uci -q show tda7313.@tda7313[0] || {
+uci add tda7313 tda7313
+uci set tda7313.@tda7313[0].i2c_adres=0x44
+uci set tda7313.@tda7313[0].i2c_dev=0
+uci set tda7313.@tda7313[0].sda_gpio=18
+uci set tda7313.@tda7313[0].scl_gpio=20
+uci -q commit tda7313
+}
+
+
+

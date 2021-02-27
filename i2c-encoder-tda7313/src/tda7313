@@ -1,0 +1,149 @@
+#!/bin/sh
+
+#i2c_adres=0x44
+#i2c_dev=0
+
+i2c_adres=$(uci get tda7313.@tda7313[0].i2c_adres)
+i2c_dev=$(uci get tda7313.@tda7313[0].i2c_dev)
+
+volume='0'
+bass='96' # 0x60
+treble='112' # 0x70
+spec_LF='128' # 0x80 # 128+0+$vol_spec
+spec_RF='160' # 0xA0 # 128+32+$vol_spec
+spec_LR='192' # 0xC0 # 128+64+$vol_spec
+spec_RR='224' # 0xE0 # 128+96+$vol_spec
+
+switch='64' # 0x40 # 64+0
+#switch1='65' # 0x41 # 64+1
+#switch2='66' # 0x42 # 64+2
+
+write_CMD () {
+i2cset -f -y $i2c_dev $i2c_adres $hh
+}
+
+tda7313_init () {
+vol='15' # CEPEDINA
+hh=$(($volume + $vol))
+write_CMD
+
+hh=$(($bass + $vol))
+write_CMD
+
+vol='13' # CEPEDINA
+hh=$(($treble + $vol))
+write_CMD
+
+vol='16' # CEPEDINA
+hh=$(($spec_LF + $vol))
+write_CMD
+
+hh=$(($spec_RF + $vol))
+write_CMD
+
+hh=$(($spec_LR + $vol))
+write_CMD
+
+hh=$(($spec_RR + $vol))
+write_CMD
+
+vol='1' # switch1
+hh=$(($switch + $vol))
+write_CMD
+}
+
+
+###############################################################
+if [[ "$1" == "tda7313_init" || "$1" == "init" ]]; then
+    tda7313_init
+    echo $1 "OK"
+elif [ "$1" == "volume" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "63" ]]; then
+    var=63
+    let "var -= $2"
+    hh=$(($volume + $var))
+    write_CMD
+  fi
+elif [[ "$1" == "switch" || "$1" == "aux" || "$1" == "input" ]]; then
+  if [[ "$2" -ge "0" && "$2" -le "3" ]]; then
+    hh=$(($switch + $2))
+    write_CMD
+  fi
+elif [ "$1" == "bass" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "15" ]]; then
+    if [ "$2" -le "7" ]; then
+	hh=$(($bass + $2))
+    else
+	var=23
+	let "var -= $2"
+	hh=$(($bass + $var))
+    fi
+    write_CMD
+  fi
+elif [ "$1" == "treble" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "15" ]]; then
+    if [ "$2" -le "7" ]; then
+	hh=$(($treble + $2))
+    else
+	var=23
+	let "var -= $2"
+	hh=$(($treble + $var))
+    fi
+    write_CMD
+  fi
+elif [ "$1" == "sbass" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
+    var=31
+    let "var -= $2"
+    hh=$(($spec_LR + $var))
+    write_CMD
+    hh=$(($spec_RR + $var))
+    write_CMD
+  fi
+elif [ "$1" == "streble" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
+    var=31
+    let "var -= $2"
+    hh=$(($spec_LF + $var))
+    write_CMD
+    hh=$(($spec_RF + $var))
+    write_CMD
+  fi
+elif [ "$1" == "LF" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
+    var=31
+    let "var -= $2"
+    hh=$(($spec_LF + $var))
+    write_CMD
+  fi
+elif [ "$1" == "RF" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
+    var=31
+    let "var -= $2"
+    hh=$(($spec_RF + $var))
+    write_CMD
+  fi
+elif [ "$1" == "LR" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
+    var=31
+    let "var -= $2"
+    hh=$(($spec_LR + $var))
+    write_CMD
+  fi
+elif [ "$1" == "RR" ]; then
+  if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
+    var=31
+    let "var -= $2"
+    hh=$(($spec_RR + $var))
+    write_CMD
+  fi
+else
+    tda7313_init
+    echo $1 "OK"
+fi
+
+echo $1":" $2
+
+exit 0
+
+
