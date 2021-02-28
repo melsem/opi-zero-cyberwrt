@@ -50,6 +50,9 @@ echo -e "KEY_RIGHT_DOWN"'\t'"2"'\t'"tda7313 sbass 10" >> $triggerhappy
 echo -e "KEY_KBDINPUTASSIST_PREV"'\t'"1"'\t'"tda7313 input 1" >> $triggerhappy
 echo -e "KEY_KBDINPUTASSIST_NEXT"'\t'"1"'\t'"tda7313 input 0" >> $triggerhappy
 echo -e "KEY_KBDINPUTASSIST_PREVGROUP"'\t'"1"'\t'"tda7313 input 2" >> $triggerhappy
+echo -e "REL_Y"'\t'"1"'\t'"tda7313 volume \"-\"" >> $triggerhappy
+echo -e "REL_Y"'\t'"-1"'\t'"tda7313 volume \"+\"" >> $triggerhappy
+echo -e "KEY_SYSRQ"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
 # ***************************************************
 
 sed -i "/web-ir-remote\/index.cgi/d" /www/menu.html 2> /dev/null
