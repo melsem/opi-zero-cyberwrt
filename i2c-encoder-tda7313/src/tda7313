@@ -23,52 +23,82 @@ i2cset -f -y $i2c_dev $i2c_adres $hh
 }
 
 tda7313_init () {
-vol='15' # CEPEDINA
-hh=$(($volume + $vol))
+vlm='45'
+var=63
+let "var -= $vlm"
+hh=$(($volume + $var))
 write_CMD
+echo volume $vlm > /tmp/hh
 
+vol='13'
 hh=$(($bass + $vol))
 write_CMD
+echo bass $vol >> /tmp/hh
 
-vol='13' # CEPEDINA
 hh=$(($treble + $vol))
 write_CMD
+echo treble $vol >> /tmp/hh
 
-vol='16' # CEPEDINA
+vol='16'
 hh=$(($spec_LF + $vol))
 write_CMD
-
 hh=$(($spec_RF + $vol))
 write_CMD
+echo LF $vol >> /tmp/hh
+echo RF $vol >> /tmp/hh
+echo subtrebl $vol >> /tmp/hh
 
 hh=$(($spec_LR + $vol))
 write_CMD
-
 hh=$(($spec_RR + $vol))
 write_CMD
+echo LR $vol >> /tmp/hh
+echo RR $vol >> /tmp/hh
+echo subbas $vol >> /tmp/hh
 
 vol='1' # switch1
 hh=$(($switch + $vol))
 write_CMD
+echo switch $vol >> /tmp/hh
 }
 
 
 ###############################################################
 if [[ "$1" == "tda7313_init" || "$1" == "init" ]]; then
     tda7313_init
-    echo $1 "OK"
+#    echo $1 "OK"
+elif [[ "$1" == "switch" || "$1" == "aux" || "$1" == "input" ]]; then
+  if [[ "$2" -ge "0" && "$2" -le "3" ]]; then
+    hh=$(($switch + $2))
+    write_CMD
+    volm=$(sed '/switch /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/switch /s/'$volm'/'$2'/g' /tmp/hh
+  fi
 elif [ "$1" == "volume" ]; then
   if [[ "$2" -ge "0" && "$2" -le "63" ]]; then
     var=63
     let "var -= $2"
     hh=$(($volume + $var))
     write_CMD
-  fi
-elif [[ "$1" == "switch" || "$1" == "aux" || "$1" == "input" ]]; then
-  if [[ "$2" -ge "0" && "$2" -le "3" ]]; then
-    hh=$(($switch + $2))
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$2'/g' /tmp/hh
+  elif [[ "$2" == "+" || "$2" == "-" ]]; then
+    vlm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    if [[ "$2" == "-" && "$vlm" -eq "63" ]]; then
+      let "vlm "$2"= 1"
+    elif [[ "$vlm" -eq "0" && "$2" == "+" ]]; then
+      let "vlm "$2"= 1"
+    elif [[ "$vlm" -gt "0" && "$vlm" -lt "63" ]]; then
+      let "vlm "$2"= 1"
+    fi
+    var=63
+    let "var -= $vlm"
+    hh=$(($volume + $var))
     write_CMD
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$vlm'/g' /tmp/hh
   fi
+# end volume
 elif [ "$1" == "bass" ]; then
   if [[ "$2" -ge "0" && "$2" -le "15" ]]; then
     if [ "$2" -le "7" ]; then
@@ -79,6 +109,8 @@ elif [ "$1" == "bass" ]; then
 	hh=$(($bass + $var))
     fi
     write_CMD
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$2'/g' /tmp/hh
   fi
 elif [ "$1" == "treble" ]; then
   if [[ "$2" -ge "0" && "$2" -le "15" ]]; then
@@ -90,6 +122,8 @@ elif [ "$1" == "treble" ]; then
 	hh=$(($treble + $var))
     fi
     write_CMD
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$2'/g' /tmp/hh
   fi
 elif [ "$1" == "sbass" ]; then
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
@@ -99,6 +133,8 @@ elif [ "$1" == "sbass" ]; then
     write_CMD
     hh=$(($spec_RR + $var))
     write_CMD
+    volm=$(sed '/subbas /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/subbas /s/'$volm'/'$2'/g' /tmp/hh
   fi
 elif [ "$1" == "streble" ]; then
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
@@ -108,6 +144,8 @@ elif [ "$1" == "streble" ]; then
     write_CMD
     hh=$(($spec_RF + $var))
     write_CMD
+    volm=$(sed '/subtrebl /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/subtrebl /s/'$volm'/'$2'/g' /tmp/hh
   fi
 elif [ "$1" == "LF" ]; then
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
@@ -115,6 +153,8 @@ elif [ "$1" == "LF" ]; then
     let "var -= $2"
     hh=$(($spec_LF + $var))
     write_CMD
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$2'/g' /tmp/hh
   fi
 elif [ "$1" == "RF" ]; then
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
@@ -122,6 +162,8 @@ elif [ "$1" == "RF" ]; then
     let "var -= $2"
     hh=$(($spec_RF + $var))
     write_CMD
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$2'/g' /tmp/hh
   fi
 elif [ "$1" == "LR" ]; then
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
@@ -129,6 +171,8 @@ elif [ "$1" == "LR" ]; then
     let "var -= $2"
     hh=$(($spec_LR + $var))
     write_CMD
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$2'/g' /tmp/hh
   fi
 elif [ "$1" == "RR" ]; then
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
@@ -136,14 +180,15 @@ elif [ "$1" == "RR" ]; then
     let "var -= $2"
     hh=$(($spec_RR + $var))
     write_CMD
+    volm=$(sed '/'$1' /!d' /tmp/hh | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$2'/g' /tmp/hh
   fi
 else
     tda7313_init
     echo $1 "OK"
 fi
 
-echo $1":" $2
+#echo $1":" $2
 
 exit 0
-
 
