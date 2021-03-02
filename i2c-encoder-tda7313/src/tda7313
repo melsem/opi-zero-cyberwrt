@@ -21,68 +21,55 @@ switch='64' # 0x40 # 64+0
 #switch2='66' # 0x42 # 64+2
 
 write_CMD () {
-i2cset -f -y $i2c_dev $i2c_adres $hh
-}
-
-volume_init () {
-vlm='30'
-var=63
-let "var -= $vlm"
-hh=$(($volume + $var))
-write_CMD
-echo volume $vlm > $tfiles
-}
-
-subtrebl_init () {
-vlm='20'
-var=31
-let "var -= $vlm"
-hh=$(($spec_LF + $var))
-write_CMD
-hh=$(($spec_RF + $var))
-write_CMD
-echo LF $vlm >> $tfiles
-echo RF $vlm >> $tfiles
-echo subtrebl $vlm >> $tfiles
-}
-
-subbas_init () {
-vlm='15'
-var=31
-let "var -= $vlm"
-hh=$(($spec_LR + $var))
-write_CMD
-hh=$(($spec_RR + $var))
-write_CMD
-echo LR $vlm >> $tfiles
-echo RR $vlm >> $tfiles
-echo subbas $vlm >> $tfiles
+ i2cset -f -y $i2c_dev $i2c_adres $hh
 }
 
 tda7313_init () {
-volume_init
+ echo -e volume 30'\n'subtrebl 20'\n'subbas 15'\n'bass 12'\n'treble 12'\n'switch 1 > $tfiles
 
-vol='13'
-hh=$(($bass + $vol))
-write_CMD
-echo bass $vol >> $tfiles
+ vol='30'
+ var=63
+ let "var -= $vol"
+ hh=$(($volume + $var))
+ write_CMD
 
-hh=$(($treble + $vol))
-write_CMD
-echo treble $vol >> $tfiles
+ vol='20'
+ var=31
+ let "var -= $vol"
+ hh=$(($spec_LF + $var))
+ write_CMD
+ hh=$(($spec_RF + $var))
+ write_CMD
 
-subtrebl_init
+ vol='15'
+ var=31
+ let "var -= $vol"
+ hh=$(($spec_LR + $var))
+ write_CMD
+ hh=$(($spec_RR + $var))
+ write_CMD
 
-subbas_init
+ vol='12'
+ var=23
+ let "var -= $vol"
+ hh=$(($bass + $var))
+ write_CMD
+ hh=$(($treble + $var))
+ write_CMD
 
-vol='1' # switch1
-hh=$(($switch + $vol))
-write_CMD
-echo switch $vol >> $tfiles
+ vol='1' # switch1
+ hh=$(($switch + $vol))
+ write_CMD
 }
 
+test_reg () {
+ echo 
+ cat /tmp/hh
+ echo 
+ echo "  reg+vol: "$hh
+}
+###
 
-###############################################################
 if [[ "$1" == "tda7313_init" || "$1" == "init" ]]; then
     tda7313_init
 #    echo $1 "OK"
@@ -118,7 +105,7 @@ elif [ "$1" == "volume" ]; then
     volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
     sed -i '/'$1' /s/'$volm'/'$vlm'/g' $tfiles
   fi
-# end volume
+# treble
 elif [ "$1" == "treble" ]; then
   if [[ "$2" -ge "0" && "$2" -le "15" ]]; then
     if [ "$2" -le "7" ]; then
@@ -140,29 +127,42 @@ elif [ "$1" == "treble" ]; then
     elif [[ "$vlm" -gt "0" && "$vlm" -lt "15" ]]; then
       let "vlm "$2"= 1"
     fi
-    if [ "$2" -le "7" ]; then
+    if [ "$vlm" -le "7" ]; then
 	hh=$(($treble + $vlm))
     else
       var=23
       let "var -= $vlm"
-      hh=$(($volume + $var))
+      hh=$(($treble + $var))
     fi
     write_CMD
     volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
     sed -i '/'$1' /s/'$volm'/'$vlm'/g' $tfiles
   fi
-elif [ "$1" == "sbass" ]; then
+# sbass - streble
+elif [[ "$1" == "sbass" || "$1" == "streble" ]]; then
+  if [ "$1" == "sbass" ]; then
+      tmbr='subbas'
+  elif [ "$1" == "streble" ]; then
+      tmbr='subtrebl'
+  fi
+  volm=$(sed '/'$tmbr' /!d' $tfiles | awk '{print $2}')
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
     var=31
     let "var -= $2"
-    hh=$(($spec_LR + $var))
-    write_CMD
-    hh=$(($spec_RR + $var))
-    write_CMD
-    volm=$(sed '/subbas /!d' $tfiles | awk '{print $2}')
-    sed -i '/subbas /s/'$volm'/'$2'/g' $tfiles
+    if [ "$1" == "sbass" ]; then
+      hh=$(($spec_LR + $var))
+      write_CMD
+      hh=$(($spec_RR + $var))
+      write_CMD
+    elif [ "$1" == "streble" ]; then
+      hh=$(($spec_LF + $var))
+      write_CMD
+      hh=$(($spec_RF + $var))
+      write_CMD
+    fi
+    sed -i '/'$tmbr' /s/'$volm'/'$2'/g' $tfiles
   elif [[ "$2" == "+" || "$2" == "-" ]]; then
-    vlm=$(sed '/subbas /!d' $tfiles | awk '{print $2}')
+    vlm=$(sed '/'$tmbr' /!d' $tfiles | awk '{print $2}')
     if [[ "$2" == "-" && "$vlm" -eq "31" ]]; then
       let "vlm "$2"= 1"
     elif [[ "$vlm" -eq "0" && "$2" == "+" ]]; then
@@ -172,41 +172,20 @@ elif [ "$1" == "sbass" ]; then
     fi
     var=31
     let "var -= $vlm"
-    hh=$(($spec_LR + $var))
-    write_CMD
-    hh=$(($spec_RR + $var))
-    write_CMD
-    volm=$(sed '/subbas /!d' $tfiles | awk '{print $2}')
-    sed -i '/subbas /s/'$volm'/'$vlm'/g' $tfiles
-  fi
-elif [ "$1" == "streble" ]; then
-  if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
-    var=31
-    let "var -= $2"
-    hh=$(($spec_LF + $var))
-    write_CMD
-    hh=$(($spec_RF + $var))
-    write_CMD
-    volm=$(sed '/subtrebl /!d' $tfiles | awk '{print $2}')
-    sed -i '/subtrebl /s/'$volm'/'$2'/g' $tfiles
-  elif [[ "$2" == "+" || "$2" == "-" ]]; then
-    vlm=$(sed '/subtrebl /!d' $tfiles | awk '{print $2}')
-    if [[ "$2" == "-" && "$vlm" -eq "31" ]]; then
-      let "vlm "$2"= 1"
-    elif [[ "$vlm" -eq "0" && "$2" == "+" ]]; then
-      let "vlm "$2"= 1"
-    elif [[ "$vlm" -gt "0" && "$vlm" -lt "31" ]]; then
-      let "vlm "$2"= 1"
+    if [ "$1" == "sbass" ]; then
+      hh=$(($spec_LR + $var))
+      write_CMD
+      hh=$(($spec_RR + $var))
+      write_CMD
+    elif [ "$1" == "streble" ]; then
+      hh=$(($spec_LF + $var))
+      write_CMD
+      hh=$(($spec_RF + $var))
+      write_CMD
     fi
-    var=31
-    let "var -= $vlm"
-    hh=$(($spec_LF + $var))
-    write_CMD
-    hh=$(($spec_RF + $var))
-    write_CMD
-    volm=$(sed '/subtrebl /!d' $tfiles | awk '{print $2}')
-    sed -i '/subtrebl /s/'$volm'/'$vlm'/g' $tfiles
+    sed -i '/'$tmbr' /s/'$volm'/'$vlm'/g' $tfiles
   fi
+# bass
 elif [ "$1" == "bass" ]; then
   if [[ "$2" -ge "0" && "$2" -le "15" ]]; then
     if [ "$2" -le "7" ]; then
@@ -219,6 +198,25 @@ elif [ "$1" == "bass" ]; then
     write_CMD
     volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
     sed -i '/'$1' /s/'$volm'/'$2'/g' $tfiles
+  elif [[ "$2" == "+" || "$2" == "-" ]]; then
+    vlm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
+    if [[ "$2" == "-" && "$vlm" -eq "15" ]]; then
+      let "vlm "$2"= 1"
+    elif [[ "$vlm" -eq "0" && "$2" == "+" ]]; then
+      let "vlm "$2"= 1"
+    elif [[ "$vlm" -gt "0" && "$vlm" -lt "15" ]]; then
+      let "vlm "$2"= 1"
+    fi
+    if [ "$vlm" -le "7" ]; then
+	hh=$(($bass + $vlm))
+    else
+      var=23
+      let "var -= $vlm"
+      hh=$(($bass + $var))
+    fi
+    write_CMD
+    volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
+    sed -i '/'$1' /s/'$volm'/'$vlm'/g' $tfiles
   fi
 elif [ "$1" == "LF" ]; then
   if [[ "$2" -ge "0" && "$2" -le "31" ]]; then
@@ -263,8 +261,5 @@ elif [[ "$1" == "?" || "$1" == "-?" || "$1" == "--?" || "$1" == "help" ]]; then
     echo -e '\t' Example:'\n\t' tda7313 "volume +"'\t'"#" Volume level "+".
     echo -e '\t' tda7313 "volume -"'\t'"#" Volume level "-"'\n\t' tda7313 "volume 55"'\t'"#" Volume level "55"
 fi
-
-#echo $1":" $2
-
+#test_reg
 exit 0
-
