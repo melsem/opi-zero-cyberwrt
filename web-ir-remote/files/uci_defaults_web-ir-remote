@@ -20,9 +20,7 @@ echo -e "KEY_7"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 7" >> $triggerhapp
 echo -e "KEY_8"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 8" >> $triggerhappy
 echo -e "KEY_9"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 9" >> $triggerhappy
 echo -e "KEY_0"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 10" >> $triggerhappy
-echo -e "KEY_MUTE"'\t'"1"'\t'"amixer -c 0 -q set \"Line Out\" 100%-" >> $triggerhappy
-echo -e "KEY_VOLUMEDOWN"'\t'"1"'\t'"amixer -c 0 -q set \"Line Out\" 1-" >> $triggerhappy
-echo -e "KEY_VOLUMEUP"'\t'"1"'\t'"amixer -c 0 -q set \"Line Out\" 1+" >> $triggerhappy
+#echo -e "KEY_MUTE"'\t'"1"'\t'"amixer -c 0 -q set \"Line Out\" 100%-" >> $triggerhappy
 echo -e "KEY_POWER"'\t'"1"'\t'"/etc/init.d/web-radio2.init start" >> $triggerhappy
 echo -e "KEY_CHANNELUP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
 echo -e "KEY_CHANNELDOWN"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
@@ -33,20 +31,25 @@ echo -e "KEY_NEXTSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $trig
 echo -e "KEY_UP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
 echo -e "KEY_PREVIOUSSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
 echo -e "KEY_TUNER"'\t'"2"'\t'"reboot" >> $triggerhappy
-echo -e "BTN_RIGHT"'\t'"1"'\t'"tda7313 volume 60" >> $triggerhappy
-echo -e "BTN_RIGHT"'\t'"2"'\t'"tda7313 volume 63" >> $triggerhappy
-echo -e "BTN_LEFT"'\t'"1"'\t'"tda7313 volume 56" >> $triggerhappy
-echo -e "BTN_LEFT"'\t'"2"'\t'"tda7313 volume 50" >> $triggerhappy
+echo -e "KEY_MUTE"'\t'"1"'\t'"tda7313 volume 0" >> $triggerhappy
+echo -e "KEY_VOLUMEUP"'\t'"1"'\t'"amixer -c 0 -q set "Line Out" 1+" >> $triggerhappy
+echo -e "KEY_VOLUMEUP"'\t'"2"'\t'"tda7313 volume +" >> $triggerhappy
+echo -e "KEY_VOLUMEDOWN"'\t'"1"'\t'"amixer -c 0 -q set "Line Out" 1-" >> $triggerhappy
+echo -e "KEY_VOLUMEDOWN"'\t'"2"'\t'"tda7313 volume -" >> $triggerhappy
+echo -e "BTN_RIGHT"'\t'"1"'\t'"tda7313 streble +" >> $triggerhappy
+echo -e "BTN_RIGHT"'\t'"2"'\t'"tda7313 streble +" >> $triggerhappy
+echo -e "BTN_LEFT"'\t'"1"'\t'"tda7313 streble -" >> $triggerhappy
+echo -e "BTN_LEFT"'\t'"2"'\t'"tda7313 streble 0" >> $triggerhappy
 echo -e "KEY_PAGEUP"'\t'"1"'\t'"tda7313 init" >> $triggerhappy
-echo -e "KEY_PAGEDOWN"'\t'"1"'\t'"tda7313 treble 15" >> $triggerhappy
-echo -e "KEY_PAGEDOWN"'\t'"2"'\t'"tda7313 streble 15" >> $triggerhappy
-echo -e "BTN_PINKIE"'\t'"1"'\t'"tda7313 streble 20" >> $triggerhappy
-echo -e "BTN_PINKIE"'\t'"2"'\t'"tda7313 streble 25" >> $triggerhappy
-echo -e "BTN_BASE"'\t'"1"'\t'"tda7313 sbass 25" >> $triggerhappy
-echo -e "KEY_RIGHT_UP"'\t'"1"'\t'"tda7313 sbass 20" >> $triggerhappy
-echo -e "KEY_RIGHT_UP"'\t'"2"'\t'"tda7313 sbass 15" >> $triggerhappy
-echo -e "KEY_RIGHT_DOWN"'\t'"1"'\t'"tda7313 sbass 13" >> $triggerhappy
-echo -e "KEY_RIGHT_DOWN"'\t'"2"'\t'"tda7313 sbass 10" >> $triggerhappy
+echo -e "BTN_PINKIE"'\t'"1"'\t'"tda7313 treble +" >> $triggerhappy
+echo -e "BTN_PINKIE"'\t'"2"'\t'"tda7313 treble +" >> $triggerhappy
+echo -e "KEY_PAGEDOWN"'\t'"1"'\t'"tda7313 treble -" >> $triggerhappy
+echo -e "KEY_PAGEDOWN"'\t'"2"'\t'"tda7313 treble 0" >> $triggerhappy
+echo -e "BTN_BASE"'\t'"2"'\t'"tda7313 sbass 0" >> $triggerhappy
+echo -e "KEY_RIGHT_DOWN"'\t'"1"'\t'"tda7313 sbass +" >> $triggerhappy
+echo -e "KEY_RIGHT_DOWN"'\t'"2"'\t'"tda7313 sbass +" >> $triggerhappy
+echo -e "KEY_RIGHT_UP"'\t'"1"'\t'"tda7313 sbass -" >> $triggerhappy
+echo -e "KEY_RIGHT_UP"'\t'"2"'\t'"tda7313 sbass 0" >> $triggerhappy
 echo -e "KEY_KBDINPUTASSIST_PREV"'\t'"1"'\t'"tda7313 input 1" >> $triggerhappy
 echo -e "KEY_KBDINPUTASSIST_NEXT"'\t'"1"'\t'"tda7313 input 0" >> $triggerhappy
 echo -e "KEY_KBDINPUTASSIST_PREVGROUP"'\t'"1"'\t'"tda7313 input 2" >> $triggerhappy
