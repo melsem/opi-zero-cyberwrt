@@ -41,7 +41,7 @@ define Package/boot-config-mmc/install
 	$(INSTALL_DIR) $(1)/tmp
 	$(INSTALL_BIN) ./src/cpufreq_scaling $(1)/tmp/cpufreq_scaling.init
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./src/uci_defaults_cpufreq_scaling $(1)/etc/uci-defaults/50-cpufreq_scaling
+	$(INSTALL_BIN) ./src/uci_defaults_boot-config $(1)/etc/uci-defaults/50-boot-config
 	$(INSTALL_BIN) ./src/add-mount-boot $(1)/etc/uci-defaults/20-boot-config-mmc
 
 	$(INSTALL_DIR) $(1)/www/boot
