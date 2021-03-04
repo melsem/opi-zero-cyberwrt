@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: dingpengyu <dingpengyu06@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"X-Generator: Poedit 2.3.1\n"
+
+msgid "CPU Freq"
+msgstr "CPU Freq"
+
+msgid "CPU Freq Settings"
+msgstr "Настройки частоты процессора"
+
+msgid "Set CPU Scaling Governor to Max Performance or Balance Mode"
+msgstr "Установите частоту процессора в режим максимальной производительности или баланса"
+
+msgid "CPU Scaling Governor"
+msgstr "Регулятор масштабирования ЦП"
+
+msgid "Ondemand Balance Mode"
+msgstr "Режим балансировки по требованию"
+
+msgid "Performance Mode"
+msgstr "Режим производительности"
+
+msgid "Min Idle CPU Freq (Khz)"
+msgstr "Минимальная частота ЦП (кГц)"
+
+msgid "Max Turbo Boost CPU Freq (Khz)"
+msgstr "Максимальная частота ЦП (кГц)"
+
+msgid "CPU Switching Threshold"
+msgstr "Порог переключения ЦП"
+
+msgid "Kernel make a decision on whether it should increase the frequency (%)"
+msgstr "Ядро принимает решение о том, следует ли ему увеличивать частоту (%)"
+
+msgid "CPU Switching Sampling rate"
+msgstr "Частота дискретизации переключения ЦП"
+
+msgid "The sampling rate determines how frequently the governor checks to tune the CPU (ms)"
+msgstr "Частота дискретизации определяет, как часто регулятор проверяет настройку ЦП (мс)"
