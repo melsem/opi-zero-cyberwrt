@@ -19,7 +19,10 @@ define Package/boot-config-mmc/description
  Utility for editing boot configuration. Sunxi Allwiner H2+ H3
 endef
 
-define Package/boot-config-mmc/postinst
+define Package/$(PKG_NAME)/postinst
+#!/bin/sh
+cat /tmp/cpufreq_scaling.init > /etc/init.d/cpufreq_scaling
+rm -fr /tmp/cpufreq_scaling.init > /dev/null
 endef
 
 define Package/boot-config-mmc/postrm
@@ -33,13 +36,13 @@ endef
 
 define Package/boot-config-mmc/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) ./files/boot-config-mmc $(1)/usr/sbin/
+	$(INSTALL_BIN) ./src/boot-config-mmc $(1)/usr/sbin/
 
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/cpufreq_scaling.init $(1)/etc/init.d/cpufreq_scaling
+	$(INSTALL_DIR) $(1)/tmp
+	$(INSTALL_BIN) ./src/cpufreq_scaling $(1)/tmp/cpufreq_scaling.init
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/uci_defaults_boot-config $(1)/etc/uci-defaults/50-boot-config-mmc
-	$(INSTALL_BIN) ./files/add-mount-boot $(1)/etc/uci-defaults/20-boot-config-mmc
+	$(INSTALL_BIN) ./src/uci_defaults_cpufreq_scaling $(1)/etc/uci-defaults/50-cpufreq_scaling
+	$(INSTALL_BIN) ./src/add-mount-boot $(1)/etc/uci-defaults/20-boot-config-mmc
 
 	$(INSTALL_DIR) $(1)/www/boot
 	$(INSTALL_BIN) ./files/boot.html $(1)/www/boot/index.html

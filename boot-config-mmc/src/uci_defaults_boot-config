@@ -1,25 +1,26 @@
 #!/bin/sh
 #/etc/init.d/cpufreq_scaling disable
 
-uci -q show cpufreq_scaling.@cpufreq[0] || {
+cat /etc/config/cpufreq_scaling > /dev/null
+if [ $? == 1 ]; then 
 echo > /etc/config/cpufreq_scaling
-uci -q add cpufreq_scaling cpufreq
-uci -q commit cpufreq_scaling
-}
+fi
 
-uci -q show cpufreq_scaling.@cpufreq[0].min_freq || {
-uci -q set cpufreq_scaling.@cpufreq[0].min_freq="480000"
+while uci -q delete cpufreq_scaling.@cpufreq[0]; do :; done
 uci -q commit cpufreq_scaling
-}
-
-uci -q show cpufreq_scaling.@cpufreq[0].max_freq || {
-uci -q set cpufreq_scaling.@cpufreq[0].max_freq="1008000"
+uci -q batch <<-EOF
+ set cpufreq_scaling.cpufreq="cpufreq"
+ set cpufreq_scaling.@cpufreq[0].min_freq="480000"
+ set cpufreq_scaling.@cpufreq[0].max_freq="1008000"
+ set cpufreq_scaling.@cpufreq[0].governor="ondemand"
+ set cpufreq_scaling.@cpufreq[0].upthreshold="25"
+ set cpufreq_scaling.@cpufreq[0].factor="10"
+EOF
+sleep 1
 uci -q commit cpufreq_scaling
-}
 
 sed -i "/boot-config-mmc\/index.cgi/d" /www/menu.html 2> /dev/null
 	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
 sed -i 3i\ '<li><a href=/cgi-bin/modules/boot-config-mmc/index.cgi>'Boot-config-mmc'</a></li>' /www/menu.html 2> /dev/null
 	# К вебке cyberwrt - закомментировть если НЕ будет использоваться ####
 #sed -i 3i\ '<a href=/cgi-bin/modules/boot-config-mmc/index.cgi><div class=left>'Boot-config-mmc'</div></a>' /www/menu.html 2> /dev/null
-
