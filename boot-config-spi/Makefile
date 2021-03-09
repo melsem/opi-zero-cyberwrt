@@ -19,12 +19,6 @@ define Package/boot-config-spi/description
  Utility for editing boot configuration. Sunxi Allwiner H2+ H3
 endef
 
-define Package/$(PKG_NAME)/postinst
-#!/bin/sh
-cat /tmp/cpufreq_scaling.init > /etc/init.d/cpufreq_scaling
-rm -fr /tmp/cpufreq_scaling.init > /dev/null
-endef
-
 define Package/boot-config-spi/postrm
 #!/bin/sh
 sed -i "/boot-config-spi\/index.cgi/d" /www/menu.html &> /dev/null
@@ -38,8 +32,10 @@ define Package/boot-config-spi/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) ./src/boot-config-spi $(1)/usr/sbin/
 
-	$(INSTALL_DIR) $(1)/tmp
-	$(INSTALL_BIN) ./src/cpufreq_scaling $(1)/tmp/cpufreq_scaling.init
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./src/cpufreq_scaling $(1)/etc/init.d/
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_BIN) ./src/cpufreq_scaling.conf $(1)/etc/config/cpufreq_scaling
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./src/uci_defaults_boot-config $(1)/etc/uci-defaults/49-boot-config
 

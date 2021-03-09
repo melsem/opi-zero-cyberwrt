@@ -22,7 +22,7 @@ end
 freq_array = string.split(cpu_freqs, " ")
 governor_array = string.split(cpu_governors, " ")
 
-m = Map("cpufreq_scaling", translate("CPU Freq Settings"))
+m = Map("cpufreq", translate("CPU Freq Settings"))
 s = m:section(NamedSection, "cpufreq", "cpufreq")
 s.anonymouse = true
 s.description = translate("Set CPU Scaling Governor to Max Performance or Balance Mode")
@@ -32,12 +32,12 @@ for _, e in ipairs(governor_array) do
 	if e ~= "" then governor:value(translate(e,string.upper(e))) end
 end
 
-minifreq = s:option(ListValue, "min_freq", translate("Min Idle CPU Freq"))
+minifreq = s:option(ListValue, "min_freq", translate("Min Idle CPU Freq (Khz)"))
 for _, e in ipairs(freq_array) do
 	if e ~= "" then minifreq:value(e) end
 end
 
-maxfreq = s:option(ListValue, "max_freq", translate("Max Turbo Boost CPU Freq"))
+maxfreq = s:option(ListValue, "max_freq", translate("Max Turbo Boost CPU Freq (Khz)"))
 for _, e in ipairs(freq_array) do
 	if e ~= "" then maxfreq:value(e) end
 end

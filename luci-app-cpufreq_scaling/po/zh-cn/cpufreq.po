@@ -38,10 +38,10 @@ msgstr "performance 高性能模式（降低游戏转发延迟）"
 msgid "CPU Freq from 48000 to 716000 (Khz)"
 msgstr "CPU 频率范围为 48000 到 716000 (Khz)"
 
-msgid "Min Idle CPU Freq"
+msgid "Min Idle CPU Freq (Khz)"
 msgstr "待机 CPU 最小频率"
 
-msgid "Max Turbo Boost CPU Freq"
+msgid "Max Turbo Boost CPU Freq (Khz)"
 msgstr "最大 Turbo Boost CPU 频率"
 
 msgid "CPU Switching Threshold"

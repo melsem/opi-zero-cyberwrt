@@ -18,16 +18,9 @@ define Package/$(PKG_NAME)
 	SECTION:=luci
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
-	TITLE:=cpufreq_scaling interface for LuCI
+	TITLE:=cpufreq scaling interface for LuCI
 	PKGARCH:=all
 	DEPENDS:=@TARGET_sunxi
-endef
-
-define Package/$(PKG_NAME)/postinst
-#!/bin/sh
-cat /tmp/cpufreq_scaling.init > /etc/init.d/cpufreq_scaling
-rm -fr /tmp/luci-indexcache /tmp/luci-modulecache \
-	/tmp/cpufreq_scaling.init > /dev/null
 endef
 
 define Build/Prepare
@@ -40,16 +33,16 @@ endef
 
 define Package/$(PKG_NAME)/install
 
-	$(INSTALL_DIR) $(1)/tmp
-	$(INSTALL_BIN) ./src/cpufreq_scaling $(1)/tmp/cpufreq_scaling.init
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./src/uci_defaults_cpufreq_scaling $(1)/etc/uci-defaults/29-cpufreq_scaling
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./src/cpufreq.init $(1)/etc/init.d/cpufreq
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_BIN) ./src/cpufreq.conf $(1)/etc/config/cpufreq
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
 	cp -pR $(PKG_BUILD_DIR)/luasrc/* $(1)/usr/lib/lua/luci/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	$$(foreach po,$$(shell find $(PKG_BUILD_DIR)/po/*/*.po), \
 		po2lmo $$(po) \
-		$(1)/usr/lib/lua/luci/i18n/cpufreq_scaling.$$(shell echo $$(po) | awk -F'/' '{print $$$$(NF-1)}').lmo;)
+		$(1)/usr/lib/lua/luci/i18n/cpufreq.$$(shell echo $$(po) | awk -F'/' '{print $$$$(NF-1)}').lmo;)
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
