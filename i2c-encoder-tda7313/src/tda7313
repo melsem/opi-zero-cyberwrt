@@ -20,14 +20,24 @@ switch='64' # 0x40 # 64+0
 #switch1='65' # 0x41 # 64+1
 #switch2='66' # 0x42 # 64+2
 
+LOUD_OFF='4'
+LOUD_ON='0'
+
+LOUD_ON3db='0'
+LOUD_ON2db='8'
+LOUD_ON1db='16'
+LOUD_ON0db='24'
+#example switch1+LOUD_ON3db:  
+# vol='1'; hh=$(($switch + $vol + $LOUD_ON + $LOUD_ON3db)); write_CMD
+
 write_CMD () {
  i2cset -f -y $i2c_dev $i2c_adres $hh
 }
 
 tda7313_init () {
- echo -e volume 30'\n'subtrebl 20'\n'subbas 15'\n'bass 12'\n'treble 12'\n'switch 1 > $tfiles
+ echo -e volume 40'\n'subtrebl 20'\n'subbas 15'\n'bass 12'\n'treble 12'\n'switch 1 > $tfiles
 
- vol='30'
+ vol='40'
  var=63
  let "var -= $vol"
  hh=$(($volume + $var))
@@ -58,7 +68,7 @@ tda7313_init () {
  write_CMD
 
  vol='1' # switch1
- hh=$(($switch + $vol))
+ hh=$(($switch + $vol + $LOUD_OFF))
  write_CMD
 }
 
@@ -75,7 +85,8 @@ if [[ "$1" == "tda7313_init" || "$1" == "init" ]]; then
 #    echo $1 "OK"
 elif [[ "$1" == "switch" || "$1" == "aux" || "$1" == "input" ]]; then
   if [[ "$2" -ge "0" && "$2" -le "3" ]]; then
-    hh=$(($switch + $2))
+#    hh=$(($switch + $2))
+    hh=$(($switch + $2 + $LOUD_OFF))
     write_CMD
     volm=$(sed '/switch /!d' $tfiles | awk '{print $2}')
     sed -i '/switch /s/'$volm'/'$2'/g' $tfiles
