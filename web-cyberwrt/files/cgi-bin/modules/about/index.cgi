@@ -6,27 +6,24 @@ echo "<title>О системе</title>"
 echo `cat /www/menu.html`
 board=$(cat /tmp/sysinfo/board_name)
 boardname="${board##*,}"
-echo "<br><br><b>$boardname</b><br>Free mem:<b> `df -h | sed '/root/!d' | awk '{print $4}'`</b><br>"
-if [ "$boardname" == "orangepi-zero-lts" ]; then
-echo "<b>`awk '{printf "Themperature: " "%.01f°C\n", $1/500}' /sys/devices/virtual/thermal/thermal_zone0/temp`</b><br>"
-else
-echo "<b>`awk '{printf "Themperature: " "%.01f°C\n", $1/1000}' /sys/devices/virtual/thermal/thermal_zone0/temp`</b><br>"
-fi
-echo "<h3>`awk '{printf "Cpufreq: " "%.03f GHz\n", $1/1000000}' /sys/bus/cpu/devices/cpu0/cpufreq/scaling_cur_freq`</h3>"
-echo "<h1>Текущая Дата и время</h1><pre>`date`</pre>"
-echo "<h1>Версия прошивки</h1><pre>`cat /proc/version`</pre>"
-echo "<h1>Информация о CPU</h1><pre>`cat /proc/cpuinfo`</pre>"
-echo "<h1>Информация о RAM</h1><pre>`cat /proc/meminfo`</pre>"
-echo "<h1>Информация об используемой и свободной ОЗУ и Swap</h1><pre>`free`</pre>"
-echo "<h1>Свободное и используемое место в разделах</h1><pre>`df -h`</pre>"
-echo "<h1>Информация о сетевых устройствах</h1><pre>`ifconfig`</pre>"
-echo "<h1>Настройки WiFi адаптера</h1><pre>`cat /etc/config/wireless`</pre>"
-echo "<h1>Настройки сети</h1><pre>`cat /etc/config/network`</pre>"
-echo "<h1>Список установленных пакетов</h1><pre>`opkg list-installed`</pre>"
-
-echo "<h1>сообщения ядра</h1><pre>`dmesg`</pre>"
-
-echo "<h1>Глобальные переменые</h1>"
+df -h | grep overlayfs &> /dev/null
+if [ $? != 1 ]; then root='overlayfs'; else root='root'; fi
+if [ "$boardname" == "orangepi-zero-lts" ]; then nn='500'; else nn='1000'; fi
+echo "<br><br><b>$boardname</b><br>Free mem:<b> `df -h | sed '/'$root'/!d' | awk '{print $4}'`</b><br>"
+echo "Themperature: ""<b>`awk '{printf "%.01f°C\n", $1/'$nn'}' /sys/devices/virtual/thermal/thermal_zone0/temp`</b><br>"
+echo "Cpufreq: ""<b>`awk '{printf "%.03f GHz\n", $1/1000000}' /sys/bus/cpu/devices/cpu0/cpufreq/scaling_cur_freq`</b><br>"
+echo "<h3>Текущая Дата и время</h3><pre>`date`</pre>"
+echo "<h3>Версия прошивки</h3><pre>`cat /proc/version`</pre>"
+echo "<h3>Информация о CPU</h3><pre>`cat /proc/cpuinfo`</pre>"
+echo "<h3>Информация о RAM</h3><pre>`cat /proc/meminfo`</pre>"
+echo "<h3>Информация об используемой и свободной ОЗУ и Swap</h3><pre>`free`</pre>"
+echo "<h3>Свободное и используемое место в разделах</h3><pre>`df -h`</pre>"
+echo "<h3>Информация о сетевых устройствах</h3><pre>`ifconfig`</pre>"
+echo "<h3>Настройки WiFi адаптера</h3><pre>`cat /etc/config/wireless`</pre>"
+echo "<h3>Настройки сети</h3><pre>`cat /etc/config/network`</pre>"
+echo "<h3>Список установленных пакетов</h3><pre>`opkg list-installed`</pre>"
+echo "<h3>сообщения ядра</h3><pre>`dmesg`</pre>"
+echo "<h3>Глобальные переменые</h3>"
 echo "<pre>"
 echo SERVER_SOFTWARE = $SERVER_SOFTWARE
 echo SERVER_NAME = $SERVER_NAME
@@ -54,3 +51,4 @@ echo CONTENT_TYPE = $CONTENT_TYPE
 echo CONTENT_LENGTH = $CONTENT_LENGTH
 echo DOCUMENT_ROOT = $DOCUMENT_ROOT
 echo "<pre>"
+
