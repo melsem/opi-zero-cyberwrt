@@ -22,7 +22,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/$(PKG_NAME)
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek RTL8189ES / RTL8189ETV SDIO WiFi
-  DEPENDS:=+kmod-cfg80211 +kmod-mmc +@DRIVER_11N_SUPPORT @!LINUX_4_19
+  DEPENDS:=+kmod-cfg80211 +kmod-mmc +wpad +@DRIVER_11N_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/8189es.ko
   AUTOLOAD:=$(call AutoLoad,50,cfg80211 8189es)
 endef
