@@ -6,10 +6,11 @@ PKG_RELEASE=1
 PKG_LICENSE:=GPLv2
 PKG_LICENSE_FILES:=
 
-PKG_SOURCE_URL:=https://github.com/melsem/rtl8189es.git
+#PKG_SOURCE_URL:=https://github.com/melsem/rtl8189ES_linux.git
+PKG_SOURCE_URL:=https://github.com/jwrdegoede/rtl8189ES_linux.git
+PKG_SOURCE_DATE:=02.03.2021
+PKG_SOURCE_VERSION:=03ac413135a355b55b693154c44b70f86a39732e
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2020-03-24
-PKG_SOURCE_VERSION:=b7049b0ee50b1e82307a75a6f3e1e3d6111de7e8
 CRLF_WORKAROUND:=1
 
 PKG_MAINTAINER:=Hauke Mehrtens <hauke@hauke-m.de>
@@ -19,7 +20,7 @@ STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backpor
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/rtl8189es
+define KernelPackage/$(PKG_NAME)
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek RTL8189ES / RTL8189ETV SDIO WiFi
   DEPENDS:=+kmod-cfg80211 +kmod-mmc +@DRIVER_11N_SUPPORT @!LINUX_4_19
@@ -45,4 +46,4 @@ define Build/Compile
 		modules
 endef
 
-$(eval $(call KernelPackage,rtl8189es))
+$(eval $(call KernelPackage,$(PKG_NAME)))

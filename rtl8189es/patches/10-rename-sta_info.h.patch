@@ -42,8 +42,8 @@ Subject: rename sta_info.h
 + *
 + *
 + ******************************************************************************/
-+#ifndef __STA_INFO_H_
-+#define __STA_INFO_H_
++#ifndef _RTL_STA_INFO_H_
++#define _RTL_STA_INFO_H_
 +
 +
 +#define IBSS_START_MAC_ID	2
@@ -531,7 +531,7 @@ Subject: rename sta_info.h
 +extern struct sta_info* rtw_get_bcmc_stainfo(_adapter* padapter);
 +extern u8 rtw_access_ctrl(_adapter *padapter, u8 *mac_addr);
 +
-+#endif //_STA_INFO_H_
++#endif //_RTL_STA_INFO_H_
 +
 --- a/include/sta_info.h
 +++ /dev/null
