@@ -3,7 +3,7 @@
 - [1.] Скачать исходники к **[openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
  или **[openwrt-19.07.7](https://github.com/openwrt/openwrt/archive/v19.07.7.tar.gz)** . Распаковать..
 - [2.] Скачать патч к **[openwrt-18.06.8](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
- или **[openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.6.patch.zip)**
+ или **[openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.6.MMC.zip)**
 - [3.] Распаковать патч с архива в openwrt-18.06.8 или openwrt-19.07.7. И применить
 ```
 patch -p1 < All_openwrt-18.06.8.patch
@@ -76,7 +76,7 @@ http://192.168.10.1/boot
 patch -p1 < All_openwrt-18.06.8.patch
 ```
 - **[Для openwrt-19.07.7](https://github.com/openwrt/openwrt/archive/v19.07.7.tar.gz)**
-- **[patch openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.6.patch.zip)**
+- **[patch openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.6.MMC.zip)**
 -  все в одном
 ```
 patch -p1 < All_openwrt-19.07.6.patch
