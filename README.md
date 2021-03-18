@@ -1,23 +1,23 @@
 
 # Как всем этим воспользоваться.
 - [1.] Скачать исходники к **[openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
- или **[openwrt-19.07.2](https://github.com/openwrt/openwrt/archive/v19.07.2.tar.gz)** . Распаковать..
+ или **[openwrt-19.07.7](https://github.com/openwrt/openwrt/archive/v19.07.7.tar.gz)** . Распаковать..
 - [2.] Скачать патч к **[openwrt-18.06.8](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
- или **[openwrt-19.07.2](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
-- [3.] Распаковать патч с архива в openwrt-18.06.8 или openwrt-19.07.2. И применить
+ или **[openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.6.patch.zip)**
+- [3.] Распаковать патч с архива в openwrt-18.06.8 или openwrt-19.07.7. И применить
 ```
 patch -p1 < All_openwrt-18.06.8.patch
 ```
 Или
 ```
-patch -p1 < All_openwrt-19.07.2.patch
+patch -p1 < All_openwrt-19.07.6.patch
 ```
 - [4.] Прописать строку в *feeds.conf.default*:
  openwrt-18.06.8
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0f330c0b5398d772167c30732e67a
 ```
- openwrt-19.07.2
+ openwrt-19.07.7
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
@@ -75,11 +75,11 @@ http://192.168.10.1/boot
 ```
 patch -p1 < All_openwrt-18.06.8.patch
 ```
-- **[Для openwrt-19.07.2](https://github.com/openwrt/openwrt/archive/v19.07.2.tar.gz)**
-- **[patch openwrt-19.07.2](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.2.patch.zip)**
+- **[Для openwrt-19.07.7](https://github.com/openwrt/openwrt/archive/v19.07.7.tar.gz)**
+- **[patch openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.6.patch.zip)**
 -  все в одном
 ```
-patch -p1 < All_openwrt-19.07.2.patch
+patch -p1 < All_openwrt-19.07.6.patch
 ```
 * ------------------------------------- 
 
@@ -99,7 +99,7 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0
 ./scripts/feeds install -a
 ```
 * -------------------------------------------------------------------------------------
-- **[Модуль-прога "boot-config-mmc". Редактор dtb фала uboot](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config-mmc/boot-config-mmc2.png)**
+- **[Модуль-прога "boot-config". Редактор dtb фала uboot](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config/boot-config2.png)**
 -    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master. 
     На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1
 ```
