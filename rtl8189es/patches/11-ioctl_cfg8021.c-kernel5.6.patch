@@ -1,0 +1,11 @@
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -6512,8 +6512,6 @@
+ 
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
+ 	.update_mgmt_frame_registrations = cfg80211_rtw_mgmt_frame_register,
+-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
+-	.mgmt_frame_register = cfg80211_rtw_mgmt_frame_register,
+ #endif
+ 
+ #if defined(CONFIG_TDLS) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3,2,0))
