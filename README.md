@@ -84,7 +84,7 @@ patch -p1 < All_openwrt-19.07.6.patch
 * ------------------------------------- 
 
 # package
-* Для xradio (к *openwrt-19.07 kernel-4.14, openwrt-master kernel-4.19*) в *feeds.conf.default* прописать строку:
+* Для xradio (к *openwrt-19.07 kernel-4.14, openwrt-master kernel-5.4.*) в *feeds.conf.default* прописать строку:
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
@@ -125,13 +125,13 @@ http://192.168.10.1/irc
 ```
 * -------------------------------------------------------------------------------------
 - **[Пакет для сборки драйвера rtl8189es к orange-pi-R1](https://github.com/melsem/opi-zero-cyberwrt/tree/master/rtl8189es)**
-- **[Подправленные исходники rtl8189es](https://github.com/melsem/rtl8189es)**
-* Для rtl8189es (к *openwrt-19.07* kernel-4.14 и *openwrt-18.06* kernel-4.14) в *feeds.conf.default* надо, что бы была
+- **[Подправленные исходники rtl8189es](https://github.com/melsem/rtl8189ES_linux)**
+* Для rtl8189es (к *openwrt-19.07* kernel-4.14, *openwrt-master* kernel-5.4.*) в *feeds.conf.default* надо, что бы была
  прописана строка:
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git
 ```
-или
+или к *openwrt-18.06* kernel-4.14
 ```
 src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0f330c0b5398d772167c30732e67a
 ```
@@ -142,6 +142,7 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0
 -    Не коннектится.
 -
 -    С openwrt-master (kernel-4.19) не работает!!! При включении wifi, kernel panic, и уходит в ребут.
+-    В *openwrt-master* kernel-5.4.* не проверял..
 -
     Включить/выключить wifi в:
 ```
