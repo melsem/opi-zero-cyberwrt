@@ -2,8 +2,9 @@
 echo 
 echo "<title>boot-config</title>"
 echo "<table align=center border=0><tr><td>"
-if [ -z "$1" ]; then echo `cat /www/menu.html`; else
-echo "<td><a href=/cgi-bin/luci/><button class="button" type=submit title="$SERVER_NAME'/cgi-bin/luci'">"Exit setting without applying changes."</button></a></td>"
+btc=$(cat /tmp/btc)
+if [ "$btc" != "55" ]; then echo `cat /www/menu.html`; else
+echo "<td><a href=/cgi-bin/luci/admin/system/bootconfig><button class="button" type=submit title="$SERVER_NAME'/cgi-bin/luci'">"Exit setting without applying changes."</button></a></td>"
 fi
 echo "</td></tr></table>"
 
@@ -720,3 +721,4 @@ echo "<table align="center" border=0 width=>
 <button class="button" $nomount type=submit name="reconv" value="$dtb" title="Compile_of_device_tree.">"Apply changes, and reboot device."</button></a>
 </td>
 </tr></form></table></body>"
+exit 0

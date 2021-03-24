@@ -64,11 +64,11 @@ rebut=0
 		value=unescape($2)
 		if(value == "dtsmmc") {
 				system("dtc -I dtb -O dts -o /tmp/t-dts /boot/dtb")
-print "<b>CONVERT-MMC-DTS</b><br>"
+				print "<b>Convert dtb to dts.</b><br>"
 		}
 		else if(value == "dtsspi") {
 				system("dtc -I dtb -O dts -o /tmp/t-dts /dev/mtd1")
-print "<b>CONVERT-SPI-DTS</b><br>"
+				print "<b>Convert mtd1 to dts.</b><br>"
 		}
 	}
 
@@ -77,12 +77,12 @@ print "<b>CONVERT-SPI-DTS</b><br>"
 		value=unescape($2)
 		if(value == "dtbmmc") {
 				system("dtc -I dts -O dtb -o /boot/dtb /tmp/t-dts")
-print "<b>RE-CONVERT-MMC-DTB</b><br>"
+				print "<b>Convert dts to dtb.</b><br>"
 		}
 		else if(value == "dtbspi") {
 				system("dtc -I dts -O dtb -o /tmp/dtb /tmp/t-dts")
 				system("mtd -e dtb write /tmp/dtb dtb")
-print "<b>RE-CONVERT-SPI-DTB</b><br>"
+				print "<b>Convert dts to mtd1.</b><br>"
 		}
 	}
 
@@ -92,4 +92,3 @@ END
 		if(rebut == "1") system("sleep 1s")
 		system("/www/cgi-bin/modules/boot-config/index.html "rebut"")
 }
-
