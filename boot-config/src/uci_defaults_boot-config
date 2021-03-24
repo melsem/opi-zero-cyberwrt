@@ -1,6 +1,8 @@
 #!/bin/sh
 /etc/init.d/cpufreq_scaling disable
 
+rm -f /tmp/luci-indexcache
+
 sed -i "/boot-config\/index.cgi/d" /www/menu.html 2> /dev/null
 	# К моей вебке cyberwrt - раскомментировать если будет использоваться ####
 sed -i 3i\ '<li><a href=/cgi-bin/modules/boot-config/index.cgi>'Boot-config'</a></li>' /www/menu.html 2> /dev/null

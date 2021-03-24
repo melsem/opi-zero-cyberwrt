@@ -2,8 +2,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=boot-config
-PKG_VERSION:=1.2
-PKG_RELEASE:=2020.03.29
+PKG_VERSION:=1.3
+PKG_RELEASE:=24.03.2021
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -11,7 +11,7 @@ define Package/$(PKG_NAME)
   SECTION:=utils
   CATEGORY:=Utilities
   DEPENDS:=@TARGET_sunxi +mount-utils +block-mount +uhttpd +dtc
-  TITLE:=boot-config
+  TITLE:=boot-config for OpenWrt.
   PKGARCH:=all
 endef
 
@@ -22,7 +22,8 @@ endef
 define Package/$(PKG_NAME)/postrm
 #!/bin/sh
 sed -i "/boot-config\/index.cgi/d" /www/menu.html &> /dev/null
- rm -R /www/cgi-bin/modules/boot-config &> /dev/null
+rm -R /www/cgi-bin/modules/boot-config &> /dev/null
+rm -fr /tmp/luci-indexcache /tmp/luci-modulecache &> /dev/null
 endef
 
 define Build/Compile
@@ -31,6 +32,8 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) ./src/boot-config $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
+	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci/
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./src/cpufreq_scaling $(1)/etc/init.d/
