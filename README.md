@@ -30,14 +30,27 @@ make menuconfig
 - Run "make menuconfig" to select your preferred configuration for the toolchain, target system & firmware packages. 
 - Be sure to select web-cyberwrt and boot-config-mmc in utils. The rest as needed.
 - Запустите «make menuconfig», чтобы выбрать предпочитаемую конфигурацию для цепочки инструментов, целевой системы и пакетов прошивки.
-- Обязательно выберите web-cyberwrt и boot-config-mmc в utils. Остальное по мере необходимости.
+- Выберите boot-config в utils. Остальное по мере необходимости.
+- Утилита boot-config должна редактировать dtb на всех sun8i-h3 и sun8i-h2-plus:
+```
+bananapi-m2-zero, libretech-all-h3-cc, orangepi-r1, orangepi-zero, orangepi-zero-lts, 
+bananapi-m2-plus, bananapi-m2-plus-v1.2, beelink-x2, emlid-neutis-n5h3-devboard, 
+libretech-all-h3-cc, mapleboard-mp130, nanopi-duo2, nanopi-m1, nanopi-m1-plus, nanopi-neo, 
+nanopi-neo-air, nanopi-r1, orangepi-2, orangepi-lite, orangepi-one, orangepi-pc, 
+orangepi-pc-plus, orangepi-plus, orangepi-plus2e, orangepi-zero-plus2, rervision-dvk, zeropi
+```
+Тестировал на orangepi-r1, orangepi-zero, orangepi-zero-lts и orangepi-pc
 ```
 make
 ```
 - После сборки, записи образа на флэшку.
-- При первой загрузке Orange Pi надо войти в утилиту boot-config-mmc для настройки конфигурации начальной загрузки
+- При первой загрузке Orange Pi надо войти в утилиту boot-config для настройки конфигурации начальной загрузки
 ```
 http://192.168.10.1/boot
+```
+-  Или с вебки Luci
+```
+http://192.168.10.1/cgi-bin/luci/admin/system/bootconfig
 ```
 
 * ---------------------------------------
@@ -72,14 +85,26 @@ http://192.168.10.1/boot
 - **[Для openwrt-18.06.8](https://github.com/openwrt/openwrt/archive/v18.06.8.tar.gz)**
 - **[patch openwrt-18.06.8](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-18.06.8.patch.zip)**
 -  все в одном
+-  Распаковать в корень сырцов openwrt-18.06.8 и:
 ```
 patch -p1 < All_openwrt-18.06.8.patch
 ```
 - **[Для openwrt-19.07.7](https://github.com/openwrt/openwrt/archive/v19.07.7.tar.gz)**
 - **[patch openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.6.MMC.zip)**
 -  все в одном
+-  Распаковать в корень сырцов openwrt-19.07.7 и:
 ```
 patch -p1 < All_openwrt-19.07.6.patch
+```
+-  Или для загрузки со SPI-флэшки, перепаянной под 16мб.
+-  Если в MMC и USB будут отсутствовать образы.
+```
+- **[Для openwrt-19.07.7](https://github.com/openwrt/openwrt/archive/v19.07.7.tar.gz)**
+- **[patch SPI-флэш openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.7-SPI-flash-firmware-16mb.zip)**
+-  все в одном
+-  Распаковать в корень сырцов openwrt-19.07.7 и:
+```
+patch -p1 < All_openwrt-19.07.7-SPI-flash-firmware-16mb.patch
 ```
 * ------------------------------------- 
 
@@ -100,10 +125,14 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0
 ```
 * -------------------------------------------------------------------------------------
 - **[Модуль-прога "boot-config". Редактор dtb фала uboot](https://github.com/melsem/opi-zero-cyberwrt/blob/master/boot-config/boot-config2.png)**
--    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master. 
-    На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1
+-    Проверялось в openwrt-18.06, openwrt-19.07 и openwrt-master-21.02. 
+-   На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1 и orangepi-pc
 ```
 http://192.168.10.1/boot
+-  Или с вебки Luci
+```
+http://192.168.10.1/cgi-bin/luci/admin/system/bootconfig
+```
 ```
 * -------------------------------------------------------------------------------------
 - **[Модуль-прога "termostat-serial-arduino". Управление платой Arduino-termostat](http://cyber-place.ru/showthread.php?t=2752)**
