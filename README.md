@@ -96,9 +96,9 @@ patch -p1 < All_openwrt-18.06.8.patch
 ```
 patch -p1 < All_openwrt-19.07.6.patch
 ```
+-  
 -  Или для загрузки со SPI-флэшки, перепаянной под 16мб.
 -  Если в MMC и USB будут отсутствовать образы.
-```
 - **[Для openwrt-19.07.7](https://github.com/openwrt/openwrt/archive/v19.07.7.tar.gz)**
 - **[patch SPI-флэш openwrt-19.07.7](https://github.com/melsem/opi-zero-cyberwrt/raw/master/patch/All_openwrt-19.07.7-SPI-flash-firmware-16mb.zip)**
 -  все в одном
