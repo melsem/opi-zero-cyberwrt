@@ -129,10 +129,10 @@ src-git opicyberwrt https://github.com/melsem/opi-zero-cyberwrt.git^b18e40dea7b0
 -   На orange-pi-zero, orange-pi-zero-lts, orange-pi-R1 и orangepi-pc
 ```
 http://192.168.10.1/boot
+```
 -  Или с вебки Luci
 ```
 http://192.168.10.1/cgi-bin/luci/admin/system/bootconfig
-```
 ```
 * -------------------------------------------------------------------------------------
 - **[Модуль-прога "termostat-serial-arduino". Управление платой Arduino-termostat](http://cyber-place.ru/showthread.php?t=2752)**
