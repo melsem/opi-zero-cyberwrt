@@ -48,7 +48,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/www/cgi-bin/modules/boot-config
 	$(INSTALL_BIN) ./files/conv.cgi $(1)/www/cgi-bin/modules/boot-config/
 	$(INSTALL_BIN) ./files/index.cgi $(1)/www/cgi-bin/modules/boot-config/
-	$(INSTALL_BIN) ./files/index.htm $(1)/www/cgi-bin/modules/boot-config/
+	$(INSTALL_BIN) ./files/luci.htm $(1)/www/cgi-bin/modules/boot-config/
 	$(INSTALL_BIN) ./files/index.html $(1)/www/cgi-bin/modules/boot-config/
 	$(INSTALL_BIN) ./files/Save.cgi $(1)/www/cgi-bin/modules/boot-config/
 endef

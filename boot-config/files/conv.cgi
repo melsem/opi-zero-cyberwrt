@@ -58,7 +58,28 @@ rebut=0
 		}
 		else print "<b>max_freq unchanged.</b><br>"
 	}
-#	************  end-max_freq  **********
+
+#	************ CPU Cores **************
+	if($1 == "corekeeper") {
+		set_corekeeper=unescape($2)
+		if(unescape($2) == "1 cores") { corekeeper=1; forcor="3 2 1";}
+		else if(unescape($2) == "2 cores") { corekeeper=2; forcor="3 2";  refrcor=1 }
+		else if(unescape($2) == "3 cores") { corekeeper=3; forcor=3;  refrcor="2 1" }
+		else if(unescape($2) == "4 cores") { corekeeper=4;  refrcor="3 2 1" }
+	}
+
+	if($1 == "set_core_keeper") {
+		if(corekeeper != unescape($2)) {
+			system("uci set cpufreq_scaling.@cpufreq[0].corekeeper='"corekeeper"'")
+			system("uci commit cpufreq_scaling")
+#			if(corekeeper < 4) system("for i in "forcor"; do echo 0 >/sys/devices/system/cpu/cpu${i}/online; done")
+#			if(corekeeper > 1) system("for i in "refrcor"; do echo 1 >/sys/devices/system/cpu/cpu${i}/online; done")
+			system("/etc/init.d/cpufreq_scaling start")
+			print "<b>Processor cores: "corekeeper" started.</b><br>"
+		}
+		else print "<b>Unchanged.</b><br>"
+	}
+#	************ End CPU Cores  **********
 
 	if($1 == "conv") {
 		value=unescape($2)

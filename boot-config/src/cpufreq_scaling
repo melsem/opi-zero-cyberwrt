@@ -1,11 +1,9 @@
 #!/bin/sh /etc/rc.common
 
-START=30
+START=80
 
 cat /etc/config/cpufreq_scaling &> /dev/null
-if [ $? == 1 ]; then
-echo > /etc/config/cpufreq_scaling
-fi
+if [ $? == 1 ]; then echo > /etc/config/cpufreq_scaling; fi
 
 uci get cpufreq_scaling.@cpufreq[0] &> /dev/null
 if [ $? == 1 ]; then
@@ -13,7 +11,8 @@ while uci -q delete cpufreq_scaling.@cpufreq[0]; do :; done
 uci -q commit cpufreq_scaling
 uci -q batch <<-EOF
  set cpufreq_scaling.cpufreq="cpufreq"
- set cpufreq_scaling.@cpufreq[0].min_freq="648000"
+ set cpufreq_scaling.@cpufreq[0].corekeeper="4"
+ set cpufreq_scaling.@cpufreq[0].min_freq="480000"
  set cpufreq_scaling.@cpufreq[0].max_freq="1008000"
  set cpufreq_scaling.@cpufreq[0].governor="ondemand"
  set cpufreq_scaling.@cpufreq[0].upthreshold="25"
@@ -22,6 +21,14 @@ EOF
 sleep 1
 uci -q commit cpufreq_scaling
 fi
+
+unescape=$(uci get cpufreq_scaling.@cpufreq[0].corekeeper)
+if [ "$unescape" == "1" ]; then corekeeper=1 forcor="3 2 1"
+elif [ "$unescape" == "2" ]; then corekeeper=2 forcor="3 2" refrcor=1
+elif [ "$unescape" == "3" ]; then corekeeper=3 forcor=3 refrcor="2 1"
+elif [ "$unescape" == "4" ]; then corekeeper=4 refrcor="3 2 1"; fi
+if [ "$corekeeper" -lt "4" ]; then for i in $forcor; do echo 0 >/sys/devices/system/cpu/cpu${i}/online; done; fi
+if [ "$corekeeper" -gt "1" ]; then for i in $refrcor; do echo 1 >/sys/devices/system/cpu/cpu${i}/online; done; fi
 
 min_freq=$(uci get cpufreq_scaling.@cpufreq[0].min_freq)
 max_freq=$(uci get cpufreq_scaling.@cpufreq[0].max_freq)
@@ -35,12 +42,12 @@ Filter="480000|648000|816000|1008000"
 
 uci get cpufreq_scaling.@cpufreq[0].min_freq &> /dev/null
 if [ $? == 1 ]; then  # Есть ли min_freq?
- uci set cpufreq_scaling.@cpufreq[0].min_freq="648000"
+ uci set cpufreq_scaling.@cpufreq[0].min_freq="480000"
  uci commit cpufreq_scaling
 elif echo $Filter | grep -qE $min_freq; then
 :
 else
- uci set cpufreq_scaling.@cpufreq[0].min_freq="648000"
+ uci set cpufreq_scaling.@cpufreq[0].min_freq="480000"
  uci commit cpufreq_scaling
 fi
 

@@ -268,11 +268,28 @@ echo "<select $disbl class="button" name="max_freq">
 <button class="button" $disbl type=submit name="set_cpu_freq" value="$set_cpu_freq">"Set cpu-freq"</button>"
 echo "</td></tr>"
 
-
+#*************  CPU Cores  **********************
+dsbl=''
+echo "<tr><td bgcolor="$astcolor">"CPU Cores: "</td><td>"
+case "`uci get cpufreq_scaling.@cpufreq[0].corekeeper`" in
+"1" ) corkeep0=selected; set_core_keeper="1";;
+"2" ) corkeep1=selected; set_core_keeper="2";;
+"3" ) corkeep2=selected; set_core_keeper="3";;
+"4" ) corkeep3=selected; set_core_keeper="4";;
+*) corkeep4=selected; dsbl="disabled";;
+esac
+echo "<select $disbl class="button" name="corekeeper">
+<option $corkeep0>"1 cores"</option>
+<option $corkeep1>"2 cores"</option>
+<option $corkeep2>"3 cores"</option>
+<option $corkeep3>"4 cores"</option>
+<option disabled $corkeep4>"Not supported."</option>
+</select>
+<input name="astart" hidden value="$works">
+<button class="button" type=submit name="set_core_keeper" value="$set_core_keeper">"Start Cores "</button>"
+echo "</td></tr>"
 
 echo "</form></table>"
-
-
 #***************************************************************
 
 echo "<form method="POST" action="Save.cgi" $nomount>"
@@ -722,3 +739,4 @@ echo "<table align="center" border=0 width=>
 </td>
 </tr></form></table></body>"
 exit 0
+
