@@ -128,7 +128,7 @@ elif [[ "$1" == "w1pin" || "$1" == "ppspin" ]]; then
 		x_pr='pps'
 	fi
 	sed -i '/'$x_pins' {/,/\};/ {s/pins.*\"\;/pins = \"'$2'\"\;/}' $dts
-	gpio_active=$(sed -n '/'$x_pr' {/,/\gpios/p' $dts | sed -n 's/.*gpios = \x3c'$phandle' \(.*\) \(.*\) \(.*\)\x3e\;/\3/p')
+	gpio_active=$(sed -n '/'$x_pr' {/,/gpios/p' $dts | sed -n 's/.*gpios = \x3c'$phandle' \(.*\) \(.*\) \(.*\)\x3e\;/\3/p')
 	sed -i '/'$x_pr' {/,/\};/ {s/gpios = <'$phandle'\ .*\ '$gpio_active'/gpios = <'$phandle'\ '$gpiosA'\ '$gpiosN'\ '$gpio_active'/}' $dts
 elif [ "$1" == "i2c0" ]; then
 	sed -i '/'$i2c0'/,/\};/ {s/'$on_off'/}' $dts
