@@ -81,15 +81,16 @@ rebut=0
 	}
 #	************ End CPU Cores  **********
 
+	if($1 == "mtd-dtb") mtd=unescape($2)
 	if($1 == "conv") {
 		value=unescape($2)
 		if(value == "dtsmmc") {
 				system("dtc -I dtb -O dts -o /tmp/t-dts /boot/dtb")
-				print "<b>Convert dtb to dts.</b><br>"
+				print "<b>Converted dtb to dts-file.</b><br>"
 		}
 		else if(value == "dtsspi") {
-				system("dtc -I dtb -O dts -o /tmp/t-dts /dev/mtd1")
-				print "<b>Convert mtd1 to dts.</b><br>"
+				system("dtc -I dtb -O dts -o /tmp/t-dts /dev/"mtd"")
+				print "Converted <b>dtb</b> - /dev/"mtd" to dts-file.<br>"
 		}
 	}
 
@@ -98,12 +99,12 @@ rebut=0
 		value=unescape($2)
 		if(value == "dtbmmc") {
 				system("dtc -I dts -O dtb -o /boot/dtb /tmp/t-dts")
-				print "<b>Convert dts to dtb.</b><br>"
+				print "<b>Converted dts-file to dtb.</b><br>"
 		}
 		else if(value == "dtbspi") {
 				system("dtc -I dts -O dtb -o /tmp/dtb /tmp/t-dts")
 				system("mtd -e dtb write /tmp/dtb dtb")
-				print "<b>Convert dts to mtd1.</b><br>"
+				print "<b>Converted dts-file to dtb.</b><br>"
 		}
 	}
 
@@ -113,3 +114,4 @@ END
 		if(rebut == "1") system("sleep 1s")
 		system("/www/cgi-bin/modules/boot-config/index.html "rebut"")
 }
+

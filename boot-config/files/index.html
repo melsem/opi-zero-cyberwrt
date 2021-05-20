@@ -177,11 +177,12 @@ time(); setInterval(time, 1000); </script>
 reboot
 fi
 
+mtd=$(sed -n 's/:\(.*\)\"dtb\"//p' /proc/mtd)
 cat $dts &> /dev/null
 if [ $? = 1 ]; then
 df -h | grep overlayfs &> /dev/null
 if [ $? != 1 ]; then
-dtc -I dtb -O dts -o $dts /dev/mtd1
+dtc -I dtb -O dts -o $dts /dev/$mtd
 else
 dtc -I dtb -O dts -o $dts /boot/dtb
 fi
@@ -218,8 +219,9 @@ fi
 echo "<table align="center" border=0 width=>
 <form method="POST" action="conv.cgi"><tr>
 <td>
+<input name="mtd-dtb" hidden value="$mtd">
 <a href=/cgi-bin/modules/boot-config/conv.cgi>
-<button class="button" $nomount type=submit name="conv" value="$dtc" title="Device_tree_compile_for_flat_device_trees.">"Convert dtb to dts."</button></a>
+<button class="button" $nomount type=submit name="conv" value="$dtc" title="Device_tree_compile_for_flat_device_trees.">"Convert $dtb to dts-file."</button></a>
 </td>
 <td>"
 df -h | grep overlayfs &> /dev/null
@@ -716,27 +718,26 @@ echo "rotary-encoder: "
 cat $dts | sed -n '/pinctrl_rotary {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
 
-
 echo "</table></td></tr>
 </table></td></tr>"
 #*******************************************************************************
-#*******************************************************************************
-
 
 #*******************************************************************************
+cat $dts &> /dev/null
+if [ $? != 1 ]; then	# Hide buttons if t-dts is not created.
 echo "<table align="center" border=0 width=><tr><td>
 <a href=/cgi-bin/modules/boot-config/Save.cgi>
 <button class="button" type=submit value="Save" $nomount name=>"Save changes."</button></a>
 </td></tr></table>"
-
 echo "</table></form>"
-
 #*****************************************************************
 echo "<table align="center" border=0 width=>
 <form method="POST" action="conv.cgi"><tr><td>
 <a href=/cgi-bin/modules/boot-config/conv.cgi>
 <button class="button" $nomount type=submit name="reconv" value="$dtb" title="Compile_of_device_tree.">"Apply changes, and reboot device."</button></a>
 </td>
-</tr></form></table></body>"
+</tr></form></table>"
+fi
+echo "</body>"
 exit 0
 
