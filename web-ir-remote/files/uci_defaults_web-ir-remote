@@ -32,9 +32,9 @@ echo -e "KEY_UP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhap
 echo -e "KEY_PREVIOUSSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
 echo -e "KEY_TUNER"'\t'"2"'\t'"reboot" >> $triggerhappy
 echo -e "KEY_MUTE"'\t'"1"'\t'"tda7313 volume 0" >> $triggerhappy
-echo -e "KEY_VOLUMEUP"'\t'"1"'\t'"amixer -c 0 -q set "Line Out" 1+" >> $triggerhappy
+echo -e "KEY_VOLUMEUP"'\t'"1"'\t'"amixer -c 0 -q set "'"Line Out"'" 1+" >> $triggerhappy
 echo -e "KEY_VOLUMEUP"'\t'"2"'\t'"tda7313 volume +" >> $triggerhappy
-echo -e "KEY_VOLUMEDOWN"'\t'"1"'\t'"amixer -c 0 -q set "Line Out" 1-" >> $triggerhappy
+echo -e "KEY_VOLUMEDOWN"'\t'"1"'\t'"amixer -c 0 -q set "'"Line Out"'" 1-" >> $triggerhappy
 echo -e "KEY_VOLUMEDOWN"'\t'"2"'\t'"tda7313 volume -" >> $triggerhappy
 echo -e "BTN_RIGHT"'\t'"1"'\t'"tda7313 streble +" >> $triggerhappy
 echo -e "BTN_RIGHT"'\t'"2"'\t'"tda7313 streble +" >> $triggerhappy
