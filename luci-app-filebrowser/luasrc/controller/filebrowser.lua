@@ -4,7 +4,7 @@ function index()
 
     page = entry({"admin", "system", "filebrowser"}, template("filebrowser"), _("File Browser"), 60)
     page.i18n = "base"
-    page.dependent = true
+    page.acl_depends={ "unauthenticated" }
 
     page = entry({"admin", "system", "filebrowser_list"}, call("filebrowser_list"), nil)
     page.leaf = true
