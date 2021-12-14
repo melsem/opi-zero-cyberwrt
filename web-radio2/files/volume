@@ -1,0 +1,15 @@
+#!/bin/sh
+
+volsost=$(amixer -c 0 get 'Line Out' | sed '/Front Left: Playback/!d' | awk '{print $4}')
+echo $1 $volsost
+if [ $1 == "volume" ]; then
+	if [ "$2" == "1+" ]; then
+	   let "volsost += 1"
+	   amixer -c 0 -q set "Line Out" $volsost
+	elif [ "$2" == "1-" ]; then
+	   let "volsost -= 1"
+	   amixer -c 0 -q set "Line Out" $volsost
+	fi
+	echo $volsost
+fi
+

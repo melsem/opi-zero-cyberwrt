@@ -84,23 +84,27 @@ border-radius: 10px;
 
 rckeymaps='/etc/rc_keymaps/keyes'
 triggerhappy='/etc/triggerhappy/triggers.d/example.conf'
+#triggerhappy=$(sed '/^\#/d' $triggerhappy_orig)
 kollw_str_rc_key=$(sed -n '$=' $rckeymaps)
-kollw_str_trig=$(sed -n '$=' $triggerhappy)
+kollw_strok=$(sed -n '$=' $triggerhappy)	# example.conf
 
 echo "<tr>
 <td>"
-kollw_strok=$(sed -n '$=' $rckeymaps)
 a=1
 while [ "$a" -le "$kollw_strok" ]; do
-  ircode=$(sed -n ''$a'p' $rckeymaps | awk '{print $1}')
-  keyname=$(sed -n ''$a'p' $rckeymaps | awk '{print $2}')
-  keysost=$(sed '/'$keyname'/!d' $triggerhappy | awk '{print $2}')
-  command=$(sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p' $triggerhappy)
+  keyname=$(sed -n ''$a'p' $triggerhappy | awk '{print $1}')
+  keysost=$(sed -n ''$a'p' $triggerhappy | sed '/'$keyname'/!d' | awk '{print $2}')
+  command=$(sed -n ''$a'p' $triggerhappy | sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p')
+  ircode=$(sed '/'$keyname'$/!d' $rckeymaps | awk '{print $1}')
   echo "<tr>
-  <td>"$a."
+  <td><b>"$a."</b>
   </td>
   <td>"
+  if [ -n "$ircode" ]; then
    echo -e " $ircode"'\t'
+  else
+   echo -e "keyboard"'\t'
+  fi
    echo "</td>
 <td></td>
   <td>"
@@ -113,7 +117,8 @@ while [ "$a" -le "$kollw_strok" ]; do
 <td></td>
   <td>"
 
-    cat $triggerhappy | sed '/'$keyname'.'$keysost'./!d' | sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p'
+#    cat $triggerhappy | sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p'
+    sed -n 's/\b'$keyname'\b.'$keysost'\b.\(.*\)/\1/p' $triggerhappy
 
    echo "</td>
 </tr><tr></tr>"

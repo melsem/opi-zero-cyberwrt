@@ -48,28 +48,33 @@ echo "
 <tr><td>
 <table align=center>"
 #===================================================================================
-kollw_strok=$(sed -n '$=' $rckeymaps)
+# kollw_strok=$(sed -n '$=' $rckeymaps)
+kollw_strok=$(sed -n '$=' $triggerhappy)	# example.conf
 a=1
 while [ "$a" -le "$kollw_strok" ]; do
-  ircode=$(sed -n ''$a'p' $rckeymaps | awk '{print $1}')
-  keyname=$(sed -n ''$a'p' $rckeymaps | awk '{print $2}')
-  keysost=$(sed '/'$keyname'/!d' $triggerhappy | awk '{print $2}')
-  command=$(sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p' $triggerhappy)
+  keyname=$(sed -n ''$a'p' $triggerhappy | awk '{print $1}')
+  keysost=$(sed -n ''$a'p' $triggerhappy | sed '/'$keyname'/!d' | awk '{print $2}')
+  command=$(sed -n ''$a'p' $triggerhappy | sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p')
+  ircode=$(sed '/'$keyname'$/!d' $rckeymaps | awk '{print $1}')
   echo "<form method="POST" action="Save.cgi">
 <tr>
  <td align="vertical">
   <input name="nomerstroki" hidden value="$a">"$a."
  </td>
  <td align="vertical">
-  <input name="ircodestar" hidden value="$ircode">
-  <input name="keynamestar" hidden value="$keyname">
-  <input name="keysoststar" hidden value="$keysost">
-  <input name="commandstar" hidden value='"
+  <input name="ircode_star" hidden value="$ircode">
+  <input name="keyname_star" hidden value="$keyname">
+  <input name="keysost_star" hidden value="$keysost">
+  <input name="command_star" hidden value='"
    printf $command
    echo "'>
 
   <input name="ircode" size="8" value="
+  if [ -n "$ircode" ]; then
    printf "$ircode"
+  else
+   printf "keyboard"
+  fi
    echo " required placeholder="список_пуст">
 
   <input readonly name="keyname" value="
@@ -81,7 +86,7 @@ while [ "$a" -le "$kollw_strok" ]; do
    echo " required placeholder="список_пуст">
 
   <input name="command" size="30" value='"
-   sed -n 's/'$keyname'.'$keysost'.\(.*\)/\1/p' $triggerhappy
+   sed -n 's/\b'$keyname'\b.'$keysost'\b.\(.*\)/\1/p' $triggerhappy
    echo "' required placeholder="список_пуст">
  </td>
  <td align="vertical">
@@ -92,16 +97,12 @@ while [ "$a" -le "$kollw_strok" ]; do
 let "a += 1"
 done
 echo "</table>"
-#===================================================================================
+#======  Save_nev  =======
 echo "<table>
 <form method="POST" action="Save.cgi"><table><tr><td align="left"><p>"
 let "kollw_strok += 1"
 printf $kollw_strok.
-echo "
-  <input size="2" hidden name="n_str" value="
-printf $kollw_strok
-echo " required placeholder="add_nev_ircode">
-  <input size="10" name="add_nev_ircode" required placeholder="add_ircode">"
+echo "<input size="10" name="add_nev_ircode" required value="keyboard">"
  kollw_comand=$(thd --listevents | sed -n '$=') # 581 - command
  ac=1
 echo "<select class="button" name="add_nev_keyname">"
@@ -118,6 +119,7 @@ echo "
 <button class="b0" type=submit name="Save_nev">"Save_nev"</button>
 </p></td></tr></table>
 </form></table>"
+#====== End Save_nev  =======
 
 echo "</td></tr>
 </table>"
