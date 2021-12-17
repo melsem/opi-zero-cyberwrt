@@ -76,6 +76,7 @@ define Package/web-radio2/install
 	$(INSTALL_BIN) ./files/save.cgi $(1)/www/cgi-bin/modules/web-radio2/
 	$(INSTALL_BIN) ./files/setup.cgi $(1)/www/cgi-bin/modules/web-radio2/
 	$(INSTALL_BIN) ./files/volume $(1)/www/cgi-bin/modules/web-radio2/
+	$(INSTALL_BIN) ./files/sed.cgi $(1)/www/cgi-bin/modules/web-radio2/
 endef
 
 $(eval $(call BuildPackage,web-radio2))

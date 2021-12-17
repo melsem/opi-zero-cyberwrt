@@ -67,7 +67,11 @@ border-radius:inherit;
    textarea {
     resize: none; /* Запрещаем изменять размер */
    } 
-</style>"
+</style>
+
+<script>
+function deleteschen(f) { if (confirm(\"Are you sure... Delete? \")) f.submit(); }
+</script>"
 #____________________________________________________________
 echo "<table><tr><td>
 
@@ -127,8 +131,7 @@ let "b = (("$c" / 2))"
 a=1
 
 echo "
-<table width="100"><tr><th></th><th>
-<table align="left"><tr><td><form method="POST" action="save.cgi">"
+<table align="left"><tr><td></td><td></td><td><form method="POST" action="save.cgi">"
 pidof web-radio2 &> /dev/null
 if [ $? == 1 ]; then
    pidof madplay &> /dev/null
@@ -145,16 +148,25 @@ else
 	echo "<button class="b1" name="ostanov" type=submit title="Желаете_остановить_модуль_???"><img src="/modules/web-radio2/r.jpg" alt= style="vertical-align: middle">"    RADIO STOP"</button>"
    fi
 fi
-echo "</form></td></tr></table>
-
-<table align="centr"><tr><td><form method="POST" action="save.cgi">
+echo "</form></td>
+<td><form method="POST" action="save.cgi">
 <button name="next" type="submit" title="Следующий_канал" class="b1"> "  Next chennel"</button>
-</form></td></tr></table></th><th></th></tr>"
+</form></td></tr></table><br>"
 
 while [ "$a" -le "$b" ]; do
 name=$(cat $playlist | awk -F , '/#EXTINF:'-$a',/ {print $2}')
 url=$(sed -n '/#EXTINF:'-$a'/{n;p;q;}' $playlist)
-echo "<form method="POST" action="save.cgi"><tr>
+echo "
+<table width="100"><tr>
+
+<form method="POST" action="save.cgi" onsubmit=\"deleteschen(this);return false;\">
+<td valign="vertical">
+<input type="checkbox" name="delchan" checked="checked" hidden value="$a">
+<button name="confirm" type="submit" value="$a" title="Delete_$name"><img src=/modules/web-radio2/del.png></button>
+</td>
+</form>
+
+<form method="POST" action="save.cgi">
 <td valign="vertical"><input name="nomerstroki" hidden value="$a">"$a."</td>
 <td valign="vertical">
 <input class="b2" name="nameURL" size="50" readonly value="
@@ -165,7 +177,7 @@ echo "<form method="POST" action="save.cgi"><tr>
    echo " required hidden>
 </td><td valign="vertical">
 <input class="b2" type="submit" value="play">
-</td></tr></form>"
+</td></form></tr>"
 let "a += 1"
 done
 echo "</table><br>"
@@ -209,6 +221,3 @@ echo "</textarea></td></tr><tr><td ><br><input type="submit" class="b1" value="S
 </td></tr></table>
  </body>"
 #____________________________________________________________
-
-
-

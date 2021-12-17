@@ -21,6 +21,12 @@ print ""
 }
 {
 	playlist="/etc/config/web-radio2"
+
+	if($1 == "delchan") {
+		delstroki=dannie($2)
+#		print "delstroki - "delstroki
+		system("/www/cgi-bin/modules/web-radio2/sed.cgi delet "delstroki"")
+	}
 	
 #	========= play-NAME-URL-(play-list) ========
 	if($1 == "nomerstroki") nomerstroki=dannie($2)
@@ -84,8 +90,8 @@ print ""
 	if($1 == "add_nev_name")
 	{
 		nb=dannie($2)
-#		print "#EXTINF:-"n",\""dannie($2) | "sed 's/$/\"/' >> "playlist
-		print "#EXTINF:-"n","dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
+#		print "#EXTINF:-"n","dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
+		system("/www/cgi-bin/modules/web-radio2/sed.cgi addnev "n" "nb"")
 	}
 	if($1 == "add_nev_url") print dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
 }
@@ -106,5 +112,4 @@ END
 		system("/www/cgi-bin/modules/web-radio2/setup.cgi")
 	}
 }
-
 
