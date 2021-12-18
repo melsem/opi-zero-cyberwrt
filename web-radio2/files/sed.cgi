@@ -15,7 +15,7 @@ zzz=0
 sed -i 's/#EXTINF:-\(.*\),/#EXTINF:-0,/' $m3u
 b=1
 while [ "$kollwo" -ne  "$zzz" ]; do
-sed -i '1,/#EXTINF:-0,/{s//#EXTINF:-'$b',/}' $m3u
+sed -i '1,/#EXTINF:-0,/{s/#EXTINF:-0,/#EXTINF:-'$b',/}' $m3u
 let "b += 1"
 let "zzz += 1"
 done
