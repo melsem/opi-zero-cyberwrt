@@ -65,3 +65,4 @@ elif [ "$1" == "triggerhappy_add" ]; then
   echo -e $5'\t'$6'\t'$7 >> $triggerhappy
  fi
 fi
+

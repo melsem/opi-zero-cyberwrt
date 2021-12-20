@@ -23,15 +23,15 @@ echo -e "KEY_9"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 9" >> $triggerhapp
 echo -e "KEY_0"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 10" >> $triggerhappy
 echo -e "KEY_POWER"'\t'"1"'\t'"/etc/init.d/web-radio2.init start" >> $triggerhappy
 echo -e "KEY_CHANNELUP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
-echo -e "KEY_CHANNELDOWN"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
-echo -e "KEY_OK"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 62" >> $triggerhappy
-echo -e "KEY_ENTER"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 62" >> $triggerhappy
+echo -e "KEY_CHANNELDOWN"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 13" >> $triggerhappy
+echo -e "KEY_OK"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 15" >> $triggerhappy
+echo -e "KEY_ENTER"'\t'"1"'\t'"tda7313 lound +" >> $triggerhappy
 echo -e "KEY_PLAYPAUSE"'\t'"1"'\t'"/etc/init.d/web-radio2.init start" >> $triggerhappy
 echo -e "KEY_NEXTSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
 echo -e "KEY_UP"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
 echo -e "KEY_SYSRQ"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 0" >> $triggerhappy
-echo -e "KEY_PREVIOUSSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 63" >> $triggerhappy
-echo -e "KEY_TUNER"'\t'"2"'\t'"reboot" >> $triggerhappy
+echo -e "KEY_PREVIOUSSONG"'\t'"1"'\t'"/etc/init.d/web-radio2.init reload 13" >> $triggerhappy
+echo -e "KEY_TUNER"'\t'"1"'\t'"tda7313 lound +" >> $triggerhappy
 echo -e "KEY_VOLUMEUP"'\t'"1"'\t'"/www/cgi-bin/modules/web-radio2/volume volume 1+" >> $triggerhappy
 echo -e "KEY_VOLUMEDOWN"'\t'"1"'\t'"/www/cgi-bin/modules/web-radio2/volume volume 1-" >> $triggerhappy
 echo -e "KEY_VOLUMEUP"'\t'"2"'\t'"tda7313 volume +" >> $triggerhappy

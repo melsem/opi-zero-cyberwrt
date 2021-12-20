@@ -70,6 +70,7 @@ define Package/web-radio2/install
 	$(INSTALL_DIR) $(1)/www/modules/web-radio2
 	$(INSTALL_DATA) ./files/b.jpg $(1)/www/modules/web-radio2/
 	$(INSTALL_DATA) ./files/r.jpg $(1)/www/modules/web-radio2/
+	$(INSTALL_DATA) ./files/del.png $(1)/www/modules/web-radio2/
 
 	$(INSTALL_DIR) $(1)/www/cgi-bin/modules/web-radio2
 	$(INSTALL_BIN) ./files/index.cgi $(1)/www/cgi-bin/modules/web-radio2/
