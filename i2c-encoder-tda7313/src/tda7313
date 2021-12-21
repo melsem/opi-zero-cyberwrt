@@ -8,6 +8,7 @@ i2c_dev=$(uci get tda7313.@tda7313[0].i2c_dev)
 
 tfiles='/tmp/hh'
 
+mute='31'
 volume='0'
 bass='96' # 0x60
 treble='112' # 0x70
@@ -32,7 +33,7 @@ write_CMD () {
 }
 
 tda7313_init () {
- echo -e volume 40'\n'subtrebl 20'\n'subbas 15'\n'bass 12'\n'treble 12'\n'input 1'\n'loundst 1 > $tfiles
+ echo -e volume 40'\n'subtrebl 20'\n'subbas 15'\n'bass 12'\n'treble 12'\n'input 1'\n'loundst 1'\n'mute 1 > $tfiles
 
  vol='40'
  var=63
@@ -77,35 +78,35 @@ test_reg () {
 }
 
 lound_CMD () {
-    case "$loundst" in	# от 1 до 5
-	"1" ) lost=$LOUD_OFF; lodb=$LOUD_ON0db;;
-	"2" ) lost=$LOUD_ON; lodb=$LOUD_ON0db;;
-	"3" ) lost=$LOUD_ON; lodb=$LOUD_ON1db;;
-	"4" ) lost=$LOUD_ON; lodb=$LOUD_ON2db;;
-	"5" ) lost=$LOUD_ON; lodb=$LOUD_ON3db;;
-	* ) lost=$LOUD_OFF; lodb=$LOUD_ON0db;;
-    esac
+  case "$loundst" in	# от 1 до 5
+      "1" ) lost=$LOUD_OFF; lodb=$LOUD_ON0db;;
+      "2" ) lost=$LOUD_ON; lodb=$LOUD_ON0db;;
+      "3" ) lost=$LOUD_ON; lodb=$LOUD_ON1db;;
+      "4" ) lost=$LOUD_ON; lodb=$LOUD_ON2db;;
+      "5" ) lost=$LOUD_ON; lodb=$LOUD_ON3db;;
+      * ) lost=$LOUD_OFF; lodb=$LOUD_ON0db;;
+  esac
 }
 
 tembr () {
     vlm=$(sed '/'$indes1' /!d' $tfiles | awk '{print $2}')
-    if [[ "$indes2" == "-" && "$vlm" -eq "15" ]]; then
+  if [[ "$indes2" == "-" && "$vlm" -eq "15" ]]; then
       let "vlm "$indes2"= 1"
-    elif [[ "$vlm" -eq "0" && "$indes2" == "+" ]]; then
+  elif [[ "$vlm" -eq "0" && "$indes2" == "+" ]]; then
       let "vlm "$indes2"= 1"
-    elif [[ "$vlm" -gt "0" && "$vlm" -lt "15" ]]; then
+  elif [[ "$vlm" -gt "0" && "$vlm" -lt "15" ]]; then
       let "vlm "$indes2"= 1"
-    fi
-    if [ "$vlm" -le "7" ]; then
-	hh=$(($tembr + $vlm))
-    else
+  fi
+  if [ "$vlm" -le "7" ]; then
+      hh=$(($tembr + $vlm))
+  else
       var=23
       let "var -= $vlm"
       hh=$(($tembr + $var))
-    fi
-    write_CMD
-    volm=$(sed '/'$indes1' /!d' $tfiles | awk '{print $2}')
-    sed -i '/'$indes1' /s/'$volm'/'$vlm'/g' $tfiles
+  fi
+  write_CMD
+  volm=$(sed '/'$indes1' /!d' $tfiles | awk '{print $2}')
+  sed -i '/'$indes1' /s/'$volm'/'$vlm'/g' $tfiles
 }
 
 balans () {
@@ -132,8 +133,24 @@ tembrbtre () {
       write_CMD
     fi
 }
+
+# mute
+if [ "$1" == "mute" ]; then
+    bit_mute_sfile=$(sed '/mute /!d' $tfiles | awk '{print $2}')
+  if [ "$bit_mute_sfile" == "1" ]; then
+      hh=$mute	# 31 #
+      write_CMD
+      bit_mute_inwers=0
+      sed -i '/mute /s/'$bit_mute_sfile'/'$bit_mute_inwers'/g' $tfiles
+
+      bit_volm_sfile=$(sed '/volume /!d' $tfiles | awk '{print $2}')
+      mutesost=$(($bit_volm_sfile - 1))
+      bit_volm_sfile=$(sed '/volume /!d' $tfiles | awk '{print $2}')
+      sed -i '/volume /s/'$bit_volm_sfile'/'$mutesost'/g' $tfiles
+  fi
+
 # tda7313 init
-if [[ "$1" == "tda7313_init" || "$1" == "init" ]]; then
+elif [[ "$1" == "tda7313_init" || "$1" == "init" ]]; then
     tda7313_init
 # switch
 elif [[ "$1" == "switch" || "$1" == "aux" || "$1" == "input" ]]; then
@@ -148,42 +165,47 @@ elif [[ "$1" == "switch" || "$1" == "aux" || "$1" == "input" ]]; then
 # lound
 elif [[ "$1" == "lound" ]]; then
     loundst=$(sed '/loundst /!d' $tfiles | awk '{print $2}')
-    if [ "$2" == "+" ]; then
-	let "loundst += 1"
-	if [ "$loundst" == "6" ]; then
-		loundst=1
-	fi
-	lound_CMD
-	volm=$(sed '/input /!d' $tfiles | awk '{print $2}')
-	hh=$(($switch + $volm + $lost + $lodb))
-	write_CMD
-	volm=$(sed '/loundst /!d' $tfiles | awk '{print $2}')
-	sed -i '/loundst /s/'$volm'/'$loundst'/g' $tfiles
-    fi
+  if [ "$2" == "+" ]; then
+      let "loundst += 1"
+      if [ "$loundst" == "6" ]; then
+	loundst=1
+      fi
+      lound_CMD
+      volm=$(sed '/input /!d' $tfiles | awk '{print $2}')
+      hh=$(($switch + $volm + $lost + $lodb))
+      write_CMD
+      volm=$(sed '/loundst /!d' $tfiles | awk '{print $2}')
+      sed -i '/loundst /s/'$volm'/'$loundst'/g' $tfiles
+  fi
 # volume
 elif [ "$1" == "volume" ]; then
+      bit_mute_sfile=$(sed '/mute /!d' $tfiles | awk '{print $2}')
+  if [ "$bit_mute_sfile" == "0" ]; then
+      bit_mute_inwers=1
+      sed -i '/mute /s/'$bit_mute_sfile'/'$bit_mute_inwers'/g' $tfiles
+  fi
   if [[ "$2" -ge "0" && "$2" -le "63" ]]; then
-    var=63
-    let "var -= $2"
-    hh=$(($volume + $var))
-    write_CMD
-    volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
-    sed -i '/'$1' /s/'$volm'/'$2'/g' $tfiles
+      var=63
+      let "var -= $2"
+      hh=$(($volume + $var))
+      write_CMD
+      volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
+      sed -i '/'$1' /s/'$volm'/'$2'/g' $tfiles
   elif [[ "$2" == "+" || "$2" == "-" ]]; then
-    vlm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
-    if [[ "$2" == "-" && "$vlm" -eq "63" ]]; then
-      let "vlm "$2"= 1"
-    elif [[ "$vlm" -eq "0" && "$2" == "+" ]]; then
-      let "vlm "$2"= 1"
-    elif [[ "$vlm" -gt "0" && "$vlm" -lt "63" ]]; then
-      let "vlm "$2"= 1"
-    fi
-    var=63
-    let "var -= $vlm"
-    hh=$(($volume + $var))
-    write_CMD
-    volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
-    sed -i '/'$1' /s/'$volm'/'$vlm'/g' $tfiles
+      vlm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
+      if [[ "$2" == "-" && "$vlm" -eq "63" ]]; then
+	let "vlm "$2"= 1"
+      elif [[ "$vlm" -eq "0" && "$2" == "+" ]]; then
+	let "vlm "$2"= 1"
+      elif [[ "$vlm" -gt "0" && "$vlm" -lt "63" ]]; then
+	let "vlm "$2"= 1"
+      fi
+      var=63
+      let "var -= $vlm"
+      hh=$(($volume + $var))
+      write_CMD
+      volm=$(sed '/'$1' /!d' $tfiles | awk '{print $2}')
+      sed -i '/'$1' /s/'$volm'/'$vlm'/g' $tfiles
   fi
 # treble
 elif [ "$1" == "treble" ]; then
@@ -259,5 +281,5 @@ elif [[ "$1" == "?" || "$1" == "-?" || "$1" == "--?" || "$1" == "help" ]]; then
     echo -e '\t' Example:'\n\t' tda7313 "volume +"'\t'"#" Volume level "+".
     echo -e '\t' tda7313 "volume -"'\t'"#" Volume level "-"'\n\t' tda7313 "volume 55"'\t'"#" Volume level "55"
 fi
-# reg1=$1; test_reg
+ reg1=$1; test_reg
 exit 0
