@@ -5,6 +5,8 @@
 -    check /dev/kmem virtual device support
 
 -    Select your board from the list below and enter it into the file /patches/001-add-board_config.patch:
+
+```
 	orangepione-h3
 	orangepilite-h3
 	orangepipc-h3
@@ -29,6 +31,7 @@
 	orangepi4
 	orangepi800
 	orangepir1plus-rk3328
+```
 
 -    Example for orangepizero-h2:
 ```
