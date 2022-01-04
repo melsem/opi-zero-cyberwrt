@@ -1,0 +1,47 @@
+--- a/devLib/Makefile
++++ b/devLib/Makefile
+@@ -83,44 +90,6 @@
+ tags:	$(SRC)
+ 	$Q echo [ctags]
+ 	$Q ctags $(SRC)
+-
+-
+-.PHONY:	install
+-install:	$(DYNAMIC)
+-	$Q echo "[Install Headers]"
+-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/include
+-	$Q install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include
+-	$Q echo "[Install Dynamic Lib]"
+-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
+-	$Q install -m 0755 libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)
+-	$Q ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)	$(DESTDIR)/lib/libwiringPiDev.so
+-	$Q $(LDCONFIG)
+-
+-.PHONY:	install-static
+-install-static:	$(STATIC)
+-	$Q echo "[Install Headers]"
+-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/include
+-	$Q install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include
+-	$Q echo "[Install Static Lib]"
+-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
+-	$Q install -m 0755 libwiringPiDev.a				$(DESTDIR)$(PREFIX)/lib
+-
+-.PHONY:	install-deb
+-install-deb:	$(DYNAMIC)
+-	$Q echo "[Install Headers: deb]"
+-	$Q install -m 0755 -d							$(CURDIR)/../debian-template/wiringPi/usr/include
+-	$Q install -m 0644 $(HEADERS)						$(CURDIR)/../debian-template/wiringPi/usr/include
+-	$Q echo "[Install Dynamic Lib: deb]"
+-	install -m 0755 -d							$(CURDIR)/../debian-template/wiringPi/usr/lib
+-	install -m 0755 libwiringPiDev.so.$(VERSION)				$(CURDIR)/../debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)
+-	ln -sf $(CURDIR)/../debian-template/wiringPi/usr/lib/libwiringPiDev.so.$(VERSION)	$(CURDIR)/../debian-template/wiringPi/usr/lib/libwiringPiDev.so
+-
+-.PHONY:	uninstall
+-uninstall:
+-	$Q echo "[UnInstall]"
+-	$Q cd $(DESTDIR)$(PREFIX)/include/ && rm -f $(HEADERS)
+-	$Q cd $(DESTDIR)$(PREFIX)/lib/     && rm -f libwiringPiDev.*
+-	$Q $(LDCONFIG)
+ 
+ 
+ .PHONY:	depend

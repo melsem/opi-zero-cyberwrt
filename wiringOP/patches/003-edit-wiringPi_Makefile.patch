@@ -1,0 +1,47 @@
+--- a/wiringPi/Makefile
++++ b/wiringPi/Makefile
+@@ -24,6 +24,8 @@
+ VERSION=$(shell cat ../VERSION)
+ DESTDIR?=/usr
+ PREFIX?=/local
++
++BOARD=$(shell cat ../BOARD)
+ 
+ LDCONFIG?=ldconfig
+ 
+@@ -164,35 +170,6 @@
+ tags:	$(SRC)
+ 	$Q echo [ctags]
+ 	$Q ctags $(SRC)
+-
+-
+-.PHONY:	install
+-install:	$(DYNAMIC)
+-	$Q echo "[Install Headers]"
+-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/include
+-	$Q install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include
+-	$Q echo "[Install Dynamic Lib]"
+-	$Q install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
+-	$Q install -m 0755 libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)
+-	$Q ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)	$(DESTDIR)/lib/libwiringPi.so
+-	$Q $(LDCONFIG)
+-
+-.PHONY:	install-deb
+-install-deb:	$(DYNAMIC)
+-	$Q echo "[Install Headers: deb]"
+-	$Q install -m 0755 -d							$(CURDIR)/../debian-template/wiringPi/usr/include
+-	$Q install -m 0644 $(HEADERS)						$(CURDIR)/../debian-template/wiringPi/usr/include
+-	$Q echo "[Install Dynamic Lib: deb]"
+-	install -m 0755 -d							$(CURDIR)/../debian-template/wiringPi/usr/lib
+-	install -m 0755 libwiringPi.so.$(VERSION)				$(CURDIR)/../debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)
+-	ln -sf $(CURDIR)/../debian-template/wiringPi/usr/lib/libwiringPi.so.$(VERSION)	$(CURDIR)/../debian-template/wiringPi/usr/lib/libwiringPi.so
+-
+-.PHONY:	uninstall
+-uninstall:
+-	$Q echo "[UnInstall]"
+-	$Q cd $(DESTDIR)$(PREFIX)/include/ && rm -f $(HEADERS)
+-	$Q cd $(DESTDIR)$(PREFIX)/lib/     && rm -f libwiringPi.*
+-	$Q $(LDCONFIG)
+ 
+ 
+ .PHONY:	depend

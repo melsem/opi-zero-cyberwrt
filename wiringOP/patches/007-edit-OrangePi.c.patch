@@ -1,0 +1,99 @@
+--- a/gpio/OrangePi.c
++++ b/gpio/OrangePi.c
+@@ -1086,6 +1090,8 @@
+ void OrangePiReadAll(void)
+ {
+     int pin;
++    char name [80] ;
++    FILE *fd ;
+ 	int tmp = wiringPiDebug;
+     wiringPiDebug = FALSE;
+ 
+@@ -1089,39 +1093,13 @@
+ 	int tmp = wiringPiDebug;
+     wiringPiDebug = FALSE;
+ 
++    if ((fd = fopen ("/proc/device-tree/model", "r")) != NULL)
++    {
++      if ( fgets (name, 80, fd) ){;}
++      fclose (fd) ;
++    }
++
+-#ifdef CONFIG_ORANGEPI_PC2
+-    printf (" +------+-----+----------+------+---+  OPi PC2 +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_PRIME
+-    printf (" +------+-----+----------+------+---+   PRIME  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZEROPLUS
+-    printf (" +------+-----+----------+------+---+ ZEROPLUS +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZEROPLUS2_H5
+-    printf (" +------+-----+----------+------+---+ZEROPLUS 2+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_2G_IOT
+-    printf (" +------+-----+----------+------+---+  2G-IOT  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_H3
+-    printf (" +------+-----+----------+------+---+OrangePiH3+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZEROPLUS2_H3
+-    printf (" +------+-----+----------+------+---+ZEROPLUS 2+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZERO
+-    printf (" +------+-----+----------+------+---+  OPi H2  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_WIN
+-    printf (" +------+-----+----------+------+---+ OPi Win  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_LITE2 
+-    printf (" +------+-----+----------+------+---+  OPi H6  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_3
+-    printf (" +------+-----+----------+------+---+   OPi 3  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZERO2
+-    printf (" +------+-----+----------+------+---+  Zero 2  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_RK3399
+-    printf (" +------+-----+----------+------+---+OPi RK3399+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_4
+-    printf (" +------+-----+----------+------+---+OrangePi 4+---+---+--+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_800
+-    printf (" +------+-----+----------+------+---+   800    +---+---+--+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_R1PLUS
+-    printf (" +------+-----+----------+------+---+ R1 Plus  +---+---+--+----------+-----+------+\n");
+-#endif
++    printf ("\n\n +------+-----+----------+- %s -+----------+-----+------+\n", name);
+ 
+     printf (" | GPIO | wPi |   Name   | Mode | V | Physical | V | Mode | Name     | wPi | GPIO |\n");
+     printf (" +------+-----+----------+------+---+----++----+---+------+----------+-----+------+\n");
+@@ -1143,39 +1183,7 @@
+     printf (" +------+-----+----------+------+---+----++----+---+------+----------+-----+------+\n");
+     printf (" | GPIO | wPi |   Name   | Mode | V | Physical | V | Mode | Name     | wPi | GPIO |\n");
+ 
+-#ifdef CONFIG_ORANGEPI_PC2
+-    printf (" +------+-----+----------+------+---+  OPi PC2 +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_PRIME
+-    printf (" +------+-----+----------+------+---+   PRIME  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZEROPLUS
+-    printf (" +------+-----+----------+------+---+ ZEROPLUS +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZEROPLUS2_H5
+-    printf (" +------+-----+----------+------+---+ZEROPLUS 2+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_2G_IOT
+-    printf (" +------+-----+----------+------+---+  2G-IOT  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_H3
+-    printf (" +------+-----+----------+------+---+OrangePiH3+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZEROPLUS2_H3
+-    printf (" +------+-----+----------+------+---+ZEROPLUS 2+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZERO
+-    printf (" +------+-----+----------+------+---+  OPi H2  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_WIN
+-    printf (" +------+-----+----------+------+---+ OPi Win  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_LITE2 
+-    printf (" +------+-----+----------+------+---+  OPi H6  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_3
+-    printf (" +------+-----+----------+------+---+   OPi 3  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_ZERO2
+-    printf (" +------+-----+----------+------+---+  Zero 2  +---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_RK3399
+-    printf (" +------+-----+----------+------+---+OPi RK3399+---+------+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_4
+-    printf (" +------+-----+----------+------+---+OrangePi 4+---+---+--+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_800
+-    printf (" +------+-----+----------+------+---+   800    +---+---+--+----------+-----+------+\n");
+-#elif CONFIG_ORANGEPI_R1PLUS
+-    printf (" +------+-----+----------+------+---+ R1 Plus  +---+---+--+----------+-----+------+\n");
+-#endif
++    printf (" +------+-----+----------+- %s -+----------+-----+------+\n\n", name);
+ 
+     wiringPiDebug = tmp;
+ }
