@@ -93,6 +93,12 @@ define Build/Compile
 		$(TARGET_CONFIGURE_OPTS)					\
 		CFLAGS=$(CFLAGS)						\
 		LIBS="$(TARGET_LDFLAGS) -L$(PKG_BUILD_DIR)/devLib -L$(PKG_BUILD_DIR)/wiringPi -lwiringPi -lwiringPiDev -lm -lcrypt -lrt"
+
+	make -C $(PKG_BUILD_DIR)/wiringPiD	\
+		$(TARGET_CONFIGURE_OPTS)	\
+		CFLAGS=$(CFLAGS)		\
+		LIBS="$(TARGET_LDFLAGS) -L$(PKG_BUILD_DIR)/devLib -L$(PKG_BUILD_DIR)/wiringPi -lwiringPi -lwiringPiDev -lpthread -lrt -lm -lcrypt"
+
 endef
 
 define Package/$(PKG_NAME)/install
@@ -105,39 +111,41 @@ define Package/$(PKG_NAME)/install
 
 	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/gpio/gpio $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/speed $(1)$(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/wiringPiD/wiringpid $(1)$(DESTDIR)$(PREFIX)/bin/
 
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/serialRead $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/lcd $(1)$(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/examples
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/speed $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/serialRead $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/lcd $(1)$(DESTDIR)$(PREFIX)/examples/
 
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink8 $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink12 $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink12drcs $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/pwm $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/wfi $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/isr $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/isr-osc $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/lcd-adafruit $(1)$(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink8 $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink12 $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/blink12drcs $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/pwm $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/wfi $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/isr $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/isr-osc $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/lcd-adafruit $(1)$(DESTDIR)$(PREFIX)/examples/
 
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/clock $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/nes $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/softPwm $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/softTone $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/delayTest $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/serialTest $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/okLed $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/ds1302 $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/rht03 $(1)$(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/clock $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/nes $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/softPwm $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/softTone $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/delayTest $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/serialTest $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/okLed $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/ds1302 $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/rht03 $(1)$(DESTDIR)$(PREFIX)/examples/
 
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/lowPower $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/max31855 $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/oled_demo $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/spiSpeed $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/spidev_test $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/w25q64_test $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/watchdog $(1)$(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/spidev_test_linux3_4 $(1)$(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/lowPower $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/max31855 $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/oled_demo $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/spiSpeed $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/spidev_test $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/w25q64_test $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/watchdog $(1)$(DESTDIR)$(PREFIX)/examples/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/spidev_test_linux3_4 $(1)$(DESTDIR)$(PREFIX)/examples/
 
 	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/include
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/*.h $(1)$(DESTDIR)$(PREFIX)/include/

@@ -1,0 +1,11 @@
+--- a/wiringPiD/Makefile
++++ b/wiringPiD/Makefile
+@@ -35,7 +35,7 @@
+ INCLUDE	= -I$(DESTDIR)$(PREFIX)/include
+ CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe
+ 
+-LDFLAGS	= -L$(DESTDIR)$(PREFIX)/lib
++LDFLAGS	= -L$(DESTDIR)$(PREFIX)/lib -L../wiringPi -L../devLib
+ LIBS    = -lwiringPi -lwiringPiDev -lpthread -lrt -lm -lcrypt
+ 
+ # May not need to  alter anything below this line
