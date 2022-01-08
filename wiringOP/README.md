@@ -41,7 +41,7 @@
 +orangepizero-h2
 ```
 root@orangepi-zero-lts:~# gpio -v
-'''
+```
 gpio version: 2.46
 Copyright (c) 2012-2018 Gordon Henderson
 This is free software with ABSOLUTELY NO WARRANTY.
@@ -49,9 +49,9 @@ For details type: gpio -warranty
 
   * Device tree is enabled.
   *--> Xunlong Orange Pi Zero Lts
-'''
+```
 root@orangepi-zero-lts:~# gpio -h
-'''
+```
 gpio: Usage: gpio -v
        gpio -h
        gpio [-g|-1] ...
@@ -65,9 +65,9 @@ gpio: Usage: gpio -v
        gpio serial port
        gpio rbx/rbd
        gpio wb <value>
-'''
+```
 root@orangepi-zero-lts:~# gpio readall
-'''
+```
  +------+-----+----------+- Xunlong Orange Pi Zero Lts -+----------+-----+------+
  | GPIO | wPi |   Name   | Mode | V | Physical | V | Mode | Name     | wPi | GPIO |
  +------+-----+----------+------+---+----++----+---+------+----------+-----+------+
@@ -89,12 +89,12 @@ root@orangepi-zero-lts:~# gpio readall
  +------+-----+----------+------+---+----++----+---+------+----------+-----+------+
  | GPIO | wPi |   Name   | Mode | V | Physical | V | Mode | Name     | wPi | GPIO |
  +------+-----+----------+- Xunlong Orange Pi Zero Lts -+----------+-----+------+
-'''
+```
 root@orangepi-zero-lts:~# gpio mode 3 in
 root@orangepi-zero-lts:~# gpio mode 4 out
 root@orangepi-zero-lts:~# gpio write 4 1
 root@orangepi-zero-lts:~# gpio readall
-'''
+```
  +------+-----+----------+- Xunlong Orange Pi Zero Lts -+----------+-----+------+
  | GPIO | wPi |   Name   | Mode | V | Physical | V | Mode | Name     | wPi | GPIO |
  +------+-----+----------+------+---+----++----+---+------+----------+-----+------+
@@ -116,7 +116,7 @@ root@orangepi-zero-lts:~# gpio readall
  +------+-----+----------+------+---+----++----+---+------+----------+-----+------+
  | GPIO | wPi |   Name   | Mode | V | Physical | V | Mode | Name     | wPi | GPIO |
  +------+-----+----------+- Xunlong Orange Pi Zero Lts -+----------+-----+------+
-'''
+```
 
 
 
