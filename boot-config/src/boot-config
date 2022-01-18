@@ -76,7 +76,7 @@ if [ "$1" == "wifi" ]; then
 	elif [ "$2" == "disabled" ]; then
 	    rm $xradio
 	fi
-  elif [ "$boardname" == "orangepi-r1" ]; then
+  elif [[ "$boardname" == "orangepi-r1" || "$boardname" == "orangepi-one" ]]; then
 	rtles='/etc/modules.d/50-rtl8189es'
 	mac80211='/lib/netifd/wireless/mac80211.sh'
  	if [ "$2" == "okay" ]; then

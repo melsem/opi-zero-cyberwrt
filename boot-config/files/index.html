@@ -83,8 +83,9 @@ border-radius: 10px;
 </style><br>"
 #***************************************************************
 board=$(cat /tmp/sysinfo/board_name)
-model=$(cat /tmp/sysinfo/model)
 boardname="${board##*,}"
+model=$(cat /proc/device-tree/model)
+boardmodel="${model}"
 backup='/boot/dtb.backup'
 dts='/tmp/t-dts'
 wifi='mmc@1c10000\|mmc@01c10000'
@@ -167,6 +168,41 @@ sostusb1=okay
 sostusb2=disabled
 fi
 }
+
+if [ "$boardname" == "orangepi-r1" ]; then
+ powerwifi='Turn on/off the power of the rtl8189es radio module.'
+ pownamwifi='Wifi: rtl8189es'
+ textpownam='vcc-wifi:'
+ usb1='Ethernet1'
+ txt_usb1='RTL8152B USB-Ethernet'
+ ledspin=' (status_Red-Led)'
+ spi1_hide=''
+elif [ "$boardname" == "orangepi-one" ]; then
+ powerwifi='Turn on/off the power of the rtl8189es radio module.'
+ pownamwifi='Wifi: rtl8189es'
+ textpownam='vcc-wifi:'
+ usb1='usb1'
+ txt_usb1='---'
+ ledspin=''
+ spi1_hide='hide'
+elif [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" ]]; then
+ powerwifi='Turn on/off the power of the xr819 radio module.'
+ pownamwifi='Wifi: xradio, xr819'
+ textpownam='vcc-wifi:'
+ usb1='usb1'
+ txt_usb1='---'
+ ledspin=' (status_Red-Led)'
+ spi1_hide=''
+else
+ powerwifi='Turn on/off MMC1.'
+ pownamwifi='mmc1: '
+ textpownam=''
+ usb1='usb1'
+ txt_usb1='---'
+ ledspin=''
+ spi1_hide=''
+fi
+
 
 if [ "$1" == "1" ]; then
 echo "<table align="center" border=0 width=><tr><td>
@@ -297,26 +333,9 @@ echo "</form></table>"
 echo "<form method="POST" action="Save.cgi" $nomount>"
 echo "<table align=center>"
 
-#****** xr819 *******
-if [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" ]]; then
- powerwifi='Turn on/off the power of the xr819 radio module.'
- pownamwifi='Wifi: xradio, xr819'
- textpownam='vcc-wifi:'
- ledspin='Leds-red'
-elif [ "$boardname" == "orangepi-r1" ]; then
- powerwifi='Turn on/off the power of the rtl8189es radio module.'
- pownamwifi='Wifi: rtl8189es'
- textpownam='vcc-wifi:'
- ledspin='Leds-red'
-else
- powerwifi='Turn on/off MMC1.'
- pownamwifi='mmc1: '
- textpownam=''
- ledspin=''
-fi
-#if [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" ]]; then
+#****** 'Wifi: xr819, Wifi: rtl8189es, MMC1 *******
 echo "<tr><td align="center"><table class="b2" border="1" cols="4" bgcolor="#ffffff" cellspacing="10">
-<caption>$model</br>"$powerwifi"</caption>"
+<caption>$boardmodel</br>"$powerwifi"</caption>"
 echo "<tr><td>"
 mod=$(cat $dts | sed -n '/'$wifi'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
@@ -334,8 +353,8 @@ echo "$textpownam enabled"
 fi
 echo "</td></tr>
 </table></td></tr>"
-#fi
-#****** xr819 *******
+# *** END *** 'Wifi: xr819, Wifi: rtl8189es, MMC1 *******
+
 
 echo "<tr><td align="center"><table>"
 
@@ -437,6 +456,7 @@ cat $dts | sed -n '/'$spin0' {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' 
 echo "</td></tr>"
 
 #****************************************************************
+if [ "$spi1_hide" != "hide" ]; then
 echo "<tr><td>"
 mod=$(cat $dts | sed -n '/'$spi1'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 stachec
@@ -448,6 +468,7 @@ echo "
 echo "Gpio: "
 cat $dts | sed -n '/'$spin1' {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td></tr>"
+fi
 
 #*************   usb_otg  **********************
 echo "<tr><td>"
@@ -484,7 +505,7 @@ echo "
 <input type="checkbox" name="usb1" value="disabled" $sostusb2 $checusb1>OFF
 <input type="checkbox" name="usb1" value="okay" $sostusb1 $checusb>ON
 </td>
-<td align="center" bgcolor="$usbcolor">"usb1: "</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
+<td align="center" bgcolor="$usbcolor">"$usb1: "</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>"$txt_usb1"</td></tr>"
 #***************************************************************
 
 
@@ -510,22 +531,7 @@ echo "
 <input type="checkbox" name="usb3" value="disabled" $sostusb2 $checusb1>OFF
 <input type="checkbox" name="usb3" value="okay" $sostusb1 $checusb>ON
 </td>
-<td align="center" bgcolor="$usbcolor">"usb3"</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
-
-
-#*****************************************************************
-echo "<tr><td>"
-mod=$(cat $dts | sed -n '/'$spdif'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
-stachec
-echo "
-<input type="checkbox" name="spdif" value="disabled" $sost2 $checked1>OFF
-<input type="checkbox" name="spdif" value="okay" $sost1 $checked>ON
-</td>
-<td align="center" bgcolor="$bgcolor">"Spdif: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
-echo "Spdif:"
-cat $dts | sed -n '/'$spdifn' {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
-echo "$ledspin"
-echo "</td></tr>"
+<td align="center" bgcolor="$usbcolor">"usb3:"</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td><td>---</td></tr>"
 
 #***************************************************************
 echo "<tr><td>"
@@ -594,7 +600,8 @@ case "`sed -n '/w1_pins {/,/\};/ s/.*pins = \"\(.*\)\".*/\1/p' $dts`" in
 "PG6") pinsg6=selected; aa="uart1_tx";;
 "PG7") pinsg7=selected; aa="uart1_rx";;
 esac
-echo "<select class="button" name="w1pin"><option $pins0>PA0</option>
+echo "<select class="button" name="w1pin">
+<option $pins0>PA0</option>
 <option $pins1>PA1</option>
 <option $pins2>PA2</option>
 <option $pins3>PA3</option>
@@ -647,6 +654,21 @@ cat $dts | sed -n '/pwm0 {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p'
 echo " - UART0_RX"
 echo "</td></tr>"
 
+#*************** spdif ******************************************
+echo "<tr><td>"
+mod=$(cat $dts | sed -n '/'$spdif'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+stachec
+echo "
+<input type="checkbox" name="spdif" value="disabled" $sost2 $checked1>OFF
+<input type="checkbox" name="spdif" value="okay" $sost1 $checked>ON
+</td>
+<td align="center" bgcolor="$bgcolor">"Spdif: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>"
+echo "Spdif:"
+cat $dts | sed -n '/'$spdifn' {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
+echo "$ledspin"
+echo "</td></tr>"
+
+
 #*****************  gps-pps  *******************************
 echo "<tr>
 <td>"
@@ -681,7 +703,26 @@ case "`sed -n '/pps_pins {/,/\};/ s/.*pins = \"\(.*\)\".*/\1/p' $dts`" in
 "PG6") ppinsg6=selected; ab="uart1_tx";;
 "PG7") ppinsg7=selected; ab="uart1_rx";;
 esac
-echo "<select class="button" name="ppspin"><option $ppins0>PA0</option><option $ppins1>PA1</option><option $ppins2>PA2</option><option $ppins3>PA3</option><option $ppins4>PA4</option><option $ppins5>PA5</option><option $ppins6>PA6</option><option $ppins7>PA7</option><option $ppins10>PA10</option><option $ppins11>PA11</option><option $ppins12>PA12</option><option $ppins13>PA13</option><option $ppins14>PA14</option><option $ppins15>PA15</option><option $ppins16>PA16</option><option $ppins18>PA18</option><option $ppins19>PA19</option><option $ppinsg6>PG6</option><option $ppinsg7>PG7</option></select>"
+echo "<select class="button" name="ppspin">
+<option $ppins0>PA0</option>
+<option $ppins1>PA1</option>
+<option $ppins2>PA2</option>
+<option $ppins3>PA3</option>
+<option $ppins4>PA4</option>
+<option $ppins5>PA5</option>
+<option $ppins6>PA6</option>
+<option $ppins7>PA7</option>
+<option $ppins10>PA10</option>
+<option $ppins11>PA11</option>
+<option $ppins12>PA12</option>
+<option $ppins13>PA13</option>
+<option $ppins14>PA14</option>
+<option $ppins15>PA15</option>
+<option $ppins16>PA16</option>
+<option $ppins18>PA18</option>
+<option $ppins19>PA19</option>
+<option $ppinsg6>PG6</option>
+<option $ppinsg7>PG7</option></select>"
 echo $ab
 echo "</td></tr>"
 
