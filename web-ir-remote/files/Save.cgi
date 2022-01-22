@@ -93,7 +93,7 @@ sost = 0
 	if($1 == "webirremoteinit") webirremoteinit = unescape($2)
 	if($1 == "textremoteinit")
 	{
-		system("echo '"webirremoteinit"' | sed 's/\r//;/^$/d' > /etc/init.d/web-ir-remote")
+	#	system("echo '"webirremoteinit"' | sed 's/\r//;/^$/d' > /etc/init.d/web-ir-remote")
 	#	print "<b> Save web-ir-remote-init OK</b><br>"
 	}
 }

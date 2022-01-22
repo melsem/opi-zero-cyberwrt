@@ -2,23 +2,28 @@
 
 START=99
 
+protocol='nec'
+keyfile=/etc/rc_keymaps/keyes
+key_file=$(sed 's/[ \t]/=/g' $keyfile | sed -e :a -e '$!N;s/\n/,/;ta' -e 'P;D')
+
 start() {
- /etc/init.d/triggerhappy stop &
- ir-keytable -p nec &
- ir-keytable -w /etc/rc_keymaps/keyes &
- /etc/init.d/triggerhappy start &
+ /usr/sbin/th-cmd --socket /tmp/triggerhappy.socket --quit
+ ir-keytable -c 2>/dev/null
+ ir-keytable -p ${protocol} -k ${key_file} 2>/dev/null
+ /usr/sbin/thd --socket /tmp/triggerhappy.socket --triggers /etc/triggerhappy/triggers.d/ --daemon /dev/input/event* &
 }
 
 restart() {
- /etc/init.d/triggerhappy stop &
- ir-keytable -p nec &
- ir-keytable -w /etc/rc_keymaps/keyes &
- /etc/init.d/triggerhappy start &
+ /usr/sbin/th-cmd --socket /tmp/triggerhappy.socket --quit
+ ir-keytable -c 2>/dev/null
+ ir-keytable -p ${protocol} -k ${key_file} 2>/dev/null
+ /usr/sbin/thd --socket /tmp/triggerhappy.socket --triggers /etc/triggerhappy/triggers.d/ --daemon /dev/input/event* &
 }
 
 reload() {
- /etc/init.d/triggerhappy stop &
- ir-keytable -p nec &
- ir-keytable -w /etc/rc_keymaps/keyes &
- /etc/init.d/triggerhappy start &
+ /usr/sbin/th-cmd --socket /tmp/triggerhappy.socket --quit
+ ir-keytable -c 2>/dev/null
+ ir-keytable -p ${protocol} -k ${key_file} 2>/dev/null
+ /usr/sbin/thd --socket /tmp/triggerhappy.socket --triggers /etc/triggerhappy/triggers.d/ --daemon /dev/input/event* &
 }
+
