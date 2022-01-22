@@ -1,11 +1,13 @@
 <%+header%>
 	<a href=/cgi-bin/modules/boot-config/luci.htm>
 	<h2 name="content"><%:Boot config: sun8i Allwinner H2+, H3.%></h2>
-	1. Configure items to boot <b>i2c0, i2c1, i2c2, uart0, uart1, uart2, spi0, spi1, usb_otg, usb0, usb1, usb2, usb3, Spdif, Ethernet0</b>.</a>
-		</br></br>
+	1. Configure items to boot <b>i2c0, i2c1, i2c2, uart0, uart1, uart2, spi0, spi1, 
+		usb_otg, usb0, usb1, usb2, usb3, Spdif, Ethernet0</b>.</a></br></br>
+
 	<a href=https://github.com/melsem/opi-zero-cyberwrt/tree/master/patch>
-	2. To configure the boot items: <b>wifi-xr819 or MMC1, Analog-audio-codec, w1, irc, pwm0, pps-gpio, gpio-keys-user, rotary-encoder</b>, </br>
-	you need to rebuild the firmware yourself. And use <b>corrected sources.</b></a></br></br>
+	2. To configure the boot items: <b>cpu-freq, CPU Cores, wifi or MMC1, Analog-audio-codec, w1, irc, pwm0, pps-gpio, 
+		uart0-1-2, USB0-1-2-3, gpio-keys-user, rotary-encoder</b> 
+			you need to rebuild the firmware yourself. And use <b>corrected sources.</b></a></br></br>
 	<a href=/cgi-bin/modules/boot-config/luci.htm>
 		<input type="button" value="Boot-config editor"></a>
 <%+footer%>
