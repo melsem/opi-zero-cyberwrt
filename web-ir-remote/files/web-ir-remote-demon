@@ -13,6 +13,7 @@ if [ "$1" == "rckeymaps" ]; then
 	else
 		sed -i '/'$2'.'$3'/d' $rckeymaps
  		echo -e $4" "$5 >> $rckeymaps
+		sed -i '/^$/d' $rckeymaps
 		echo "EDIT rckeymaps"
 	fi
 
@@ -22,6 +23,7 @@ elif [ "$1" == "triggerhappy" ]; then
  echo "EDIT triggerhappy.conf "
  sed -i '/\b'$2'\b.'$3'\b/d' $triggerhappy
  echo -e $5'\t'$6'\t'$7 >> $triggerhappy
+  sed -i '/^$/d' $rckeymaps
 
 #####
 
@@ -53,6 +55,7 @@ elif [ "$1" == "rckeymaps_add" ]; then
  else
   echo -e "Saved by ircode."
   echo -e $2" "$3 >> $rckeymaps
+  sed -i '/^$/d' $rckeymaps
  fi
 
 #  system("ir-remote triggerhappy_add '"keyname_star"' '"keysost_star"' '"command_star"' '"add_nev_keyname"' '"add_nev_keysost"' '"add_nev_command"")
@@ -63,6 +66,6 @@ elif [ "$1" == "triggerhappy_add" ]; then
  else
   echo -e "Saved by triggerhappy"
   echo -e $5'\t'$6'\t'$7 >> $triggerhappy
+  sed -i '/^$/d' $rckeymaps
  fi
 fi
-
