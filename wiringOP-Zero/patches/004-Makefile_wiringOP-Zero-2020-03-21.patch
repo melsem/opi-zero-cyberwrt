@@ -1,0 +1,31 @@
+--- a/examples/Makefile	2022-01-13 23:50:18.000000000 +0200
++++ b/examples/Makefile	2022-01-28 13:20:08.920665163 +0200
+@@ -29,7 +29,7 @@
+ INCLUDE	= -I/usr/local/include
+ CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
+ 
+-LDFLAGS	= -L/usr/local/lib
++LDFLAGS	= -L/usr/local/lib -L../wiringPi -L../devLib
+ LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm
+ 
+ # Should not alter anything below this line
+@@ -43,7 +43,7 @@
+ 		nes.c								\
+ 		softPwm.c softTone.c 						\
+ 		delayTest.c serialRead.c serialTest.c okLed.c ds1302.c		\
+-		rht03.c piglow.c
++		rht03.c piglow.c 7segments.c
+ 
+ OBJ	=	$(SRC:.c=.o)
+ 
+@@ -56,6 +56,10 @@
+ 
+ really-all:	$(BINS)
+ 
++7segments:	7segments.o
++	@echo [link]
++	@$(CC) -o $@ 7segments.o $(LDFLAGS) $(LDLIBS)
++
+ blink:	blink.o
+ 	@echo [link]
+ 	@$(CC) -o $@ blink.o $(LDFLAGS) $(LDLIBS)
