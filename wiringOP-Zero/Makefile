@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wiringOP-Zero
-PKG_RELEASE:=2.0
+PKG_RELEASE:=2.6
 DESTDIR=/usr
 PREFIX=
 
@@ -22,6 +22,25 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_KERNEL_DEVMEM \
 	CONFIG_KERNEL_DEVKMEM \
+	CONFIG_EXAMPLES \
+	CONFIG_SHARE_MAN1 \
+	CONFIG_INCLUDE_LIB_WIRINGOP \
+	CONFIG_ORANGEPI_ZERO_H2_PLUS \
+	CONFIG_ORANGEPI_R1_H2_PLUS \
+	CONFIG_ORANGEPI_PLUS_H3 \
+	CONFIG_ORANGEPI_ONE_H3 \
+	CONFIG_ORANGEPI_LITE_H3 \
+	CONFIG_ORANGEPI_PC_H3 \
+	CONFIG_ORANGEPI_PC_PLUS_H3 \
+	CONFIG_ORANGEPI_PLUS_2E_H3 \
+	CONFIG_ORANGEPI_ZERO_PLUS2_H3 \
+	CONFIG_ORANGEPI_ZERO_PLUS2_H5 \
+	CONFIG_ORANGEPI_LITE_2 \
+	CONFIG_ORANGE_PI_WIN \
+	CONFIG_ORANGEPI_ZERO_PLUS \
+	CONFIG_ORANGEPI_PC2 \
+	CONFIG_ORANGEPI_PRIME \
+	CONFIG_ORANGEPI_3
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -30,19 +49,97 @@ define Package/$(PKG_NAME)
   CATEGORY:=Utilities
   TITLE:=$(PKG_NAME) for orangepi.
   DEPENDS:=@TARGET_sunxi
+  MENU:=1
 endef
 
 define Package/$(PKG_NAME)/description
+  Depends: 
+  'make menuconfig', select 'Global Build Settings' ---> 'Kernel Build Options':
+  check "/dev/mem virtual device support" and
+  check "/dev/kmem virtual device support"
+
+  -------------------------------
+  This is a modified WiringPi for:
+	"ORANGEPI_ZERO_H2+"
+	"ORANGEPI_R1_H2+"
+	"ORANGEPI_PLUS_H3"
+	"ORANGEPI_ONE_H3"
+	"ORANGEPI_LITE_H3"
+	"ORANGEPI_PC_H3"
+	"ORANGEPI_PC_PLUS_H3"
+	"ORANGEPI_PLUS_2E_H3"
+	"ORANGEPI_ZERO_PLUS2_H3"
+	"ORANGEPI_ZERO_PLUS2_H5"
+	"ORANGEPI_LITE_2"
+	"ORANGE_PI_WIN"
+	"ORANGEPI_ZERO_PLUS"
+	"ORANGEPI_PC2"
+	"ORANGEPI_PRIME"
+	"ORANGEPI_3"
+  -------------------------------
+
   https://github.com/sanjuruk/WiringOP-Zero
 #  https://github.com/sunzone93/WiringOP-Zero
 endef
+
+define Package/$(PKG_NAME)/config
+	source "$(SOURCE)/Config.in"
+endef
+
+#################
+ifeq ($(CONFIG_ORANGEPI_ZERO_H2_PLUS),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO
+else ifeq ($(CONFIG_ORANGEPI_R1_H2_PLUS),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO
+
+else ifeq ($(CONFIG_ORANGEPI_PLUS_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_H3
+else ifeq ($(CONFIG_ORANGEPI_ONE_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_H3
+else ifeq ($(CONFIG_ORANGEPI_LITE_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_H3
+else ifeq ($(CONFIG_ORANGEPI_PC_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_H3
+else ifeq ($(CONFIG_ORANGEPI_PC_PLUS_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_H3
+else ifeq ($(CONFIG_ORANGEPI_PLUS_2E_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_H3
+else ifeq ($(CONFIG_ORANGEPI_PLUS_2_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_H3
+
+else ifeq ($(CONFIG_ORANGEPI_ZERO_PLUS2_H3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZEROPLUS2_H3
+else ifeq ($(CONFIG_ORANGEPI_ZERO_PLUS2_H5),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZEROPLUS2_H3
+
+else ifeq ($(CONFIG_ORANGEPI_LITE_2),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_LITE2
+
+else ifeq ($(CONFIG_ORANGE_PI_WIN),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_WIN
+
+else ifeq ($(CONFIG_ORANGEPI_ZERO_PLUS),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO
+
+else ifeq ($(CONFIG_ORANGEPI_PC2),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_PC2
+
+else ifeq ($(CONFIG_ORANGEPI_PRIME),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_PRIME
+
+else ifeq ($(CONFIG_ORANGEPI_3),y)
+EXTRA_CFLAGS = -DCONFIG_ORANGEPI_3
+
+endif
+#################
 
 #define Build/Prepare
 #	mkdir -p $(PKG_BUILD_DIR)
 #	$(CP) ./* $(PKG_BUILD_DIR)/
 #endef
 
-CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) -I/$(PKG_BUILD_DIR)/wiringPi/ -I/$(PKG_BUILD_DIR)/devLib/"
+CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) -I/$(PKG_BUILD_DIR)/wiringPi/ \
+			-I/$(PKG_BUILD_DIR)/devLib/ $(EXTRA_CFLAGS)"
 
 SRC_EXAMPLES =	blink blink8 blink12					\
 		blink12drcs						\
@@ -90,6 +187,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/gpio/gpio $(1)$(DESTDIR)$(PREFIX)/bin/
 
+ifeq ($(CONFIG_EXAMPLES),y)
 	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/examples
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/speed $(1)$(DESTDIR)$(PREFIX)/examples/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/7segments $(1)$(DESTDIR)$(PREFIX)/examples/
@@ -125,13 +223,18 @@ define Package/$(PKG_NAME)/install
 #	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/w25q64_test $(1)$(DESTDIR)$(PREFIX)/examples/
 #	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/watchdog $(1)$(DESTDIR)$(PREFIX)/examples/
 #	$(INSTALL_BIN) $(PKG_BUILD_DIR)/examples/spidev_test_linux3_4 $(1)$(DESTDIR)$(PREFIX)/examples/
+endif
 
+ifeq ($(CONFIG_INCLUDE_LIB_WIRINGOP),y)
 	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/include
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/*.h $(1)$(DESTDIR)$(PREFIX)/include/
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/*.h $(1)$(DESTDIR)$(PREFIX)/include/
+endif
 
+ifeq ($(CONFIG_SHARE_MAN1),y)
 	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/share/man/man1
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/gpio/gpio.1 $(1)$(DESTDIR)$(PREFIX)/share/man/man1/
+endif
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

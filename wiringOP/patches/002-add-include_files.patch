@@ -1,0 +1,32 @@
+--- a/examples/w25q64_test.c
++++ b/examples/w25q64_test.c
+@@ -2,7 +5,8 @@
+ #include <stdint.h>
+ #include <stdbool.h>
+ #include <string.h>
+-#include "w25q64.h"
++#include "../wiringPi/w25q64.h"
++#include "../wiringPi/wiringPiSPI.h"
+ 
+ #define SPI_CHANNEL 0 // /dev/spidevX.0
+ //#define SPI_CHANNEL 1 // /dev/spidevX.0
+@@ -54,7 +59,7 @@
+ 
+ void main() {
+     uint8_t buf[256];    
+-    uint8_t wdata[16];   
++    uint8_t wdata[32];   
+     uint8_t i;
+     uint16_t n;          
+ 
+--- a/examples/watchdog.c
++++ b/examples/watchdog.c
+@@ -11,7 +19,7 @@
+ #include <unistd.h>
+ #include <time.h>
+ #include <getopt.h>
+-#include <sys/signal.h>
++//#include <sys/signal.h>	// <linux/signal.h>
+ #include <termios.h>
+ 
+ struct watchdog_info{

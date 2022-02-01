@@ -1,0 +1,121 @@
+menu "wiringOP-zero map-gpio target orangepi.."
+	depends on PACKAGE_wiringOP-Zero
+
+config ORANGEPI_ZERO_H2_PLUS
+	bool "Enable target orangepi-zero-h2+"
+	default y
+	help
+           This 26-pin headers, and 13pin function interface.
+
+config ORANGEPI_ZERO_PLUS
+	bool "Enable target orangepi-zero-plus-h5"
+	default n
+	help
+           This 26-pin headers, and 13pin function interface.
+
+config ORANGEPI_R1_H2_PLUS
+	bool "Enable target orangepi-R1-h2+"
+	default n
+	help
+           This 26-pin headers, and 13pin function interface.
+
+config ORANGEPI_PC_H3
+	bool "Enable target orangepi-pc-h3"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_PC_PLUS_H3
+	bool "Enable target orangepi-pc-plus-h3"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_PLUS_H3
+	bool "Enable target orangepi-plus-h3"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_PLUS_2E_H3
+	bool "Enable target orangepi-plus-2e-h3"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_ONE_H3
+	bool "Enable target orangepi-one-h3"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_LITE_H3
+	bool "Enable target orangepi-lite-h3"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_ZERO_PLUS2_H3
+	bool "Enable target orangepi-zero-plus2-h3"
+	default n
+	help
+           This 26-pin headers, and 13pin function interface.
+
+config ORANGEPI_ZERO_PLUS2_H5
+	bool "Enable target orangepi-zero-plus2-h5"
+	default n
+	help
+           This 26-pin headers, and 13pin function interface.
+
+config ORANGEPI_LITE_2
+	bool "Enable target orangepi-lite2"
+	default n
+	help
+           This 26-pin headers
+
+config ORANGE_PI_WIN
+	bool "Enable target orangepi-win"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_PC2
+	bool "Enable target orangepi-pc2"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_PRIME
+	bool "Enable target orangepi-prime"
+	default n
+	help
+           This 40-pin headers.
+
+config ORANGEPI_3
+	bool "Enable target orangepi-3"
+	default n
+	help
+           This 26-pin headers
+
+endmenu
+
+menu "Examples"
+	depends on PACKAGE_wiringOP-Zero
+config EXAMPLES
+	bool "Examples"
+	default n
+	help
+		Examples.
+
+config INCLUDE_LIB_WIRINGOP
+	bool "include"
+	default n
+	help
+		include.
+
+config SHARE_MAN1
+	bool "Share-man1"
+	default n
+	help
+		Share-man.
+endmenu

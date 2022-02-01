@@ -1,5 +1,14 @@
 --- a/gpio/gpio.c	2022-01-13 23:50:18.000000000 +0200
-+++ b/gpio/gpio.c	2022-01-28 13:20:08.928664954 +0200
++++ b/gpio/gpio.c	2022-02-01 16:29:19.499787642 +0200
+@@ -34,7 +34,7 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ 
+-#include <wiringPi.h>
++#include "../wiringPi/wiringPi.h"
+ 
+ #include <gertboard.h>
+ #include <piFace.h>
 @@ -46,6 +46,7 @@
  // External functions I can't be bothered creating a separate .h file for:
  
@@ -8,18 +17,49 @@
  extern void doPins       (void) ;
  
  #ifndef TRUE
-@@ -62,8 +63,9 @@
+@@ -53,7 +54,7 @@
+ #  define	FALSE	(1==2)
+ #endif
+ 
+-#define	VERSION			"2.20"
++#define	VERSION			"2.60"
+ #define	PI_USB_POWER_CONTROL	38
+ #define	I2CDETECT		"/usr/sbin/i2cdetect"
+ 
+@@ -62,16 +63,29 @@
  char *usage = "Usage: gpio -v\n"
                "       gpio -h\n"
                "       gpio [-g|-1] [-x extension:params] ...\n"
-+              "       gpio <toggle/blink> <pin>\n"
-               "       gpio <read/write/aread/awritewb/pwm/mode> ...\n"   /*modify for BananaPro by LeMaker team*/
+-              "       gpio <read/write/aread/awritewb/pwm/mode> ...\n"   /*modify for BananaPro by LeMaker team*/
 -	      "       gpio readall/reset\n"
++	      "       gpio <toggle/blink> <pin>\n"
++	      "       gpio <read/write/aread/awritewb/pwm/mode> ...\n"   /*modify for BananaPro by LeMaker team*/
 +	      "       gpio readall/nreadall/allreadall/reset\n"
  	      "       gpio unexportall/exports\n"
  	      "       gpio export/edge/unexport ...\n"
  	      "       gpio pwm-bal/pwm-ms \n"
-@@ -358,7 +360,7 @@
+ 	      "       gpio pwmr <range> \n"
+ 	      "       gpio pwmc <divider> \n"
+ 	      "       gpio load spi/i2c\n"
+ 	      "       gpio i2cd/i2cdetect\n"
+-	      "       gpio usbp high/low\n"
++	      "       gpio usbp high/low\n\n"
++	      "                     mode pin mode\n"
++	      "       gpio mode <pin> <in/input>           (pinMode - pin, INPUT)\n"
++	      "       gpio mode <pin> <out/output>  (pinMode - pin, OUTPUT)\n\n"
++	      "       gpio mode <pin> <up>             (pullUpDnControl - pin, PUD_UP)\n"
++	      "       gpio mode <pin> <down>           (pullUpDnControl - pin, PUD_DOWN)\n"
++	      "       gpio mode <pin> <tri/off>        (pullUpDnControl - pin, PUD_OFF)\n\n"
++	      "       gpio mode <pin> <alt0>           (pinModeAlt      (pin, 0b100)\n"
++	      "       gpio mode <pin> <alt1>           (pinModeAlt      (pin, 0b101)\n"
++	      "       gpio mode <pin> <alt2>           (pinModeAlt      (pin, 0b110)\n"
++	      "       gpio mode <pin> <alt3/disable>   (pinModeAlt      (pin, 0b111)\n"
++	      "       gpio mode <pin> <alt4/enable>    (sunxi H3 pin-5, pwm-ON...0b011)\n"
++	      "       gpio mode <pin> <alt5>           (pinModeAlt      (pin, 0b010)\n\n"
+ 			;
+ 
+ #ifdef	NOT_FOR_NOW
+@@ -358,7 +369,7 @@
    char fName [128] ;
    char buf [16] ;
  
@@ -28,7 +68,7 @@
    {
  
  // Try to read the direction
-@@ -701,14 +703,17 @@
+@@ -701,14 +712,17 @@
    FILE *fd ;
    int pin ;
  
@@ -48,7 +88,7 @@
      fclose (fd) ;
    }
  }
-@@ -748,11 +753,12 @@
+@@ -748,11 +762,12 @@
    {
      doUnexportall (progName) ;
  
@@ -62,7 +102,16 @@
        digitalWrite    (pin, LOW) ;
        pinMode         (pin, INPUT) ;
        pullUpDnControl (pin, PUD_OFF) ;
-@@ -1114,6 +1120,34 @@
+@@ -796,6 +811,8 @@
+   else if (strcasecmp (mode, "alt1")    == 0) pinModeAlt      (pin, 0b101) ;
+   else if (strcasecmp (mode, "alt2")    == 0) pinModeAlt      (pin, 0b110) ;
+   else if (strcasecmp (mode, "alt3")    == 0) pinModeAlt      (pin, 0b111) ;
++  else if (strcasecmp (mode, "disable") == 0) pinModeAlt      (pin, 0b111) ;
++  else if (strcasecmp (mode, "enable")  == 0) pinModeAlt      (pin, 0b011) ;
+   else if (strcasecmp (mode, "alt4")    == 0) pinModeAlt      (pin, 0b011) ;
+   else if (strcasecmp (mode, "alt5")    == 0) pinModeAlt      (pin, 0b010) ;
+ 
+@@ -1114,6 +1131,34 @@
  
  
  /*
@@ -97,7 +146,7 @@
   * doPwmTone:
   *	Output a tone in a PWM pin
   *********************************************************************************
-@@ -1249,6 +1283,9 @@
+@@ -1249,6 +1294,9 @@
    int i ;
    int model, rev, mem, maker, overVolted ;
  
@@ -107,7 +156,7 @@
    if (getenv ("WIRINGPI_DEBUG") != NULL)
    {
      printf ("gpio: wiringPi debug mode enabled\n") ;
-@@ -1292,19 +1329,19 @@
+@@ -1292,19 +1340,19 @@
      printf ("This is free software with ABSOLUTELY NO WARRANTY.\n") ;
      printf ("For details type: %s -warranty\n", argv [0]) ;
      printf ("\n") ;
@@ -140,16 +189,46 @@
      return 0 ;
    }
  
-@@ -1417,6 +1454,7 @@
+@@ -1365,6 +1413,11 @@
+   {
+     wiringPiSetupPhys () ;
+ 
++  int pin;
++  pin = atoi (argv [3]) ;
++  if (physPinToGpio (pin) == -1)
++     exit (1) ;
++
+     for (i = 2 ; i < argc ; ++i)
+       argv [i - 1] = argv [i] ;
+     --argc ;
+@@ -1409,24 +1462,25 @@
+   if (strcasecmp (argv [1], "mode"   ) == 0) doMode      (argc, argv) ;
+   else if (strcasecmp (argv [1], "read"   ) == 0) doRead      (argc, argv) ;
+   else if (strcasecmp (argv [1], "write"  ) == 0) doWrite     (argc, argv) ;
+-  else if (strcasecmp (argv [1], "pwm"    ) == 0) doPwm       (argc, argv) ;
+-  else if (strcasecmp (argv [1], "awrite" ) == 0) doAwrite    (argc, argv) ;
+-  else if (strcasecmp (argv [1], "aread"  ) == 0) doAread     (argc, argv) ;
++  else if (strcasecmp (argv [1], "pwm"    ) == 0) doPwm       (argc, argv) ;
++//  else if (strcasecmp (argv [1], "awrite" ) == 0) doAwrite    (argc, argv) ;
++//  else if (strcasecmp (argv [1], "aread"  ) == 0) doAread     (argc, argv) ;
+ 
+ // GPIO Nicies
  
    else if (strcasecmp (argv [1], "toggle" ) == 0) doToggle    (argc, argv) ;
  
 +  else if (strcasecmp (argv [1], "blink"  ) == 0) doBlink     (argc, argv) ;
  // Pi Specifics
  
-   else if (strcasecmp (argv [1], "pwm-bal"  ) == 0) doPwmMode    (PWM_MODE_BAL) ;
-@@ -1426,7 +1464,7 @@
-   else if (strcasecmp (argv [1], "pwmTone"  ) == 0) doPwmTone    (argc, argv) ;
+-  else if (strcasecmp (argv [1], "pwm-bal"  ) == 0) doPwmMode    (PWM_MODE_BAL) ;
+-  else if (strcasecmp (argv [1], "pwm-ms"   ) == 0) doPwmMode    (PWM_MODE_MS) ;
+-  else if (strcasecmp (argv [1], "pwmr"     ) == 0) doPwmRange   (argc, argv) ;
+-  else if (strcasecmp (argv [1], "pwmc"     ) == 0) doPwmClock   (argc, argv) ;
+-  else if (strcasecmp (argv [1], "pwmTone"  ) == 0) doPwmTone    (argc, argv) ;
++  else if (strcasecmp (argv [1], "pwm-bal"  ) == 0) doPwmMode    (PWM_MODE_BAL) ;
++  else if (strcasecmp (argv [1], "pwm-ms"   ) == 0) doPwmMode    (PWM_MODE_MS) ;
++  else if (strcasecmp (argv [1], "pwmr"     ) == 0) doPwmRange   (argc, argv) ;
++  else if (strcasecmp (argv [1], "pwmc"     ) == 0) doPwmClock   (argc, argv) ;
++  else if (strcasecmp (argv [1], "pwmTone"  ) == 0) doPwmTone    (argc, argv) ;
    else if (strcasecmp (argv [1], "usbp"     ) == 0) doUsbP       (argc, argv) ;
    else if (strcasecmp (argv [1], "readall"  ) == 0) doReadall    () ;
 -  else if (strcasecmp (argv [1], "nreadall" ) == 0) doReadall    () ;

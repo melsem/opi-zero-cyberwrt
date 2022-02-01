@@ -1,0 +1,24 @@
+--- a/gpio/gpio.c
++++ b/gpio/gpio.c
+@@ -825,6 +836,9 @@
+ 
+   for (pin = 0 ; pin < 63 ; ++pin)
+   {
++	if (pinToGpioOrangePi [pin & 63] == -1)
++		continue ;
++printf (" Unexportall-OrangePi: gpio-%d\n", pinToGpioOrangePi [pin & 63]) ; // test: All gpio-unexport
+ #ifdef CONFIG_ORANGEPI
+   	i = pinToGpioOrangePi[pin];
+ #ifdef CONFIG_ORANGEPI_RK3399
+@@ -837,7 +837,11 @@
+       fprintf (stderr, "%s: Unable to open GPIO export interface\n", progName) ;
+       exit (1) ;
+     }
++    fprintf (fd, "%d\n", pinToGpioOrangePi [pin & 63]) ;
++#ifdef CONFIG_ORANGEPI_RK3399
++printf (" Unexportall-RK3399: gpio-%d\n", i ; // test: All gpio-unexport-RK3399
+     fprintf (fd, "%d\n", i) ;
++#endif
+     fclose (fd) ;
+   }
+ }

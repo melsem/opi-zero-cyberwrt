@@ -1,0 +1,11 @@
+--- a/devLib/Makefile	2022-01-13 23:50:18.000000000 +0200
++++ b/devLib/Makefile	2022-02-01 16:35:16.898462313 +0200
+@@ -21,7 +21,7 @@
+ #################################################################################
+ 
+ DYN_VERS_MAJ=2
+-DYN_VERS_MIN=0
++DYN_VERS_MIN=6
+ 
+ VERSION=$(DYN_VERS_MAJ).$(DYN_VERS_MIN)
+ DESTDIR=/usr
