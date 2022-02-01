@@ -1,5 +1,5 @@
 --- a/gpio/OrangePi.h	1970-01-01 03:00:00.000000000 +0300
-+++ b/gpio/OrangePi.h	2022-02-01 16:29:19.507787435 +0200
++++ b/gpio/OrangePi.h	2022-02-01 22:33:59.693390921 +0200
 @@ -0,0 +1,540 @@
 +
 +#ifdef CONFIG_ORANGEPI_ZERO

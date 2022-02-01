@@ -1,5 +1,5 @@
 --- a/wiringPi/OrangePi.h	1970-01-01 03:00:00.000000000 +0300
-+++ b/wiringPi/OrangePi.h	2022-02-01 16:29:19.519787124 +0200
++++ b/wiringPi/OrangePi.h	2022-02-01 22:33:59.705390611 +0200
 @@ -0,0 +1,935 @@
 +#ifdef CONFIG_ORANGEPI_ZERO
 +// WiringPiNr. gegeben .. -> Array GPIOx orange pi

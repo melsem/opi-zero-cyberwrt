@@ -1,5 +1,5 @@
 --- a/examples/Makefile	2022-01-13 23:50:18.000000000 +0200
-+++ b/examples/Makefile	2022-02-01 16:29:19.527786916 +0200
++++ b/examples/Makefile	2022-02-01 22:33:59.717390302 +0200
 @@ -29,7 +29,7 @@
  INCLUDE	= -I/usr/local/include
  CFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
