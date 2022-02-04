@@ -1,4 +1,4 @@
-menu "wiringOP-zero map-gpio target orangepi.."
+menu "Selecting the Orangepi model to which the assembly is WiringOP-zero..."
 	depends on PACKAGE_wiringOP-Zero
 
 config ORANGEPI_ZERO_H2_PLUS
@@ -99,20 +99,26 @@ config ORANGEPI_3
 
 endmenu
 
-menu "Examples"
+menu "Include in Examples build"
 	depends on PACKAGE_wiringOP-Zero
 config EXAMPLES
 	bool "Examples"
 	default n
 	help
 		Examples.
+endmenu
 
+menu "Include in library build. - (/usr/include/*.h)"
+	depends on PACKAGE_wiringOP-Zero
 config INCLUDE_LIB_WIRINGOP
 	bool "include"
 	default n
 	help
-		include.
+	   Include in library build. - (/usr/include/*.h).
+endmenu
 
+menu "Include in SHARE_MAN1 build"
+	depends on PACKAGE_wiringOP-Zero
 config SHARE_MAN1
 	bool "Share-man1"
 	default n
