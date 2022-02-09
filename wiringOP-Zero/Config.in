@@ -112,7 +112,7 @@ menu "Include in library build. - (/usr/include/*.h)"
 	depends on PACKAGE_wiringOP-Zero
 config INCLUDE_LIB_WIRINGOP
 	bool "include"
-	default n
+	default y
 	help
 	   Include in library build. - (/usr/include/*.h).
 endmenu
