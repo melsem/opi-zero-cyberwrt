@@ -227,8 +227,56 @@ endif
 
 ifeq ($(CONFIG_INCLUDE_LIB_WIRINGOP),y)
 	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/include
+	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/include/wiringPi
+	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/include/devLib
+	$(INSTALL_DIR) $(1)$(DESTDIR)$(PREFIX)/include/gpio
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/*.h $(1)$(DESTDIR)$(PREFIX)/include/
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/*.h $(1)$(DESTDIR)$(PREFIX)/include/
+
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/drcSerial.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/drcSerial.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/max31855.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/max31855.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/max5322.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/max5322.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp23008.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp23008.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp23016.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp23016.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp23017.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp23017.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp23s08.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp23s08.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp23s17.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp23s17.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp3002.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp3002.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp3004.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp3004.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp3422.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp3422.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/mcp4802.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/mcp4802.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/pcf8574.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/pcf8574.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/pcf8591.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/pcf8591.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/piHiPri.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/piHiPri.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/piThread.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/piThread.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/sn3218.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/sn3218.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/softPwm.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/softPwm.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/softServo.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/softServo.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/softTone.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/softTone.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/sr595.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/sr595.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/wiringPi.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/wiringPi.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/wiringPiI2C.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/wiringPiI2C.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/wiringPiSPI.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/wiringPiSPI.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/wiringSerial.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/wiringSerial.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/wiringPi/wiringShift.c $(1)$(DESTDIR)$(PREFIX)/include/wiringPi/wiringShift.h
+
+
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/ds1302.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/ds1302.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/gertboard.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/gertboard.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/hx711.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/hx711.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/lcd128x64.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/lcd128x64.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/lcd.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/lcd.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/maxdetect.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/maxdetect.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/onewire.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/onewire.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/piFace.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/piFace.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/piFaceOld.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/piFaceOld.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/piGlow.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/piGlow.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/devLib/piNes.c $(1)$(DESTDIR)$(PREFIX)/include/devLib/piNes
+
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/gpio/extensions.h $(1)$(DESTDIR)$(PREFIX)/include/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/gpio/extensions.c $(1)$(DESTDIR)$(PREFIX)/include/gpio/extensions.h
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/gpio/OrangePi.h $(1)$(DESTDIR)$(PREFIX)/include/gpio/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/gpio/readall.c $(1)$(DESTDIR)$(PREFIX)/include/gpio/readall.h
 endif
 
 ifeq ($(CONFIG_SHARE_MAN1),y)
