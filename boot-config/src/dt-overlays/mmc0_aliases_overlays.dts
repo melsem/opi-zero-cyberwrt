@@ -1,0 +1,7 @@
+
+/ {
+	aliases {
+		mmc0 = "/soc/mmc@1c0f000";
+	};
+};
+

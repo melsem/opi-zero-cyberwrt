@@ -1,0 +1,6 @@
+
+&codec {
+	allwinner,audio-routing = "Line Out", "LINEOUT", 
+				"MIC1", "Mic", "Mic", "MBIAS";
+};
+

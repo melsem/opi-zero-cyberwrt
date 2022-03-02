@@ -1,0 +1,43 @@
+
+&pio {
+	wifi_wake: wifi-wake {
+		pins = "PG10";
+		function = "gpio_in";
+	};
+};
+
+&mmc1 {
+	keep-power-in-suspend;
+	status = "disabled";
+
+	xr819: sdio_wifi@1 {
+		reg = <0x01>;
+		compatible = "xradio,xr819";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_wake>;
+		interrupt-parent = <0x0a>;
+		interrupts = <0x06 0x0a 0x01>;
+		interrupt-names = "host-wake";
+	};
+};
+
+&r_pio {
+	r_wifi_rst: r-wifi-rst {
+		pins = "PL7";
+		function = "gpio_out";
+	};
+};
+
+/ {
+	aliases {
+		ethernet1 = &xr819;
+	};
+};
+
+/ {
+	wifi_pwrseq {
+		pinctrl-names = "default";
+		pinctrl-0 = <&r_wifi_rst>;
+	};
+};
+

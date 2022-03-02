@@ -1,0 +1,3 @@
+uci -q set network.@device[0].ports='eth0 usb0'
+uci commit network
+

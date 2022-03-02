@@ -1,0 +1,9 @@
+
+/ {
+	leds {
+		status_led {
+			status = "okay";
+		};
+	};
+};
+

@@ -1,0 +1,47 @@
+&pio {
+	gpio_keys: gpio_keys {
+		pins = "PA13\0PA14\0PA15\0PA16\0PA2";
+		function = "gpio_in";
+		bias-pull-up;
+		pull = <0x01>;
+	};
+};
+
+/ {
+	gpio-keys-user {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpio_keys>;
+		status = "disabled";
+
+		keys_volup {
+			label = "volume_up";
+			linux,code = <0x73>;
+			gpios = <&pio 0x00 0x10 0x01>;
+		};
+
+		keys_voldown {
+			label = "volume_down";
+			linux,code = <0x72>;
+			gpios = <&pio 0x00 0x0f 0x01>;
+		};
+
+		keys_power {
+			label = "keys_power";
+			linux,code = <0x74>;
+			gpios = <&pio 0x00 0x0e 0x01>;
+		};
+
+		keys_chanup {
+			label = "channel_up";
+			linux,code = <0x192>;
+			gpios = <&pio 0x00 0x0d 0x01>;
+		};
+
+		keys_chandown {
+			label = "channel_down";
+			linux,code = <0x193>;
+			gpios = <&pio 0x00 0x02 0x01>;
+		};
+	};
+};

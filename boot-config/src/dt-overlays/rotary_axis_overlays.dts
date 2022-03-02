@@ -1,0 +1,23 @@
+
+&pio {
+	pinctrl_rotary: pinctrl_rotary {
+		pins = "PA1\0PA3";
+		function = "gpio_in";
+		bias-pull-up;
+		pull = <0x01>;
+	};
+};
+
+/ {
+	rotary_axis {
+		compatible = "rotary-encoder";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_rotary>;
+		gpios = <&pio 0 0x7 0x01>;
+		linux,axis = <0x01>;
+		rotary-encoder,relative-axis;
+		rotary-encoder,half-period;
+		status = "disabled";
+	};
+};
+

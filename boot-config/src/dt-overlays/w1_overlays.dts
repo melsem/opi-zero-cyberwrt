@@ -1,0 +1,25 @@
+
+/ {
+	aliases {
+		w1 = "/w1@0";
+	};
+};
+
+&pio {
+	w1_pins: w1_pins {
+		pins = "PA10";
+		function = "gpio_in";
+		pull = <0x00>;
+	};
+};
+
+/ {
+	w1@0 {
+		compatible = "w1-gpio";
+		gpios = <&pio 0x00 0x0a 0x07>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&w1_pins>;
+		status = "disabled";
+	};
+};
+

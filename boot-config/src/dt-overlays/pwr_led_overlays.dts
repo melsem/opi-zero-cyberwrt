@@ -1,0 +1,9 @@
+
+/ {
+	leds {
+		pwr_led {
+			status = "okay";
+		};
+	};
+};
+

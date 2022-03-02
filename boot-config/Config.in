@@ -1,0 +1,54 @@
+menu "Select editor 'boot-config' Options to add the ability to edit the overlay."
+	depends on PACKAGE_boot-config
+	comment "boot-config compilation overlay options."
+
+	config overlays
+		bool "Enable edit-add overlays"
+		default n
+		help
+			Enable overlay editor (enable ready-made examples, add a new one).
+
+	config overlay_1wire
+		bool "Add 1-Wire gpio10 PA10"
+		default n
+		help
+			Include a working example: 1-Wire "Overlay" in the download list.
+
+	config overlay_pps
+		bool "Add pps gpio7 PA7"
+		default n
+		help
+			Include a working example: pps "Overlay" in the download list.
+
+	config overlay_gpio_keys_user
+		bool "Add gpio_keys_user PA13-PA14-PA15-PA16-PA2"
+		default n
+		help
+			Include a working example: gpio_keys_user "Overlay" in the download list.
+
+	config overlay_rotary_encoder
+		bool "Add rotary_button-PA0 rotary_encoder-PA1-PA3"
+		default n
+		help
+			Enable working example Overlay rotate_button-PA0, rotate_encoder-PA1-PA3 into the load list.
+
+	config overlay_i2c4
+		bool "Add i2c4 sda-gpio18 PA18, scl-gpio19 PA19"
+		default n
+		help
+			Enable working example "Overlay": i2c4 sda-gpio18 PA18, scl-gpio19 PA19 into the load list.
+endmenu
+menu "Select boot-config Web Control is a custom Web UI for boot-config."
+	depends on PACKAGE_boot-config
+	comment "Custom Web UI for boot-config."
+
+	config boot-config-luci-web-control
+		bool "Luci Web UI for boot-config."
+		select PACKAGE_uhttpd
+		default n
+
+	config boot-config-cyberwrt-web-control
+		bool "Cyberwrt Web UI for boot-config."
+		select PACKAGE_uhttpd
+		default n
+endmenu

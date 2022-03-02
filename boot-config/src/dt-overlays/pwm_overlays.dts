@@ -1,0 +1,15 @@
+
+&pio {
+	pwm0_pin: pwm0 {
+		pins = "PA5";
+		function = "pwm0";
+		drive = <0x00>;
+		pull = <0x00>;
+	};
+};
+
+&pwm {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm0_pin>;
+};
+
