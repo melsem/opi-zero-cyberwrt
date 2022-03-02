@@ -1,6 +1,15 @@
 
 # Как всем этим воспользоваться.
-root@orangepi-zero-lts:~# boot-config overlays 
+- Включить в список загрузки аудио-кодек
+- root@orangepi-zero-lts:~# boot-config overlays codec
+- ======================
+- Сами overlays в сыцах: /boot-config/src/dt-overlays
+- в orangepi будут /etc/dt-overlays
+- Можно добавить и свои overlays в /dt-overlays.
+
+- B 'aliases' и 'moduls' находятся псевдонимы и их имена регистров, по которым и привязываются оверлэи.
+
+root@orangepi-zero-lts:~# boot-config -h
 ```
 
  ------------------->  Xunlong Orange Pi Zero Lts           <-------------------
