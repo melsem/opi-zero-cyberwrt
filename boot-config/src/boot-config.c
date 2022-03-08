@@ -176,13 +176,6 @@ int main (int argc, char *argv [])
 
 	else if (strcasecmp (argv [1+ofset], "spdif") == 0) okay_disabled (spdif, on_off);
 
-		/* LED ON/OFF */
-	else if ((strcasecmp (argv [1+ofset], "pwr_led") == 0) || \
-			(strcasecmp (argv [1+ofset], "green-led") == 0)) okay_disabled (pwr_led, on_off);
-	else if ((strcasecmp (argv [1+ofset], "status_led") == 0) || \
-			(strcasecmp (argv [1+ofset], "red-led") == 0)) okay_disabled (status_led, on_off);
-		/* END LED ON/OFF */
-
 		/* MMC0 - MMC1 - MMC2 */
 	else if (strcasecmp (argv [1+ofset], "mmc0") == 0) okay_disabled (mmc0, on_off);	/* End mmc0 - cd-flash */
 	else if ((strcasecmp (argv [1+ofset], "wifi") == 0) || (strcasecmp (argv [1+ofset], "mmc1") == 0))
@@ -190,6 +183,14 @@ int main (int argc, char *argv [])
 	else if (strcasecmp (argv [1+ofset], "mmc2") == 0) okay_disabled (mmc2, on_off);	/* End mmc2 */
 
 #if CONFIG_overlays	/* dt_overlays. */
+
+		/* LED ON/OFF */
+	else if ((strcasecmp (argv [1+ofset], "pwr_led") == 0) || \
+			(strcasecmp (argv [1+ofset], "green-led") == 0)) okay_disabled (pwr_led, on_off);
+	else if ((strcasecmp (argv [1+ofset], "status_led") == 0) || \
+			(strcasecmp (argv [1+ofset], "red-led") == 0)) okay_disabled (status_led, on_off);
+		/* END LED ON/OFF */
+
 #if CONFIG_overlay_1wire
 	else if ((strcasecmp (argv [1+ofset], "w1") == 0) || (strcasecmp (argv [1+ofset], "w1pin") == 0)) okay_disabled (w1, on_off);
 #endif
