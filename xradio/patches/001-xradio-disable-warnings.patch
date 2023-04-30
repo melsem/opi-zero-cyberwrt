@@ -33,7 +33,7 @@
  		spin_unlock_bh(&priv->ps_state_lock);
 --- a/main.c
 +++ b/main.c
-@@ -161,7 +174,9 @@
+@@ -162,7 +174,9 @@
  	/* Intentionally not offloaded:					*/
  	/*.channel_switch	 = xradio_channel_switch,		*/
  	.remain_on_channel = xradio_remain_on_channel,

@@ -68,7 +68,7 @@ Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
  					break;
 --- a/sdio.c
 +++ b/sdio.c
-@@ -136,8 +136,10 @@
+@@ -147,8 +166,10 @@
  	int irq;
  
  	of_id = of_match_node(xradio_sdio_of_match_table, np);
