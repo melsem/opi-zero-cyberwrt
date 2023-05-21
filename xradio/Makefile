@@ -8,12 +8,8 @@ PKG_LICENSE_FILES:=
 
 PKG_SOURCE_URL:=https://github.com/fifteenhex/xradio.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2023-04-10
-PKG_SOURCE_VERSION:=119cad7d07aef6973dd44e4dae74d4c9defd06a2
-# PKG_SOURCE_DATE:=2021-03-06
-# PKG_SOURCE_VERSION:=c909de15239a94e941ae5985991cdb68d8e9f5c9
-# PKG_SOURCE_DATE:=2020-03-21
-# PKG_SOURCE_VERSION:=8965ea55ddfd862ee76384913f82e6b69628cd27
+PKG_SOURCE_DATE:=2023-05-10
+PKG_SOURCE_VERSION:=a2dd9cd8b1a8b8a8af8aaff90dfaa65fcf783e26
 PKG_HASH:=3ead40075330178d0e1840fa01d382629001bfe83748f6ee3d51d1c99e0da4c4
 
 PKG_BUILD_PARALLEL:=1
@@ -25,7 +21,6 @@ define Download/xr819
   FILE:=xr819.tar.bz2
   URL:=https://github.com/melsem/openwrt-lede_xradio-xr819_soc-audio/raw/master/firmware/
   HASH:=bc9bae512267e04b6d00ffe18fe68a4181c9a5af35f765dfbabdeedd28c8f4f7
-#  HASH:=add13a7045cb2dbf170d51e2be678e0af8e2c7bf29cfd0f33a3a216fc88696dc
 endef
 $(eval $(call Download,xr819))
 
