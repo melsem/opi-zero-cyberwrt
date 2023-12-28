@@ -1,6 +1,21 @@
 --- a/main.c
 +++ b/main.c
-@@ -505,7 +510,7 @@
+@@ -148,10 +158,14 @@
+ 	.set_key           = xradio_set_key,
+ 	.set_rts_threshold = xradio_set_rts_threshold,
+ 	.config            = xradio_config,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+ 	.bss_info_changed  = xradio_bss_info_changed,
++#endif
+ 	.prepare_multicast = xradio_prepare_multicast,
+ 	.configure_filter  = xradio_configure_filter,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+ 	.conf_tx           = xradio_conf_tx,
++#endif
+ 	.get_stats         = xradio_get_stats,
+ 	.ampdu_action      = xradio_ampdu_action,
+ 	.flush             = xradio_flush,
+@@ -505,7 +530,7 @@
  	int if_id;
  	struct ieee80211_hw *dev;
  	struct xradio_common *hw_priv;
@@ -9,7 +24,7 @@
  	unsigned char addr[ETH_ALEN];
  #else
  	unsigned char randomaddr[ETH_ALEN];
-@@ -523,7 +530,7 @@
+@@ -523,7 +550,7 @@
  	hw_priv->sdio_func = func;
  	sdio_set_drvdata(func, hw_priv);
  
