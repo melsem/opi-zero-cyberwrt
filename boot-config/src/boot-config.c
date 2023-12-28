@@ -59,17 +59,29 @@
 /*  ================================================================  */
 int main (int argc, char *argv [])
 {
+  FILE	*fd ;
+
+  sprintf (tempraw,"df -h | grep overlayfs &> /dev/null; if [ $? != 1 ]; then echo spi-nor-kernel > %s; fi", tmp_SPI);
+  system (tempraw);
+
+  if ((fd = fopen (tmp_SPI, "r")) == NULL) {
+		fclose (fd);
 	if ((argc == 2) && (strcasecmp (argv [1+ofset], "dtb-dts-mmc") == 0)) 
-			test_dts (DTB_TO_DTS_MMC,CONV);
+								test_dts (DTB_TO_DTS_MMC,CONV);
 	else if ((argc == 2) && (strcasecmp (argv [1+ofset], "dts-dtb-mmc") == 0)) 
-			test_dts (DTS_TO_DTB_MMC,CONV);
-/*
-	else if ((argc == 2) && (strcasecmp (argv [1+ofset], "dtb-dts-spi") == 0))
-			test_dts (DTB_TO_DTS_SPI,CONV);
+								test_dts (DTS_TO_DTB_MMC,CONV);
+	else if ((fd = fopen(tmp_dts, "r")) == NULL) test_dts (TEST_DTS_MMC,CONV);
+  }
+
+  else if ((fd = fopen (tmp_SPI, "r")) != NULL) {
+		fclose (fd);
+	if ((argc == 2) && (strcasecmp (argv [1+ofset], "dtb-dts-spi") == 0))
+								test_dts (DTB_TO_DTS_SPI,CONV);
 	else if ((argc == 2) && (strcasecmp (argv [1+ofset], "dts-dtb-spi") == 0))
-			test_dts (DTS_TO_DTB_SPI,CONV);
-*/
-	else test_dts (TEST_DTS_MMC,CONV);
+								test_dts (DTS_TO_DTB_SPI,CONV);
+	else if ((fd = fopen(tmp_dts, "r")) == NULL) test_dts (TEST_DTS_SPI,CONV);
+  }
+
 
 	if ((argc == 3) && (strcasecmp (argv [1+ofset], "overlays") == 0))
 			dt_overlays (argc,argv);

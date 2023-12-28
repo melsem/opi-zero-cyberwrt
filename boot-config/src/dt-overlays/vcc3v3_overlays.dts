@@ -1,0 +1,6 @@
+
+/ {
+	vcc3v3 {
+		status = "disabled";
+	};
+};

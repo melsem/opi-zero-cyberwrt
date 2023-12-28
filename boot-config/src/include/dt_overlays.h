@@ -21,12 +21,15 @@ void dts_add_overlays (int i)
 
 };
 
-void dt_overlays (int argc,char *argv [])
-{
-	test_dts (DTB_TO_DTS_MMC,OVERLAYS);
+void dt_overlays (int argc,char *argv []) {
 
-char	number_of_strings [4];	/* количество строк */
+  char	number_of_strings [4];	/* количество строк */
   FILE	*fd ;
+	if (((fd = fopen (tmp_SPI, "r")) == NULL) && ((fd = fopen(tmp_dts, "r")) == NULL))
+									test_dts (TEST_DTS_MMC,OVERLAYS);
+	else if (((fd = fopen (tmp_SPI, "r")) != NULL) && ((fd = fopen(tmp_dts, "r")) == NULL))
+									test_dts (TEST_DTS_SPI,OVERLAYS);
+		fclose (fd);
 
   sprintf (tempraw,"sed -n '/\\(.*\\) {/,/;/p' %s | sed -n 's/\\(.*\\) {/\\1/p; s/^[ \\t]*//' | sed -n '$=' > %s", tmp_dts, tmp_files);
   system (tempraw);
@@ -69,7 +72,14 @@ char	number_of_strings [4];	/* количество строк */
 
 	if (system (tempraw))
 		printf ("\n  Error: %s_overlays.dts is missing\n  or check the name you entered.\n\n", argv [2+ofset]);
-	else { sleep (1); test_dts (DTS_TO_DTB_MMC,OVERLAYS); }
+	else
+	{
+		sleep (1);
+		if (((fd = fopen (tmp_SPI, "r")) == NULL) && ((fd = fopen(tmp_dts, "r")) != NULL))
+									test_dts (DTS_TO_DTB_MMC,OVERLAYS);
+		else if (((fd = fopen (tmp_SPI, "r")) != NULL) && ((fd = fopen(tmp_dts, "r")) != NULL))
+									test_dts (DTS_TO_DTB_SPI,OVERLAYS);
+	}
 	exit (EXIT_FAILURE);
 };
 

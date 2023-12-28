@@ -1,0 +1,6 @@
+
+/ {
+	vcc5v0 {
+		status = "disabled";
+	};
+};

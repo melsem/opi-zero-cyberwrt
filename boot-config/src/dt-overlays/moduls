@@ -79,3 +79,6 @@ system-control@1c00000
 sram@1d00000
 sram-section@0
 gpu@1c40000
+vcc3v0
+vcc3v3
+vcc5v0
