@@ -32,8 +32,8 @@ void test_dts (int file_dts,int exi_dts) {
 		else		// File converted dtb_mtd to tmp_dts - OK
 		{
 			printf ("   %s file converted.. OK\n", tmp_dts);
-	//		if (exi_dts != OVERLAYS)
-	//					exit (EXIT_FAILURE);
+			if (exi_dts == DTB_TO_DTS)
+						exit (EXIT_FAILURE);
 		}
 	}
 
@@ -64,7 +64,7 @@ void test_dts (int file_dts,int exi_dts) {
 			remove (dtb_tmp);
 			remove (tmp_dts);
 			remove (tmp_SPI);
-			if (exi_dts != OVERLAYS)
+			if (exi_dts == CONV)
 					exit (EXIT_FAILURE);
 		}
 	}

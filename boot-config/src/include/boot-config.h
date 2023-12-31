@@ -18,6 +18,8 @@
 #define NUM_GPIO	5
 #define OVERLAYS	6
 
+#define DTB_TO_DTS	10
+
 #define CONV		0
 
 #define err_help	mini_help

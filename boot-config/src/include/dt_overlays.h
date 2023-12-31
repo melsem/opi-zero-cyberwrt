@@ -26,9 +26,9 @@ void dt_overlays (int argc,char *argv []) {
   char	number_of_strings [4];	/* количество строк */
   FILE	*fd ;
 	if (((fd = fopen (tmp_SPI, "r")) == NULL) && ((fd = fopen(tmp_dts, "r")) == NULL))
-									test_dts (TEST_DTS_MMC,OVERLAYS);
+									test_dts (TEST_DTS_MMC, DTB_TO_DTS);
 	else if (((fd = fopen (tmp_SPI, "r")) != NULL) && ((fd = fopen(tmp_dts, "r")) == NULL))
-									test_dts (TEST_DTS_SPI,OVERLAYS);
+									test_dts (TEST_DTS_SPI, DTB_TO_DTS);
 		fclose (fd);
 
   sprintf (tempraw,"sed -n '/\\(.*\\) {/,/;/p' %s | sed -n 's/\\(.*\\) {/\\1/p; s/^[ \\t]*//' | sed -n '$=' > %s", tmp_dts, tmp_files);
@@ -76,9 +76,9 @@ void dt_overlays (int argc,char *argv []) {
 	{
 		sleep (1);
 		if (((fd = fopen (tmp_SPI, "r")) == NULL) && ((fd = fopen(tmp_dts, "r")) != NULL))
-									test_dts (DTS_TO_DTB_MMC,OVERLAYS);
+									test_dts (DTS_TO_DTB_MMC, OVERLAYS);
 		else if (((fd = fopen (tmp_SPI, "r")) != NULL) && ((fd = fopen(tmp_dts, "r")) != NULL))
-									test_dts (DTS_TO_DTB_SPI,OVERLAYS);
+									test_dts (DTS_TO_DTB_SPI, OVERLAYS);
 	}
 	exit (EXIT_FAILURE);
 };
