@@ -61,6 +61,8 @@ int main (int argc, char *argv [])
 {
   FILE	*fd ;
 
+  read_boardname ();
+
   sprintf (tempraw,"df -h | grep overlayfs &> /dev/null; if [ $? != 1 ]; then echo spi-nor-kernel > %s; fi", tmp_SPI);
   system (tempraw);
 
@@ -78,8 +80,6 @@ int main (int argc, char *argv [])
 
 	if ((argc == 3) && (strcasecmp (argv [1+ofset], "overlays") == 0))
 			dt_overlays (argc,argv);
-
-	read_boardname ();
 
 	char *on_off;
 	if (argc != 3)				/* Not '3' input arguments. */

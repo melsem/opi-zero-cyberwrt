@@ -5,10 +5,8 @@ void mini_help (int info,char *argv [])
 
     else if (info == HELP) {
 	printf ("\n\n ------------------->  %-35s  <-------------------\n",boardname);
-	printf (" Convert dtb file to dts:\n");
-	printf ("   Example: %s dtb-dts-mmc\n", argv [0]);
-	printf (" Convert dtb file to dts:\n");
-	printf ("   Example: %s dts-dtb-mmc\n\n", argv [0]);
+	printf (" Convert dtb to dts Example:   %s dtb-dts\n", argv [0]);
+	printf (" Convert dts to dtb Example:   %s dts-dtb\n\n", argv [0]);
 	printf (" Modules that can be controlled by commands: <on/ON/okay> or <off/OFF/disabled>.\n\n");
 	printf ("   mmc0/mmc1/mmc2/ir/pwm/i2c0/i2c1/i2c2/camera/audcodec\n");
 	printf ("   i2s0/i2s1/uart0/uart1/uart2/otg/host/peripheral/spdif\n");
