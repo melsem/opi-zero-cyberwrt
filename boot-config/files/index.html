@@ -709,49 +709,8 @@ echo "
 <td align="center" bgcolor="$bgcolor">"pps-gpio: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
+cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 #cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p'
-case "`sed -n '/pps_pins {/,/\};/ s/.*pins = \"\(.*\)\".*/\1/p' $dts`" in
-"PA0") ppins0=selected; ab="uart2_tx";;
-"PA1") ppins1=selected; ab="uart2_rx";;
-"PA2") ppins2=selected; ab="uart2_rts";;
-"PA3") ppins3=selected; ab="uart2_cts";;
-"PA4") ppins4=selected; ab="uart0_tx";;
-"PA5") ppins5=selected; ab="uart0_rx";;
-"PA6") ppins6=selected; ab="";;
-"PA7") ppins7=selected; ab="";;
-"PA10") ppins10=selected; ab="";;
-"PA11") ppins11=selected; ab="i2c0_scl";;
-"PA12") ppins12=selected; ab="i2c0_sda";;
-"PA13") ppins13=selected; ab="spi1_CS";;
-"PA14") ppins14=selected; ab="spi1_CLK";;
-"PA15") ppins15=selected; ab="spi1_MOSI";;
-"PA16") ppins16=selected; ab="spi1_MISO";;
-"PA18") ppins18=selected; ab="i2c1_scl";;
-"PA19") ppins19=selected; ab="i2c1_sda";;
-"PG6") ppinsg6=selected; ab="uart1_tx";;
-"PG7") ppinsg7=selected; ab="uart1_rx";;
-esac
-echo "<select class="button" name="ppspin">
-<option $ppins0>PA0</option>
-<option $ppins1>PA1</option>
-<option $ppins2>PA2</option>
-<option $ppins3>PA3</option>
-<option $ppins4>PA4</option>
-<option $ppins5>PA5</option>
-<option $ppins6>PA6</option>
-<option $ppins7>PA7</option>
-<option $ppins10>PA10</option>
-<option $ppins11>PA11</option>
-<option $ppins12>PA12</option>
-<option $ppins13>PA13</option>
-<option $ppins14>PA14</option>
-<option $ppins15>PA15</option>
-<option $ppins16>PA16</option>
-<option $ppins18>PA18</option>
-<option $ppins19>PA19</option>
-<option $ppinsg6>PG6</option>
-<option $ppinsg7>PG7</option></select>"
-echo $ab
 echo "</td></tr>"
 
 #************   gpio-keys   **************************
@@ -809,4 +768,5 @@ echo "<table align="center" border=0 width=>
 fi
 echo "</body>"
 exit 0
+
 

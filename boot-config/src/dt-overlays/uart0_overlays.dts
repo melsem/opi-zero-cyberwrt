@@ -1,0 +1,8 @@
+
+&uart0 {
+			status = "okay";
+};
+
+&pwm {
+			status = "disabled";
+};

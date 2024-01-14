@@ -15,7 +15,7 @@ menu "Select editor 'boot-config' Options to add the ability to edit the overlay
 			Include a working example: 1-Wire "Overlay" in the download list.
 
 	config overlay_pps
-		bool "Add pps gpio7 PA7"
+		bool "Add pps gpio7 PA7, gpio6 PA6"
 		default y
 		help
 			Include a working example: pps "Overlay" in the download list.
@@ -33,10 +33,10 @@ menu "Select editor 'boot-config' Options to add the ability to edit the overlay
 			Enable working example Overlay rotate_button-PA0, rotate_encoder-PA1-PA3 into the load list.
 
 	config overlay_i2c4
-		bool "Add i2c4 sda-gpio18 PA18, scl-gpio19 PA19"
-		default n
+		bool "Add i2c4 sda-gpio19 PA19, scl-gpio18 PA18"
+		default y
 		help
-			Enable working example "Overlay": i2c4 sda-gpio18 PA18, scl-gpio19 PA19 into the load list.
+			Enable working example "Overlay": i2c4 sda-gpio19 PA19, scl-gpio18 PA18 into the load list.
 endmenu
 menu "Select boot-config Web Control is a custom Web UI for boot-config."
 	depends on PACKAGE_boot-config

@@ -5,3 +5,6 @@
 	};
 };
 
+&mmc0 {
+			status = "okay";
+};

@@ -29,7 +29,6 @@ void dt_overlays (int argc,char *argv []) {
 									test_dts (TEST_DTS_MMC, DTB_TO_DTS);
 	else if (((fd = fopen (tmp_SPI, "r")) != NULL) && ((fd = fopen(tmp_dts, "r")) == NULL))
 									test_dts (TEST_DTS_SPI, DTB_TO_DTS);
-		fclose (fd);
 
   sprintf (tempraw,"sed -n '/\\(.*\\) {/,/;/p' %s | sed -n 's/\\(.*\\) {/\\1/p; s/^[ \\t]*//' | sed -n '$=' > %s", tmp_dts, tmp_files);
   system (tempraw);

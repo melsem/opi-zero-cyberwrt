@@ -82,3 +82,5 @@ gpu@1c40000
 vcc3v0
 vcc3v3
 vcc5v0
+i2c@4 
+i2c4 

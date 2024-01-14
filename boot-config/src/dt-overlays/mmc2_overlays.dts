@@ -3,3 +3,7 @@
 		mmc2 = "/soc/mmc@1c11000";
 	};
 };
+
+&mmc2 {
+			status = "okay";
+};

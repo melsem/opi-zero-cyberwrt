@@ -9,7 +9,12 @@
 };
 
 &pwm {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pwm0_pin>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pwm0_pin>;
+			status = "okay";
+};
+
+&uart0 {
+			status = "disabled";
 };
 

@@ -2,7 +2,7 @@
 &spdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spdif_tx_pin>;
-	status = "disabled";
+	status = "okay";
 };
 
 / {
@@ -23,5 +23,10 @@
 			sound-dai = <&spdif_out>;
 		};
 	};
-};
 
+	leds {
+		status_led {
+			status = "disabled";
+		};
+	};
+};

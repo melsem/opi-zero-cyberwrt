@@ -8,15 +8,15 @@
 
 &mmc1 {
 	keep-power-in-suspend;
-	status = "disabled";
+	status = "okay";
 
 	xr819: sdio_wifi@1 {
 		reg = <0x01>;
 		compatible = "xradio,xr819";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wifi_wake>;
-		interrupt-parent = <0x0a>;
-		interrupts = <0x06 0x0a 0x01>;
+		interrupt-parent = <&pio>;
+		interrupts = <6 10 1>;
 		interrupt-names = "host-wake";
 	};
 };
@@ -32,12 +32,9 @@
 	aliases {
 		ethernet1 = &xr819;
 	};
-};
 
-/ {
 	wifi_pwrseq {
 		pinctrl-names = "default";
 		pinctrl-0 = <&r_wifi_rst>;
 	};
 };
-

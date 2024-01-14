@@ -1,7 +1,14 @@
 
 &pio {
 	pinctrl_rotary: pinctrl_rotary {
-		pins = "PA1\0PA3";
+		pins = "PA1","PA3";
+		function = "gpio_in";
+		bias-pull-up;
+		pull = <0x01>;
+	};
+
+	pinctrl_button: pinctrl_button {
+		pins = "PA0";
 		function = "gpio_in";
 		bias-pull-up;
 		pull = <0x01>;
@@ -13,11 +20,24 @@
 		compatible = "rotary-encoder";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_rotary>;
-		gpios = <&pio 0 0x7 0x01>;
+		gpios = <&pio 0 1 1>, <&pio 0 3 1>;
 		linux,axis = <0x01>;
 		rotary-encoder,relative-axis;
 		rotary-encoder,half-period;
-		status = "disabled";
+		status = "okay";
+	};
+
+	rotary_button {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_button>;
+		status = "okay";
+
+		rotary_button_enter {
+			label = "keys_enter";
+			linux,code = <99>;
+			gpios = <&pio 0 0 1>;
+		};
 	};
 };
 

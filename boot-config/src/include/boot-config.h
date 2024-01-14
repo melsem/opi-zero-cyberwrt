@@ -11,18 +11,27 @@
 #define DTB_TO_DTS_SPI	4
 #define DTS_TO_DTB_SPI	5
 
-#define ERROR_ON_OFF	1
-#define HELP		2
-#define	MODULE		3
-#define	PIN_NAME	4
-#define NUM_GPIO	5
-#define OVERLAYS	6
+#define ERROR_ON_OFF	6
+#define HELP		7
+#define	MODULE		8
+#define	PIN_NAME	9
+#define NUM_GPIO	10
+#define OVERLAYS	11
 
-#define DTB_TO_DTS	10
+#define	SET_GPIO	12
+#define DTB_TO_DTS	13
 
-#define CONV		0
+#define CONV		14
 
 #define err_help	mini_help
+
+#define GPIO_20_HEADER_26	20
+#define GPIO_HEADER	26 /* ORANGEPI_ZERO && ORANGEPI_ZERO_LTS && ORANGEPI_ZERO_H3 && ORANGEPI_ZERO_LTS
+			   && ORANGEPI_R1 && ORANGEPI_LITE2 && ORANGEPI_ZEROPLUS2_H3 && ORANGEPI_3
+			   && ORANGEPI_ZEROPLUS2_H5 && ORANGEPI_ZEROPLUS
+			   */
+#define ON_STATUS	disabled/okay
+#define OFF_STATUS	okay/disabled
 
 void test_dts ();
 void okay_disabled ();

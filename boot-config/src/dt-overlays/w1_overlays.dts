@@ -1,10 +1,4 @@
 
-/ {
-	aliases {
-		w1 = "/w1@0";
-	};
-};
-
 &pio {
 	w1_pins: w1_pins {
 		pins = "PA10";
@@ -14,12 +8,16 @@
 };
 
 / {
-	w1@0 {
+	aliases {
+		w1 = &w1;
+	};
+
+	w1: w1 {
 		compatible = "w1-gpio";
-		gpios = <&pio 0x00 0x0a 0x07>;
+		gpios = <&pio 0 10 7>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&w1_pins>;
-		status = "disabled";
+		status = "okay";
 	};
 };
 

@@ -1,18 +1,16 @@
 
 / {
 	aliases {
-		i2c4 = "/i2c@4";
+		i2c4 = &i2c4;
 	};
-};
 
-/ {
-	i2c@4 {
+	i2c4: i2c4 {
 		compatible = "i2c-gpio";
 		pinctrl-names = "default";
-		sda-gpios = <&pio 0x00 0x12 0x07>;
-		scl-gpios = <&pio 0x00 0x13 0x07>;
+		scl-gpios = <&pio 0 18 7>;
+		sda-gpios = <&pio 0 19 7>;
 		i2c-gpio,delay-us = <0x0a>;
-		status = "disabled";
+		status = "okay";
 	};
 };
 

@@ -5,7 +5,7 @@
 void read_boardname ()
 {
   FILE *tempfile ;
-	if ((tempfile = fopen ("/proc/device-tree/model", "r")) != NULL)
+	if ((tempfile = fopen ("/tmp/sysinfo/board_name", "r")) != NULL)
 	{
 		fseek (tempfile, 0, SEEK_END);
 		size = ftell (tempfile);
