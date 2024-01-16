@@ -1,14 +1,3 @@
---- a/ap.c	2020-03-22 10:05:32.000000000 +0200
-+++ b/ap.c	2020-03-27 21:36:07.442219682 +0200
-@@ -14,6 +14,8 @@
- #include "ap.h"
- #include "bh.h"
- #include "net/mac80211.h"
-+
-+#include <linux/version.h>
- 
- #define XRADIO_LINK_ID_GC_TIMEOUT        ((unsigned long)(10 * HZ))
- #define XRADIO_ENABLE_ARP_FILTER_OFFLOAD  3
 --- a/bh.c	2020-03-22 10:05:32.000000000 +0200
 +++ b/bh.c	2020-03-27 21:36:07.446219702 +0200
 @@ -776,7 +776,7 @@
@@ -31,15 +20,3 @@
  		} else
  			ieee80211_rx_irqsafe(priv->hw, skb);
  		spin_unlock_bh(&priv->ps_state_lock);
---- a/main.c
-+++ b/main.c
-@@ -162,7 +174,9 @@
- 	/* Intentionally not offloaded:					*/
- 	/*.channel_switch	 = xradio_channel_switch,		*/
- 	.remain_on_channel = xradio_remain_on_channel,
-+#if ((LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)) || (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)))
- 	.cancel_remain_on_channel = xradio_cancel_remain_on_channel,
-+#endif
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0))
- 	.wake_tx_queue		= ieee80211_handle_wake_tx_queue,
- #endif 	

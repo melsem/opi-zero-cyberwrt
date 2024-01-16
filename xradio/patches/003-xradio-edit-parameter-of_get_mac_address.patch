@@ -1,0 +1,27 @@
+--- a/main.c	2021-06-03 20:52:34.627402316 +0300
++++ a/main.c	2021-12-20 23:28:05.002275000 +0200
+@@ -506,7 +529,7 @@
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
+ 	unsigned char addr[ETH_ALEN];
+ #else
+-	unsigned char randomaddr[ETH_ALEN];
++	unsigned char mac_addr[ETH_ALEN];
+ 	const unsigned char *addr = NULL;
+ #endif
+ 
+@@ -533,12 +547,12 @@
+ #else
+ 	// fill in mac addresses
+ 	if (hw_priv->pdev->of_node) {
+-		addr = of_get_mac_address(hw_priv->pdev->of_node);
++		if (!of_get_mac_address(hw_priv->pdev->of_node, mac_addr)) {
++			addr = mac_addr;
++		}
+ 	}
+ 	if (!addr) {
+ 		dev_warn(hw_priv->pdev, "no mac address provided, using random\n");
+-		eth_random_addr(randomaddr);
+-		addr = randomaddr;
+ 	}
+ #endif
+ 

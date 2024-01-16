@@ -18,13 +18,12 @@ Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
 
 --- a/bh.c
 +++ b/bh.c
-@@ -565,7 +565,8 @@
+@@ -565,7 +565,7 @@
  		goto out;
  	}
  
 -	ret = 1;
-+	/* if *nextlen is 0, there are no more packets to receive */
-+	ret = 1 && *nextlen;
++	ret = 1 && *nextlen; /* if *nextlen is 0, there are no more packets to receive */
  
  out:
  	/* Reclaim the SKB buffer */
