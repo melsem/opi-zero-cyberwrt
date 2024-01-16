@@ -30,8 +30,8 @@
 			   && ORANGEPI_R1 && ORANGEPI_LITE2 && ORANGEPI_ZEROPLUS2_H3 && ORANGEPI_3
 			   && ORANGEPI_ZEROPLUS2_H5 && ORANGEPI_ZEROPLUS
 			   */
-#define ON_STATUS	disabled/okay
-#define OFF_STATUS	okay/disabled
+#define ON_STATUS	"disabled/okay"
+#define OFF_STATUS	"okay/disabled"
 
 void test_dts ();
 void okay_disabled ();

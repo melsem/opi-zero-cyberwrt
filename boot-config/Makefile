@@ -83,15 +83,11 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME) $(1)/usr/sbin/
 
-#ifeq ($(CONFIG_overlays),y)
 	$(INSTALL_DIR) $(1)/etc/dt-overlays
 	$(INSTALL_DATA) ./src/dt-overlays/* $(1)/etc/dt-overlays/
-#endif
 
-ifeq ($(CONFIG_boot-config-luci-web-control),y)
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
 	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci/
-endif
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./src/cpufreq_scaling $(1)/etc/init.d/
@@ -102,14 +98,12 @@ endif
 	$(INSTALL_BIN) ./src/add-mount-boot $(1)/etc/uci-defaults/20-$(PKG_NAME)
 	$(INSTALL_BIN) ./src/uci_defaults_usb_otg $(1)/etc/uci-defaults/100-usb_otg
 
-ifeq (($(CONFIG_boot-config-cyberwrt-web-control),y) || ($(CONFIG_boot-config-luci-web-control),y))
 	$(INSTALL_DIR) $(1)/www/boot
 	$(INSTALL_BIN) ./files/boot.html $(1)/www/boot/index.html
 	$(INSTALL_DIR) $(1)/www/cgi-bin/modules/$(PKG_NAME)
 	$(INSTALL_BIN) ./files/*.cgi $(1)/www/cgi-bin/modules/$(PKG_NAME)/
 	$(INSTALL_BIN) ./files/luci.htm $(1)/www/cgi-bin/modules/$(PKG_NAME)/
 	$(INSTALL_BIN) ./files/index.html $(1)/www/cgi-bin/modules/$(PKG_NAME)/
-endif
 
 endef
 

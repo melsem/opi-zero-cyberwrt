@@ -89,10 +89,10 @@ int main (int argc, char *argv [])
    /* ********************* Test argv [2+ofset]: okay or disabled ********************* */
 	if ((argc = 3) && ((strcasecmp (argv [2+ofset], "disabled") == 0) || (strcasecmp (argv [2+ofset], "off") == 0) || \
 					(strcasecmp (argv [2+ofset], "OFF") == 0)))
-			on_off="OFF_STATUS";
+			on_off=OFF_STATUS;
 	else if ((argc = 3) && ((strcasecmp (argv [2+ofset], "okay") == 0) || (strcasecmp (argv [2+ofset], "on") == 0) || \
 					(strcasecmp (argv [2+ofset], "ON") == 0)))
-			on_off="ON_STATUS";
+			on_off=ON_STATUS;
 	else err_help (ERROR_ON_OFF,argv);
 		/* End test argv [2+ofset]: okay or disabled */
 
@@ -126,7 +126,7 @@ int main (int argc, char *argv [])
 		if ((strcasecmp (argv [2+ofset], "okay") == 0) || (strcasecmp (argv [2+ofset], "on") == 0) || \
 							(strcasecmp (argv [2+ofset], "ON") == 0))
 		{	/* Disable "pwm" only if "uart0" is enabled. */
-			on_off="OFF_STATUS";
+			on_off=OFF_STATUS;
 			okay_disabled (pwm, on_off);
 		}
 	}	/* End uart0 */
@@ -137,7 +137,7 @@ int main (int argc, char *argv [])
 		if ((strcasecmp (argv [2+ofset], "okay") == 0) || (strcasecmp (argv [2+ofset], "on") == 0) || \
 							(strcasecmp (argv [2+ofset], "ON") == 0))
 		{	/* Disable "uart0" only if "pwm" is enabled. */
-			on_off="OFF_STATUS";
+			on_off=OFF_STATUS;
 			okay_disabled (uart0, on_off);
 		}
 	}	/* End pwm */
@@ -200,10 +200,10 @@ int main (int argc, char *argv [])
 
 	else if ((argc = 3) && ((strcasecmp (argv [2+ofset], "disabled") == 0) || (strcasecmp (argv [2+ofset], "off") == 0) || \
 					(strcasecmp (argv [2+ofset], "OFF") == 0)))
-			{ on_off="OFF_STATUS"; okay_disabled (argv [1+ofset], on_off); }
+			{ on_off=OFF_STATUS; okay_disabled (argv [1+ofset], on_off); }
 	else if ((argc = 3) && ((strcasecmp (argv [2+ofset], "okay") == 0) || (strcasecmp (argv [2+ofset], "on") == 0) || \
 					(strcasecmp (argv [2+ofset], "ON") == 0)))
-			{ on_off="ON_STATUS"; okay_disabled (argv [1+ofset], on_off); }
+			{ on_off=ON_STATUS; okay_disabled (argv [1+ofset], on_off); }
 
 	else err_help (MODULE,argv);
 };
