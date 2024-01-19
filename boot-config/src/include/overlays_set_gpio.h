@@ -13,11 +13,11 @@ void set_gpio (char *name_moduls,int argc,char *argv [])
   /* ORANGEPI_ZERO && ORANGEPI_ZERO_LTS && ORANGEPI_ZERO_H3 && ORANGEPI_ZERO_LTS && ORANGEPI_R1 && ORANGEPI_LITE2 
    * && ORANGEPI_ZEROPLUS2_H3 && ORANGEPI_3 && ORANGEPI_ZEROPLUS2_H5 && ORANGEPI_ZEROPLUS
    			* 26_pins_GPIO_HEADER */
-  // int gpio_array [GPIO_20_HEADER_26] = { 0, 1, 2, 3, 5, 6, 7,10,11,12,13,14,15,16,17,18,19,198,199,362 };
+  // int gpio_array [GPIO_22_HEADER_26] = { 0, 1, 2, 3, 4, 5, 6, 7,10,11,12,13,14,15,16,17,18,19,198,199,362,363 };
 
-  char gpio_name_array [GPIO_20_HEADER_26] [5] = {
-	"PA0", "PA1", "PA2", "PA3", "PA5", "PA6", "PA7", "PA10", "PA11", "PA12",  /* ORANGEPI_ZERO - ORANGEPI_ZERO_LTS */
-     "PA13", "PA14", "PA15", "PA16", "PA17", "PA18", "PA19", "PG6", "PG7", "PL10"  /* ORANGEPI_ZERO - ORANGEPI_ZERO_LTS */
+  char gpio_name_array [GPIO_22_HEADER_26] [5] = {
+	"PA0", "PA1", "PA2", "PA3", "PA4", "PA5", "PA6", "PA7", "PA10", "PA11", "PA12",  /* ORANGEPI_ZERO - ORANGEPI_ZERO_LTS */
+     "PA13", "PA14", "PA15", "PA16", "PA17", "PA18", "PA19", "PG6", "PG7", "PL10", "PL11"  /* ORANGEPI_ZERO - ORANGEPI_ZERO_LTS */
   };
 
   int	size_name_moduls = strlen(name_moduls),
@@ -37,7 +37,7 @@ void set_gpio (char *name_moduls,int argc,char *argv [])
 
 	int pin = atoi (argv [2+ofset]);
 
-	/* for (int i = 0 ; i < GPIO_20_HEADER_26 ; ++i) {
+	/* for (int i = 0 ; i < GPIO_22_HEADER_26 ; ++i) {
 		if (atoi (argv [2+ofset]) == gpio_array [0] [i])
 				printf ("  gpio_array: %d \n", gpio_array [0] [i]);
 	   }; */
@@ -104,7 +104,7 @@ void set_gpio (char *name_moduls,int argc,char *argv [])
     }
 		//printf ("\n  line: %d  gpio_name: %s\n  gpio_bank: %d\n  gpio_numb: %d\n\n", __LINE__,gpio_name,gpio_bank,gpio_numb);
 
-   for (int i = 0 ; i < GPIO_20_HEADER_26 ; ++i) 
+   for (int i = 0 ; i < GPIO_22_HEADER_26 ; ++i) 
    {
 	if (strcasecmp (gpio_name, gpio_name_array [i]) == 0) {
 

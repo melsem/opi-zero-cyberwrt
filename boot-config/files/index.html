@@ -91,6 +91,7 @@ dts='/tmp/t-dts'
 wifi='mmc@1c10000\|mmc@01c10000'
 mmc1='mmc@1c10000\|mmc@01c10000'
 w1='w1'
+i2c4='i2c4'
 ir='ir@1f02000\|ir@01f02000'
 pwm='pwm@1c21400\|pwm@01c21400'
 i2c0='i2c@1c2ac00\|i2c@01c2ac00'
@@ -113,7 +114,7 @@ spi0='spi@1c68000\|spi@01c68000'
 spi1='spi@1c69000\|spi@01c69000'
 ethernet0='ethernet@1c30000\|ethernet@01c30000'
 spdif='spdif@1c21000\|spdif@01c21000'
-gpio_keys_user='gpio-keys-user'
+gpio_keys_user='gpio_keys_user'
 rotary_button='rotary_button'
 rotary_axis='rotary_axis'
 ledspin=''
@@ -583,6 +584,7 @@ echo "</td></tr>
 #**************************************************
 echo "<tr><td align="center"><table class="b2" border="1" bgcolor="#ffffff" cellspacing="2">
 <caption>Allwinner H2+, H3. Sun8i-DT-overlays.</caption>"
+
 #*************   Analog-audio-codec  **********************
 echo "<tr>
 <td>"
@@ -594,62 +596,6 @@ echo "
 </td>
 <td align="center" bgcolor="$bgcolor">"Analog-audio-codec: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td><td>Soc-IN/Out</td>
 </tr>"
-
-#*************   W1  **********************
-echo "<tr>
-<td>"
-mod=$(cat $dts | sed -n '/w1 {/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
-stachec
-echo "
-<input type="radio" name="w1" value="disabled" $sost2 $checked1>OFF
-<input type="radio" name="w1" value="okay" $sost1 $checked>ON
-</td>
-<td align="center" bgcolor="$bgcolor">"w1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
-<td>"
-echo "Gpio: "
-case "`sed -n '/w1_pins {/,/\};/ s/.*pins = \"\(.*\)\".*/\1/p' $dts`" in
-"PA0") pins0=selected; aa="uart2_tx";;
-"PA1") pins1=selected; aa="uart2_rx";;
-"PA2") pins2=selected; aa="uart2_rts";;
-"PA3") pins3=selected; aa="uart2_cts";;
-"PA4") pins4=selected; aa="uart0_tx";;
-"PA5") pins5=selected; aa="uart0_rx";;
-"PA6") pins6=selected; aa="";;
-"PA7") pins7=selected; aa="";;
-"PA10") pins10=selected; aa="";;
-"PA11") pins11=selected; aa="i2c0_scl";;
-"PA12") pins12=selected; aa="i2c0_sda";;
-"PA13") pins13=selected; aa="spi1_CS";;
-"PA14") pins14=selected; aa="spi1_CLK";;
-"PA15") pins15=selected; aa="spi1_MOSI";;
-"PA16") pins16=selected; aa="spi1_MISO";;
-"PA18") pins18=selected; aa="i2c1_scl";;
-"PA19") pins19=selected; aa="i2c1_sda";;
-"PG6") pinsg6=selected; aa="uart1_tx";;
-"PG7") pinsg7=selected; aa="uart1_rx";;
-esac
-echo "<select class="button" name="w1pin">
-<option $pins0>PA0</option>
-<option $pins1>PA1</option>
-<option $pins2>PA2</option>
-<option $pins3>PA3</option>
-<option $pins4>PA4</option>
-<option $pins5>PA5</option>
-<option $pins6>PA6</option>
-<option $pins7>PA7</option>
-<option $pins10>PA10</option>
-<option $pins11>PA11</option>
-<option $pins12>PA12</option>
-<option $pins13>PA13</option>
-<option $pins14>PA14</option>
-<option $pins15>PA15</option>
-<option $pins16>PA16</option>
-<option $pins18>PA18</option>
-<option $pins19>PA19</option>
-<option $pinsg6>PG6</option>
-<option $pinsg7>PG7</option></select>"
-echo $aa
-echo "</td></tr>"
 
 #*****************  ir  *******************************
 echo "<tr>
@@ -696,45 +642,173 @@ cat $dts | sed -n '/'$spdifn' {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p'
 echo "$ledspin"
 echo "</td></tr>"
 
-
-#*****************  gps-pps  *******************************
-echo "<tr>
-<td>"
-mod=$(cat $dts | sed -n '/pps {/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+#*************   W1  **********************
+echo "<tr>"
+mod=$(cat $dts | sed -n '/'$w1' {/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+if [[ "$mod" == "okay" ||  "$mod" == "disabled" ]]; then
 stachec
 echo "
+<td>"
+echo "
+<input type="radio" name="w1" value="disabled" $sost2 $checked1>OFF
+<input type="radio" name="w1" value="okay" $sost1 $checked>ON
+</td>
+<td align="center" bgcolor="$bgcolor">"w1: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
+<td>"
+echo "Gpio: "
+case "`sed -n '/w1_pins {/,/\};/ s/.*pins = \"\(.*\)\".*/\1/p' $dts`" in
+"PA0") pins0=selected; aa="uart2_tx";;
+"PA1") pins1=selected; aa="uart2_rx";;
+"PA2") pins2=selected; aa="uart2_rts";;
+"PA3") pins3=selected; aa="uart2_cts";;
+"PA4") pins4=selected; aa="uart0_tx";;
+"PA5") pins5=selected; aa="uart0_rx";;
+"PA6") pins6=selected; aa="";;
+"PA7") pins7=selected; aa="";;
+"PA10") pins10=selected; aa="";;
+"PA11") pins11=selected; aa="i2c0_scl";;
+"PA12") pins12=selected; aa="i2c0_sda";;
+"PA13") pins13=selected; aa="spi1_CS";;
+"PA14") pins14=selected; aa="spi1_CLK";;
+"PA15") pins15=selected; aa="spi1_MOSI";;
+"PA16") pins16=selected; aa="spi1_MISO";;
+"PA17") pins16=selected; aa="gpio_Red-Led";;
+"PA18") pins18=selected; aa="i2c1_scl";;
+"PA19") pins19=selected; aa="i2c1_sda";;
+"PG6") pinsg6=selected; aa="uart1_tx";;
+"PG7") pinsg7=selected; aa="uart1_rx";;
+"PL11") pinsg7=selected; aa="ir-rx-pin";;
+esac
+echo "<select class="button" name="w1pin">
+<option $pins0>PA0</option>
+<option $pins1>PA1</option>
+<option $pins2>PA2</option>
+<option $pins3>PA3</option>
+<option $pins4>PA4</option>
+<option $pins5>PA5</option>
+<option $pins6>PA6</option>
+<option $pins7>PA7</option>
+<option $pins10>PA10</option>
+<option $pins11>PA11</option>
+<option $pins12>PA12</option>
+<option $pins13>PA13</option>
+<option $pins14>PA14</option>
+<option $pins15>PA15</option>
+<option $pins16>PA16</option>
+<option $pins17>PA17</option>
+<option $pins18>PA18</option>
+<option $pins19>PA19</option>
+<option $pinsg6>PG6</option>
+<option $pinsg7>PG7</option>
+<option $pinsg7>PL11</option></select>"
+echo $aa
+echo "</td>"
+else
+echo "
+<td align="center" bgcolor="">"missing"</td>
+<td align="left" bgcolor=""><b>W1</b>, free pin contacts.</td>
+<td align="center" bgcolor="">
+<button class="button" type=submit name="overlays" value="w1">"overlays"</button>
+</td>
+<td align="left" bgcolor="">Add the <b>W1</b> ?</td>"
+fi
+echo "
+</tr>"
+
+#*****************  gps-pps  *******************************
+echo "<tr>"
+mod=$(cat $dts | sed -n '/pps {/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+if [[ "$mod" == "okay" ||  "$mod" == "disabled" ]]; then
+stachec
+echo "
+<td>
 <input type="radio" name="pps" value="disabled" $sost2 $checked1>OFF
 <input type="radio" name="pps" value="okay" $sost1 $checked>ON
 </td>
 <td align="center" bgcolor="$bgcolor">"pps-gpio: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
-echo "Gpio: "
-cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
-#cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p'
-echo "</td></tr>"
+echo "gpios: "
+cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\\0\(.*\)\".*/\1/p'
+echo ", echo-gpios: "
+cat $dts | sed -n '/pps_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\\0\(.*\)\".*/\2/p'
+echo "</td>"
+else
+echo "
+<td align="center" bgcolor="">"missing"</td>
+<td align="left" bgcolor=""><b>pps-gpio</b>, free pin contacts.</td>
+<td align="center" bgcolor="">
+<button class="button" type=submit name="overlays" value="pps">"overlays"</button>
+</td>
+<td align="left" bgcolor="">Add the <b>pps-gpio</b> ?</td>"
+fi
+echo "
+</tr>"
 
-#************   gpio-keys   **************************
-echo "<tr>
-<td>"
-mod=$(cat $dts | sed -n '/'$gpio_keys_user'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+#************   I2C4   **************************
+echo "<tr>"
+mod=$(cat $dts | sed -n '/'$i2c4'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+if [[ "$mod" == "okay" ||  "$mod" == "disabled" ]]; then
 stachec
 echo "
-<input type="radio" name="gpio-keys-user" value="disabled" $sost2 $checked1>OFF
-<input type="radio" name="gpio-keys-user" value="okay" $sost1 $checked>ON
+<td>
+<input type="radio" name="i2c4" value="disabled" $sost2 $checked1>OFF
+<input type="radio" name="i2c4" value="okay" $sost1 $checked>ON
 </td>
-<td align="center" bgcolor="$bgcolor">"gpio-keys-user: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
+<td align="center" bgcolor="$bgcolor">"I2C4: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
+<td>"
+echo "SDA: "
+cat $dts | sed -n '/i2c4 {/,/\};/p' | sed -n 's/.sda-gpios = <\(.*\) \(.*\) \(.*\) \(.*\)>.*/\3/p'
+echo ", SCL: "
+cat $dts | sed -n '/i2c4 {/,/\};/p' | sed -n 's/.scl-gpios = <\(.*\) \(.*\) \(.*\) \(.*\)>.*/\3/p'
+echo "</td>"
+else
+echo "
+<td align="center" bgcolor="">"missing"</td>
+<td align="left" bgcolor=""><b>I2C4</b>, free pin contacts.</td>
+<td align="center" bgcolor="">
+<button class="button" type=submit name="overlays" value="i2c4">"overlays"</button>
+</td>
+<td align="left" bgcolor="">Add the <b>I2C4</b> ?</td>"
+fi
+echo "
+</tr>"
+
+
+#************   gpio-keys   **************************
+echo "<tr>"
+mod=$(cat $dts | sed -n '/'$gpio_keys_user'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+if [[ "$mod" == "okay" ||  "$mod" == "disabled" ]]; then
+stachec
+echo "
+<td>
+<input type="radio" name="gpio_keys_user" value="disabled" $sost2 $checked1>OFF
+<input type="radio" name="gpio_keys_user" value="okay" $sost1 $checked>ON
+</td>
+<td align="center" bgcolor="$bgcolor">"gpio_keys_user: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td>"
 echo "Gpio: "
 cat $dts | sed -n '/gpio_keys {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
-echo "</td></tr>"
+echo "</td>"
+else
+echo "
+<td align="center" bgcolor="">"missing"</td>
+<td align="left" bgcolor=""><b>gpio_keys_user</b>, free pin contacts.</td>
+<td align="center" bgcolor="">
+<button class="button" type=submit name="overlays" value="gpio_keys_user">"overlays"</button>
+</td>
+<td align="left" bgcolor="">Add the <b>gpio_keys_user</b> ?</td>"
+fi
+echo "
+</tr>"
 
 #*************    rotary-encoder    ************************
-echo "<tr>
-<td>"
+echo "<tr>"
 ehci=$(cat $dts | sed -n '/'$rotary_button'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
 ohci=$(cat $dts | sed -n '/'$rotary_axis'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
+if [[ "$ehci" == "okay" ||  "$ohci" == "okay" ||  "$ehci" == "disabled" ||  "$ohci" == "disabled" ]]; then
 stausb
 echo "
+<td>
 <input type="radio" name="rotary" value="disabled" $sostusb2 $checusb1>OFF
 <input type="radio" name="rotary" value="okay" $sostusb1 $checusb>ON
 </td>
@@ -744,11 +818,24 @@ echo "button: "
 cat $dts | sed -n '/pinctrl_button {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "rotary-encoder: "
 cat $dts | sed -n '/pinctrl_rotary {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
-echo "</td></tr>"
+echo "</td>"
+else
+echo "
+<td align="center" bgcolor="">"missing"</td>
+<td align="left" bgcolor=""><b>rotary-encoder</b>, free pin contacts.</td>
+<td align="center" bgcolor="">
+<button class="button" type=submit name="overlays" value="rotary_axis">"overlays"</button>
+</td>
+<td align="left" bgcolor="">Add the <b>rotary-encoder</b> ?</td>"
+fi
+echo "
+</tr>"
 
+#***********************
 echo "</table></td></tr>
 </table></td></tr>"
 #*******************************************************************************
+
 
 #*******************************************************************************
 cat $dts &> /dev/null
