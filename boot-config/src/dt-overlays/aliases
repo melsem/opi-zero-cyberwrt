@@ -79,7 +79,3 @@ syscon:
 sram_c:
 ve_sram:
 mali:
-vcc3v0:
-vcc3v3:
-vcc5v0:
-i2c4 :

@@ -13,7 +13,9 @@ void mini_help (int info,char *argv [])
 	printf ("   ehci0/ohci0/ehci1/ohci1/ehci2/ohci2/ehci3/ohci3\n");
 	printf ("   usb0/usb1/usb2/usb3/spi0/spi1/ethernet0\n");
 	printf ("   otg_tipe/host_tipe/peripheral_tipe\n");
-	printf ("   w1/pps/i2c4/gpio_keys_user/rotary/rotary_axis\n");
+	printf ("   w1/pps/i2c4/gpio_keys_user/rotary/rotary_axis\n\n");
+	printf (" Edit SDA or SCL gpios i2c4.\n");
+	printf ("   sda_i2c4/sda-i2c4/scl-i2c4/scl_i2c4\n");
 
 	usage1 (info,argv);
 	printf (" -------------------------------------------------------------------------------\n\n");
@@ -56,7 +58,13 @@ void usage1 (int info,char *argv [])
 	printf ("   Usage:   %s -g <module> <gpio number>\n", argv [0]);
 	printf ("   Example4: %s -g w1 10\n\n", argv [0]);
 	printf ("   Usage:   %s <module> <gpio name>\n", argv [0]);
-	printf ("   Example5: %s w1 PA10\n\n", argv [0]);
+	printf ("   Example5: %s w1 PA10\n", argv [0]);
+	printf ("     ------------------------------------------------\n\n");
+	printf (" Edit SDA or SCL gpios i2c4.\n");
+	printf ("   Usage:   %s <edit gpio i2c4> <gpio name>\n", argv [0]);
+	printf ("   Example6: %s sda_i2c4 PA18\n", argv [0]);
+	printf ("   Example7: %s scl-i2c4 PA19\n\n", argv [0]);
+	printf ("   Example7 - or: %s -g scl-i2c4 19\n\n", argv [0]);
 
     if (info == ERROR_ON_OFF) exit (EXIT_FAILURE);
 

@@ -18,17 +18,27 @@ RS = "&"
 FS = "="
 print "Content-type: text/html; charset=utf-8"
 print ""
+overl_ok=0
 }
 {
-	driv = $1
-	stats = unescape($2)
-	system("boot-config "driv" "stats"")
-
+	if ($1 == "overlays") {
+		overlays = "overlays"
+		name=unescape($2)
+		overl_ok=1
+	}
+	else {
+		driv = $1
+		stats = unescape($2)
+		system("boot-config "driv" "stats" &> /dev/null")
+	}
 }
 END
 {
-		system("sleep 1s")
-		system("/www/cgi-bin/modules/boot-config/index.html")
-}
+	if (overl_ok == "1") {
+		print "<b>"overlays" -- "name"</b><br>"
+		system("/www/cgi-bin/modules/boot-config/index.html "overlays" "name"")
+	}
 
+	else system("/www/cgi-bin/modules/boot-config/index.html")
+}
 

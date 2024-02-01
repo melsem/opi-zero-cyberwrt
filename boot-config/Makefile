@@ -21,7 +21,7 @@ define Package/$(PKG_NAME)
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=$(PKG_NAME) for OpenWrt.
-  DEPENDS:=@TARGET_sunxi +mount-utils +block-mount +dtc
+  DEPENDS:=@TARGET_sunxi +mount-utils +block-mount +dtc +bc
   MENU:=1
 endef
 

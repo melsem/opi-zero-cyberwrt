@@ -29,8 +29,6 @@
 /*  ================================================================  */
 #include "include/boot-config.h"
 
-#include "include/overlays_modules.h"
-
 #include "include/overlays_set_gpio.h"		/* edit overlays w1-gpio */
 
 #include "include/test_dts.h"
@@ -79,9 +77,16 @@ int main (int argc, char *argv [])
 
 			/* edit overlays w1-gpio gpio */
 	if ((strcasecmp (argv [1+ofset], "w1pin") == 0) || (strcasecmp (argv [1+ofset], "w1") == 0)) set_gpio (w1,argc,argv);
+			/* edit overlays sda-scl i2c4 gpio */
+	if ((strcasecmp (argv [1+ofset], "sda_i2c4") == 0) || \
+		(strcasecmp (argv [1+ofset], "scl_i2c4") == 0) || \
+			(strcasecmp (argv [1+ofset], "sda-i2c4") == 0) || \
+				(strcasecmp (argv [1+ofset], "scl-i2c4") == 0)) set_gpio (argv [1+ofset], argc,argv);
 			/* edit overlays pps gpio */
-	if ((strcasecmp (argv [1+ofset], "ppspin") == 0) || (strcasecmp (argv [1+ofset], "pps") == 0)) set_gpio (pps,argc,argv);
-//	if ((strcasecmp (argv [1+ofset], "ppspin") == 0) || (strcasecmp (argv [1+ofset], "pps") == 0)) err_help (SET_GPIO,argv);
+	if ((strcasecmp (argv [1+ofset], "gpios_pps") == 0) || \
+		(strcasecmp (argv [1+ofset], "gpios-pps") == 0) || \
+			(strcasecmp (argv [1+ofset], "echo_pps") == 0) || \
+				(strcasecmp (argv [1+ofset], "echo-pps") == 0)) set_gpio (argv [1+ofset],argc,argv);
 
 	if ((argc >= 4) || (strcasecmp (argv [1+ofset], "-g") == 0)) err_help (MODULE,argv); /* '4' or more input arguments. */
 
@@ -142,7 +147,7 @@ int main (int argc, char *argv [])
 		}
 	}	/* End pwm */
 
-/*	else if (strcasecmp (argv [1+ofset], "uart1") == 0) okay_disabled (uart1, on_off);
+	else if (strcasecmp (argv [1+ofset], "uart1") == 0) okay_disabled (uart1, on_off);
 	else if (strcasecmp (argv [1+ofset], "uart2") == 0) okay_disabled (uart2, on_off);
 	else if (strcasecmp (argv [1+ofset], "spi0") == 0) okay_disabled (spi0, on_off);
 	else if (strcasecmp (argv [1+ofset], "spi1") == 0) okay_disabled (spi1, on_off);
@@ -150,7 +155,6 @@ int main (int argc, char *argv [])
 	else if (strcasecmp (argv [1+ofset], "i2s0") == 0) okay_disabled (i2s0, on_off);
 	else if (strcasecmp (argv [1+ofset], "i2s1") == 0) okay_disabled (i2s1, on_off);
 	else if (strcasecmp (argv [1+ofset], "camera") == 0) okay_disabled (camera, on_off);
-	else if (strcasecmp (argv [1+ofset], "spdif") == 0) okay_disabled (spdif, on_off);
 	else if (strcasecmp (argv [1+ofset], "ir") == 0) okay_disabled (ir, on_off);
 	else if (strcasecmp (argv [1+ofset], "i2c0") == 0) okay_disabled (i2c0, on_off);
 	else if (strcasecmp (argv [1+ofset], "i2c1") == 0) okay_disabled (i2c1, on_off);
@@ -163,7 +167,7 @@ int main (int argc, char *argv [])
 	else if (strcasecmp (argv [1+ofset], "ohci2") == 0) okay_disabled (ohci2, on_off);
 	else if (strcasecmp (argv [1+ofset], "ehci3") == 0) okay_disabled (ehci3, on_off);
 	else if (strcasecmp (argv [1+ofset], "ohci3") == 0) okay_disabled (ohci3, on_off);
-*/
+
 		/* MMC0 - MMC1 - MMC2 */
 	else if (strcasecmp (argv [1+ofset], "mmc0") == 0) okay_disabled (mmc0, on_off);	/* End mmc0 - cd-flash */
 	else if ((strcasecmp (argv [1+ofset], "wifi") == 0) || (strcasecmp (argv [1+ofset], "mmc1") == 0))
@@ -172,11 +176,29 @@ int main (int argc, char *argv [])
 
 		/* dt_overlays. */
 
+	else if (strcasecmp (argv [1+ofset], "spdif") == 0) {
+		okay_disabled (spdif, on_off); 
+		if ((strcasecmp (argv [2+ofset], "okay") == 0) || (strcasecmp (argv [2+ofset], "on") == 0) || \
+							(strcasecmp (argv [2+ofset], "ON") == 0))
+		{	/* Disable "uart0" only if "pwm" is enabled. */
+			on_off=OFF_STATUS;
+			okay_disabled (status_led, on_off);
+		}
+	}
+
 		/* LED ON/OFF */
 	else if ((strcasecmp (argv [1+ofset], "pwr_led") == 0) || \
 			(strcasecmp (argv [1+ofset], "green-led") == 0)) okay_disabled (pwr_led, on_off);
 	else if ((strcasecmp (argv [1+ofset], "status_led") == 0) || \
-			(strcasecmp (argv [1+ofset], "red-led") == 0)) okay_disabled (status_led, on_off);
+			(strcasecmp (argv [1+ofset], "red-led") == 0)) {
+		okay_disabled (status_led, on_off); 
+		if ((strcasecmp (argv [2+ofset], "okay") == 0) || (strcasecmp (argv [2+ofset], "on") == 0) || \
+							(strcasecmp (argv [2+ofset], "ON") == 0))
+		{	/* Disable "uart0" only if "pwm" is enabled. */
+			on_off=OFF_STATUS;
+			okay_disabled (spdif, on_off);
+		}
+	}
 		/* END LED ON/OFF */
 
 	else if ((strcasecmp (argv [1+ofset], "w1") == 0) || (strcasecmp (argv [1+ofset], "w1pin") == 0)) okay_disabled (w1, on_off);

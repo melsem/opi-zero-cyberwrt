@@ -56,7 +56,8 @@ spi0='spi@1c68000\|spi@01c68000'
 spi1='spi@1c69000\|spi@01c69000'
 ethernet0='ethernet@1c30000\|ethernet@01c30000'
 spdif='spdif@1c21000\|spdif@01c21000'
-phandle=$(sed -n '/pinctrl@1c20800 {/,/\phandle/p' $dts | sed -n 's/.*phandle = \x3c\(.*\)\x3e\;/\1/p')
+pinctrl='pinctrl@1c20800\|pinctrl@01c20800'
+phandle=$(sed -n '/'$pinctrl' {/,/\phandle/p' $dts | sed -n 's/.*phandle = \x3c\(.*\)\x3e\;/\1/p')
 # End - sun8i: Allwinner H2+, H3
 
 mod=$(eval echo \$$1) # Indirect variable reference.

@@ -1,14 +1,39 @@
+/*  ================================================================  */
+void r_t_p () {
+  FILE	*fd ;
+	if ((fd = fopen (tmp_files, "r")) != NULL) { 
+		fseek (fd, 0, SEEK_END);
+		size = ftell (fd);
+		rewind (fd);
+		pin_reg = calloc (size + 1, 1);
+		fread (pin_reg, 1, size-1, fd);
+		fclose (fd);
+		remove(tmp_files);
+	}
+};
 
 /*  ================================================================  */
-/* Edit overlay gpio pps and w1-gpio */
+/* Edit overlay gpio "pps" and "w1-gpio", "scl_i2c4, sda_i2c4" */
 void set_gpio (char *name_moduls,int argc,char *argv [])
 {
    if ((strcasecmp (argv [2+ofset], "disabled") == 0) || (strcasecmp (argv [2+ofset], "off") == 0) || \
       (strcasecmp (argv [2+ofset], "OFF") == 0) || (strcasecmp (argv [2+ofset], "okay") == 0) || \
 				(strcasecmp (argv [2+ofset], "on") == 0) || (strcasecmp (argv [2+ofset], "ON") == 0))
 			return;
+   int pos=0;
+   char *gpios="\\tgpios";	/* w1-gpio */
 
-   if ((strcasecmp (argv [1+ofset], "ppspin") == 0) || (strcasecmp (argv [1+ofset], "pps") == 0)) err_help (SET_GPIO,argv);
+			/* ppspin */
+   if ((strcasecmp (argv [1+ofset], "gpios_pps") == 0) || \
+		(strcasecmp (argv [1+ofset], "gpios-pps") == 0)) { name_moduls="pps"; gpios="\\tgpios"; pos=1; }		/* gpios */
+   else if ((strcasecmp (argv [1+ofset], "echo_pps") == 0) || \
+		(strcasecmp (argv [1+ofset], "echo-pps") == 0)) { name_moduls="pps"; gpios="echo-gpios"; pos=2; }	/* echo-gpios */
+
+			/* scl_i2c4, sda_i2c4 */
+   if ((strcasecmp (argv [1+ofset], "sda_i2c4") == 0) || \
+		(strcasecmp (argv [1+ofset], "sda-i2c4") == 0)) { name_moduls="i2c4"; gpios="sda-gpios"; pos=1; }	/* sda-gpio */
+   else if ((strcasecmp (argv [1+ofset], "scl_i2c4") == 0) ||
+		(strcasecmp (argv [1+ofset], "scl-i2c4") == 0)) { name_moduls="i2c4"; gpios="scl-gpios"; pos=2; }	/* scl-gpio */
 
   /* ORANGEPI_ZERO && ORANGEPI_ZERO_LTS && ORANGEPI_ZERO_H3 && ORANGEPI_ZERO_LTS && ORANGEPI_R1 && ORANGEPI_LITE2 
    * && ORANGEPI_ZEROPLUS2_H3 && ORANGEPI_3 && ORANGEPI_ZEROPLUS2_H5 && ORANGEPI_ZEROPLUS
@@ -33,7 +58,9 @@ void set_gpio (char *name_moduls,int argc,char *argv [])
 
     if ((strcasecmp (argv [1], "-g") == 0) && (argc == 4))
     {
-	if ((strcasecmp (argv [1], "-g") == 0) && (strcasecmp (argv [1+ofset], "w1") != 0)) err_help (MODULE,argv);
+      if ((strcasecmp (name_moduls, "i2c4") == 0) || \
+		(strcasecmp (name_moduls, "pps") == 0) || \
+				(strcasecmp (argv [1+ofset], "w1") == 0)) {
 
 	int pin = atoi (argv [2+ofset]);
 
@@ -61,6 +88,7 @@ void set_gpio (char *name_moduls,int argc,char *argv [])
 	else if ((gpio_bank == 11) && (gpio_numb <= 11)) tmp_gpio = "PL";
 	else err_help (NUM_GPIO,argv);
 	sprintf (gpio_name,"%s%d",tmp_gpio,gpio_numb);
+      } else err_help (MODULE,argv);
     }
     else if (argc == 3)
     {
@@ -112,23 +140,40 @@ void set_gpio (char *name_moduls,int argc,char *argv [])
 	sprintf (x_pins,"%s_pins", name_moduls);
 
 		/* ------- Recording gpio_name ------- */
-	sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins.*\"\\;/pins = \"%s\"\\;/}' %s", x_pins, gpio_name, tmp_dts);
-	system (tempraw);  //printf ("\n--- Recording gpio_name --\n  line: %d < %s >\n\n", __LINE__,tempraw);
+	if ( pos == 0 ) {
+		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins.*\"\\;/pins = \"%s\"\\;/}' %s", x_pins, gpio_name, tmp_dts);
+		system (tempraw);
+	} else if ( pos == 1 ) { 
+		sprintf (tempraw,"sed -n '/%s {/,/\\};/p' %s | sed -n 's/.pins = \"\\(.*\\)\\\\0\\(.*\\)\"\\;/\\2/p' | sed 's/^[ \t]*//' > %s", x_pins, tmp_dts, tmp_files);
+		//	printf ("\n--- Recording gpio_name --\n  line: %d <<< %s >>>\n", __LINE__,tempraw);
+		system (tempraw);
+		r_t_p ();
+		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins\\(.*\\)\\;/pins = \"%s\\\\0%s\"\\;/}' %s", x_pins, gpio_name, pin_reg, tmp_dts);
+		system (tempraw);
+	} else if ( pos == 2 ) { 
+		sprintf (tempraw,"sed -n '/%s {/,/\\};/p' %s | sed -n 's/.pins = \"\\(.*\\)\\\\0\\(.*\\)\"\\;/\\1/p' | sed 's/^[ \\t]*//' > %s", x_pins, tmp_dts, tmp_files);
+		system (tempraw);
+		r_t_p ();
+		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins\\(.*\\)\\;/pins = \"%s\\\\0%s\"\\;/}' %s", x_pins, pin_reg, gpio_name, tmp_dts);
+		system (tempraw);
+	}
+printf ("\n--- Recording gpio_name --\n  line: %d < %s >\n\n", __LINE__,tempraw);
 
 		/* ---- Calculate phandle------- */
-	sprintf (tempraw,"sed -n '/%s {/,/\\phandle/p' %s | sed -n 's/.*phandle = <\\(.*\\)>\\;/\\1/p' > /tmp/phandle", pinctrl, tmp_dts);
+	sprintf (tempraw,"sed -n '/%s {/,/\\phandle/p' %s | sed -n 's/.*phandle = <\\(.*\\)>\\;/\\1/p' > %s", pinctrl, tmp_dts, tmp_files);
 	system (tempraw); //printf ("\n--- Calculate phandle --\n  line: %d < %s >\n\n", __LINE__,tempraw);
-	if ((fd = fopen ("/tmp/phandle", "r")) != NULL) { if ( fgets (phandle, 5, fd) ){;} fclose (fd); remove("/tmp/phandle"); }
+	if ((fd = fopen (tmp_files, "r")) != NULL) { if ( fgets (phandle, 5, fd) ){;} fclose (fd); remove(tmp_files); }
 
 		/* -- Calculate gpio_active------ */
-	sprintf (tempraw,"sed -n '/%s {/,/gpios/p' %s | sed -n 's/.*gpios = <%s \\(.*\\) \\(.*\\) \\(.*\\)>\\;/\\3/p' > /tmp/gpio_active", x_pr, tmp_dts, phandle);
+	sprintf (tempraw,"sed -n '/%s {/,/%s/p' %s | sed -n 's/.*%s = <%s \\(.*\\) \\(.*\\) \\(.*\\)>\\;/\\3/p' > %s", x_pr, gpios, tmp_dts, gpios, phandle, tmp_files);
 	system (tempraw);  //printf ("\n--- Calculate gpio_active --\n  line: %d < %s >\n\n", __LINE__,tempraw);
-	if ((fd = fopen ("/tmp/gpio_active", "r")) != NULL) { if ( fgets (gpio_active, 5, fd) ){;} fclose (fd); remove("/tmp/gpio_active"); }
+	if ((fd = fopen (tmp_files, "r")) != NULL) { if ( fgets (gpio_active, 5, fd) ){;} fclose (fd); remove(tmp_files); }
 
 		/* ------- Recording gpio_bank, gpio_numb ------- */
-	sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/gpios = <%s .* .* %s/gpios = <%s %#x %#x %s/}' %s", \
-				 x_pr, phandle, gpio_active, phandle, gpio_bank, gpio_numb, gpio_active, tmp_dts);
-	system (tempraw);  //printf ("\n--- Recording gpio_bank, gpio_numb --\n  line: %d < %s >\n", __LINE__,tempraw);
+	sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/%s = <%s .* .* %s/%s = <%s %#x %#x %s/}' %s", \
+				 x_pr, gpios, phandle, gpio_active, gpios, phandle, gpio_bank, gpio_numb, gpio_active, tmp_dts);
+	system (tempraw);
+printf ("\n--- Recording gpio_bank, gpio_numb --\n  line: %d < %s >\n", __LINE__,tempraw);
 	exit (EXIT_FAILURE);
 	};
     };

@@ -9,18 +9,18 @@ void test_dts (int file_dts,int exi_dts) {
 	{
 		if ((tempfile = fopen(tmp_dts, "r")) == NULL)
 				printf ("   Failed to open missing file: %s\n", tmp_dts);
-		sleep (1);
+//		sleep (1);
 
 		if ((file_dts == TEST_DTS_MMC) || (file_dts == DTB_TO_DTS_MMC))	/* --- file converted. mmc boot_dtb -> dts ------- */
-		{	sprintf (tempraw,"dtc -I dtb -O dts -o %s %s 2> /dev/null", tmp_dts, boot_dtb);
+		{	sprintf (tempraw,"dtc -I dtb -O dts -o %s %s &> %s", tmp_dts, boot_dtb, dev_null);
 			system (tempraw);
-		sleep (1);
+//		sleep (1);
 		}
 
 		else if ((file_dts == TEST_DTS_SPI) || (file_dts == DTB_TO_DTS_SPI)) /* --- file converted. spi dtb_mtd -> dts ------- */
-		{	sprintf (tempraw,"dtc -I dtb -O dts -o %s %s 2> /dev/null", tmp_dts, dtb_mtd);
+		{	sprintf (tempraw,"dtc -I dtb -O dts -o %s %s &> %s", tmp_dts, dtb_mtd, dev_null);
 			system (tempraw);
-		sleep (1);
+//		sleep (1);
 		}
 
 
@@ -41,7 +41,7 @@ void test_dts (int file_dts,int exi_dts) {
 
 	if ((file_dts == DTS_TO_DTB_MMC) || (file_dts == DTS_TO_DTB_SPI))
 	{
-		sprintf (tempraw,"dtc -I dts -O dtb -o %s %s 2> /dev/null",dtb_tmp, tmp_dts);
+		sprintf (tempraw,"dtc -I dts -O dtb -o %s %s &> %s",dtb_tmp, tmp_dts, dev_null);
 		system (tempraw);
 
 		if ((tempfile = fopen(dtb_tmp, "r")) == NULL) {	// Missing file dtb_tmp??
@@ -54,9 +54,9 @@ void test_dts (int file_dts,int exi_dts) {
 			printf ("   File %s converted to %s - OK.\n", tmp_dts, dtb_tmp);
 
 			if (file_dts == DTS_TO_DTB_MMC)			// Writing a dtb_tmp file to a MMC-flash drive.
-					sprintf (tempraw,"dtc -I dts -O dtb -o %s %s 2> /dev/null",boot_dtb, tmp_dts);
+					sprintf (tempraw,"dtc -I dts -O dtb -o %s %s &> %s",boot_dtb, tmp_dts, dev_null);
 			else if (file_dts == DTS_TO_DTB_SPI)		// Writing a dtb_tmp file to a SPI-flash drive.
-					sprintf (tempraw,"mtd -e dtb write %s dtb 2> /dev/null",dtb_tmp);
+					sprintf (tempraw,"mtd -e dtb write %s dtb &> %s",dtb_tmp, dev_null);
 
 			system (tempraw);
 

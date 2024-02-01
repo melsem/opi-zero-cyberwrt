@@ -40,14 +40,14 @@ void dt_overlays (int argc,char *argv []) {
 	int nmbstr = atoi (number_of_strings);
 	for (int i = 1; i <= nmbstr; i++) {
 
-		sprintf (tempraw,"sed ''%d'!d' %s > %s", i,"/etc/dt-overlays/moduls", tmp_files);
+		sprintf (tempraw,"sed ''%d'!d' %s > %s", i, f_moduls, tmp_files);
 		system (tempraw);
 		dts_add_overlays (0);
 		if ( size <= 1 ) goto end_for;
 			/* moduls - OK */
 
 
-		sprintf (tempraw,"sed ''%d'!d' %s > %s", i,"/etc/dt-overlays/aliases", tmp_files);
+		sprintf (tempraw,"sed ''%d'!d' %s > %s", i, f_aliases, tmp_files);
 		system (tempraw);
 		dts_add_overlays (1);
 		if ( size <= 1 ) goto end_for;
@@ -67,13 +67,13 @@ void dt_overlays (int argc,char *argv []) {
 		end_for: ;
 	}
 
-	sprintf (tempraw,"cat /etc/dt-overlays/%s_overlays.dts >> %s 2> /dev/null", argv [2+ofset], tmp_dts);
+	sprintf (tempraw,"cat /etc/dt-overlays/%s_overlays.dts >> %s &> %s", argv [2+ofset], tmp_dts, dev_null);
 
 	if (system (tempraw))
 		printf ("\n  Error: %s_overlays.dts is missing\n  or check the name you entered.\n\n", argv [2+ofset]);
 	else
 	{
-		sleep (1);
+//		sleep (1);
 		if (((fd = fopen (tmp_SPI, "r")) == NULL) && ((fd = fopen(tmp_dts, "r")) != NULL))
 									test_dts (DTS_TO_DTB_MMC, OVERLAYS);
 		else if (((fd = fopen (tmp_SPI, "r")) != NULL) && ((fd = fopen(tmp_dts, "r")) != NULL))
