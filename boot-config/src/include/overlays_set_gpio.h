@@ -144,20 +144,25 @@ void set_gpio (char *name_moduls,int argc,char *argv [])
 		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins.*\"\\;/pins = \"%s\"\\;/}' %s", x_pins, gpio_name, tmp_dts);
 		system (tempraw);
 	} else if ( pos == 1 ) { 
-		sprintf (tempraw,"sed -n '/%s {/,/\\};/p' %s | sed -n 's/.pins = \"\\(.*\\)\\\\0\\(.*\\)\"\\;/\\2/p' | sed 's/^[ \t]*//' > %s", x_pins, tmp_dts, tmp_files);
+		sprintf (tempraw,\
+		"sed -n '/%s {/,/\\};/p' %s | sed -n 's/.pins = \"\\(.*\\)\\\\0\\(.*\\)\"\\;/\\2/p' | sed 's/^[ \t]*//' > %s", \
+										x_pins, tmp_dts, tmp_files);
 		//	printf ("\n--- Recording gpio_name --\n  line: %d <<< %s >>>\n", __LINE__,tempraw);
 		system (tempraw);
 		r_t_p ();
-		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins\\(.*\\)\\;/pins = \"%s\\\\0%s\"\\;/}' %s", x_pins, gpio_name, pin_reg, tmp_dts);
+		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins\\(.*\\)\\;/pins = \"%s\\\\0%s\"\\;/}' %s", \
+										x_pins, gpio_name, pin_reg, tmp_dts);
 		system (tempraw);
 	} else if ( pos == 2 ) { 
-		sprintf (tempraw,"sed -n '/%s {/,/\\};/p' %s | sed -n 's/.pins = \"\\(.*\\)\\\\0\\(.*\\)\"\\;/\\1/p' | sed 's/^[ \\t]*//' > %s", x_pins, tmp_dts, tmp_files);
+		sprintf (tempraw,\
+		"sed -n '/%s {/,/\\};/p' %s | sed -n 's/.pins = \"\\(.*\\)\\\\0\\(.*\\)\"\\;/\\1/p' | sed 's/^[ \\t]*//' > %s", \
+										x_pins, tmp_dts, tmp_files);
 		system (tempraw);
 		r_t_p ();
-		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins\\(.*\\)\\;/pins = \"%s\\\\0%s\"\\;/}' %s", x_pins, pin_reg, gpio_name, tmp_dts);
+		sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/pins\\(.*\\)\\;/pins = \"%s\\\\0%s\"\\;/}' %s", \
+										x_pins, pin_reg, gpio_name, tmp_dts);
 		system (tempraw);
-	}
-printf ("\n--- Recording gpio_name --\n  line: %d < %s >\n\n", __LINE__,tempraw);
+	}	// printf ("\n--- Recording gpio_name --\n  line: %d < %s >\n\n", __LINE__,tempraw);
 
 		/* ---- Calculate phandle------- */
 	sprintf (tempraw,"sed -n '/%s {/,/\\phandle/p' %s | sed -n 's/.*phandle = <\\(.*\\)>\\;/\\1/p' > %s", pinctrl, tmp_dts, tmp_files);
@@ -165,7 +170,8 @@ printf ("\n--- Recording gpio_name --\n  line: %d < %s >\n\n", __LINE__,tempraw)
 	if ((fd = fopen (tmp_files, "r")) != NULL) { if ( fgets (phandle, 5, fd) ){;} fclose (fd); remove(tmp_files); }
 
 		/* -- Calculate gpio_active------ */
-	sprintf (tempraw,"sed -n '/%s {/,/%s/p' %s | sed -n 's/.*%s = <%s \\(.*\\) \\(.*\\) \\(.*\\)>\\;/\\3/p' > %s", x_pr, gpios, tmp_dts, gpios, phandle, tmp_files);
+	sprintf (tempraw,"sed -n '/%s {/,/%s/p' %s | sed -n 's/.*%s = <%s \\(.*\\) \\(.*\\) \\(.*\\)>\\;/\\3/p' > %s", \
+										x_pr, gpios, tmp_dts, gpios, phandle, tmp_files);
 	system (tempraw);  //printf ("\n--- Calculate gpio_active --\n  line: %d < %s >\n\n", __LINE__,tempraw);
 	if ((fd = fopen (tmp_files, "r")) != NULL) { if ( fgets (gpio_active, 5, fd) ){;} fclose (fd); remove(tmp_files); }
 
@@ -173,7 +179,7 @@ printf ("\n--- Recording gpio_name --\n  line: %d < %s >\n\n", __LINE__,tempraw)
 	sprintf (tempraw,"sed -i '/%s {/,/\\};/ {s/%s = <%s .* .* %s/%s = <%s %#x %#x %s/}' %s", \
 				 x_pr, gpios, phandle, gpio_active, gpios, phandle, gpio_bank, gpio_numb, gpio_active, tmp_dts);
 	system (tempraw);
-printf ("\n--- Recording gpio_bank, gpio_numb --\n  line: %d < %s >\n", __LINE__,tempraw);
+		// printf ("\n--- Recording gpio_bank, gpio_numb --\n  line: %d < %s >\n", __LINE__,tempraw);
 	exit (EXIT_FAILURE);
 	};
     };

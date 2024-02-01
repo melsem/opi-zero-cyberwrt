@@ -14,8 +14,6 @@ void mini_help (int info,char *argv [])
 	printf ("   usb0/usb1/usb2/usb3/spi0/spi1/ethernet0\n");
 	printf ("   otg_tipe/host_tipe/peripheral_tipe\n");
 	printf ("   w1/pps/i2c4/gpio_keys_user/rotary/rotary_axis\n\n");
-	printf (" Edit SDA or SCL gpios i2c4.\n");
-	printf ("   sda_i2c4/sda-i2c4/scl-i2c4/scl_i2c4\n");
 
 	usage1 (info,argv);
 	printf (" -------------------------------------------------------------------------------\n\n");
@@ -46,25 +44,41 @@ void usage1 (int info,char *argv [])
 	printf ("   Example1: %s i2c0 on\n", argv [0]);
 	printf ("   Example2: %s usb2 off\n\n", argv [0]);
 	printf ("     ------------------------------------------------\n");
-	printf ("       Example3: %s otg_tipe on\n", argv [0]);
-	printf ("       Or:       %s host_tipe on\n", argv [0]);
-	printf ("       Or:       %s peripheral_tipe on\n\n", argv [0]);
-	printf ("     Or all USB0 tips disable (otg, host, peripheral).\n");
-	printf ("       example:  %s host_tipe off\n", argv [0]);
+	printf ("  Example3: %s otg_tipe on\n", argv [0]);
+	printf ("  Or:       %s host_tipe on\n", argv [0]);
+	printf ("  Or:       %s peripheral_tipe on\n\n", argv [0]);
+	printf ("  Or all USB0 tips disable (otg, host, peripheral).\n");
+	printf ("  example:  %s host_tipe off\n", argv [0]);
 	printf ("     ------------------------------------------------\n\n");
 
-    if (info == HELP) printf (" In the modules 'w1', 'pps' you can still change the pins.\n");
-	printf ("   Add or edit single one-wire, pps contacts.\n\n");
+    if (info == HELP) printf (" In the modules 'w1' you can still change the pins.\n");
+	printf ("   Add or edit single one-wire gpio-contacts.\n\n");
 	printf ("   Usage:   %s -g <module> <gpio number>\n", argv [0]);
 	printf ("   Example4: %s -g w1 10\n\n", argv [0]);
 	printf ("   Usage:   %s <module> <gpio name>\n", argv [0]);
 	printf ("   Example5: %s w1 PA10\n", argv [0]);
 	printf ("     ------------------------------------------------\n\n");
-	printf (" Edit SDA or SCL gpios i2c4.\n");
+	printf (" Edit SDA or SCL gpio i2c4.\n");
+	printf ("   sda_i2c4/sda-i2c4/scl-i2c4/scl_i2c4\n");
 	printf ("   Usage:   %s <edit gpio i2c4> <gpio name>\n", argv [0]);
 	printf ("   Example6: %s sda_i2c4 PA18\n", argv [0]);
-	printf ("   Example7: %s scl-i2c4 PA19\n\n", argv [0]);
-	printf ("   Example7 - or: %s -g scl-i2c4 19\n\n", argv [0]);
+	printf ("   Example6: %s scl_i2c4 PA19\n", argv [0]);
+	printf ("   Example7 - or: %s -g sda_i2c4 18\n", argv [0]);
+	printf ("   Example7 - or: %s -g scl_i2c4 19\n\n", argv [0]);
+
+	printf (" Edit gpios or echo-gpios pps.\n");
+	printf ("   gpios_pps/gpios-pps/echo_pps/echo-pps\n");
+	printf ("   Usage:   %s <edit gpio pps> <gpio name>\n", argv [0]);
+	printf ("   Example8: %s gpios_pps PA6\n", argv [0]);
+	printf ("   Example8: %s echo_pps PA7\n", argv [0]);
+	printf ("   Example7 - or: %s -g gpios_pps 6\n", argv [0]);
+	printf ("   Example7 - or: %s -g echo_pps 7\n\n", argv [0]);
+
+	printf (" Add overlays modules.\n");
+	printf ("   Usage:   %s overlays <overlays name>\n", argv [0]);
+	printf ("   Example9 - or: %s overlays i2c4\n", argv [0]);
+	printf ("   Example9 - or: %s overlays pps\n\n", argv [0]);
+
 
     if (info == ERROR_ON_OFF) exit (EXIT_FAILURE);
 
