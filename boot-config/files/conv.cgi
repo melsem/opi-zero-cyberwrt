@@ -110,8 +110,11 @@ rebut=0
 
 }
 END
-{
-		if(rebut == "1") system("sleep 1s")
+{ save_okay
+	if(rebut == "1") { 
+		system("sleep 1s")
 		system("/www/cgi-bin/modules/boot-config/index.html "rebut"")
+	}
+	else system("/www/cgi-bin/modules/boot-config/index.html save_okay")
 }
 

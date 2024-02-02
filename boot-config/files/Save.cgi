@@ -39,6 +39,6 @@ END
 		system("/www/cgi-bin/modules/boot-config/index.html "overlays" "name"")
 	}
 
-	else system("/www/cgi-bin/modules/boot-config/index.html")
+	else system("/www/cgi-bin/modules/boot-config/index.html save_okay")
 }
 

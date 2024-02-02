@@ -242,20 +242,33 @@ else
  sdio='mmc1'
 fi
 
+if [[ "$1" == "overlays" || "$1" == "save_okay" ]]; then
+echo "<table align="center" border=0 width=><tr><td>"
 if [ "$1" == "overlays" ]; then
-echo "<table align="center" border=0 width=><tr><td>
-The << <b1>$2</b1> >> overlay has been added to the boot configuration file.
-</br>And it will be converted to << <b>DTB</b> >> in <b><span id="time"></span></b> seconds.
-<script type="text/javascript">var i = 15; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/cgi-bin/modules/boot-config/index.cgi\"; }
-time(); setInterval(time, 1000); </script>
+echo "
+The <b>$2</b> overlay has been added to the boot configuration file.
+</br>And it will be converted to <b>DTB</b> in <b><span id="time"></span></b> seconds.
+<script type="text/javascript">var i = 5;"
+elif [ "$1" == "save_okay" ]; then
+echo "<b><span hidden id="time"></span></b>
+<script type="text/javascript">var i = 0;"
+fi
+echo " function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = "
+if [ "$btc" != "55" ]; then
+echo "\"/boot/index.html\"; }"
+else
+echo "\"/cgi-bin/modules/boot-config/luci.htm\"; }"
+fi
+echo " time(); setInterval(time, 1000);"
+echo " </script>
 </td></tr></table>"
-boot-config overlays $2 &> /dev/null
+if [ "$1" == "overlays" ]; then boot-config overlays $2 &> /dev/null; fi
 fi
 
 if [ "$1" == "1" ]; then
 echo "<table align="center" border=0 width=><tr><td>
 The device reboots.  And will be available in <b><span id="time"></span></b> seconds.
-<script type="text/javascript">var i = 30; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/cgi-bin/modules/boot-config/index.cgi\"; }
+<script type="text/javascript">var i = 30; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/boot/index.html\"; }
 time(); setInterval(time, 1000); </script>
 </td></tr></table>"
 reboot
