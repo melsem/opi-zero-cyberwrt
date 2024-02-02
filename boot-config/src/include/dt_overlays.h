@@ -67,7 +67,7 @@ void dt_overlays (int argc,char *argv []) {
 		end_for: ;
 	}
 
-	sprintf (tempraw,"cat /etc/dt-overlays/%s_overlays.dts >> %s &> %s", argv [2+ofset], tmp_dts, dev_null);
+	sprintf (tempraw,"cat /etc/dt-overlays/%s_overlays.dts >> %s 2> %s", argv [2+ofset], tmp_dts, dev_null);
 
 	if (system (tempraw))
 		printf ("\n  Error: %s_overlays.dts is missing\n  or check the name you entered.\n\n", argv [2+ofset]);
