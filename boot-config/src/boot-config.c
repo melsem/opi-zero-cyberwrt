@@ -76,17 +76,18 @@ int main (int argc, char *argv [])
 	} else if (strcasecmp (argv [1+ofset], "-g") == 0) err_help (NUM_GPIO,argv);	/* '3' input arguments. */
 
 			/* edit overlays w1-gpio gpio */
-	if ((strcasecmp (argv [1+ofset], "w1pin") == 0) || (strcasecmp (argv [1+ofset], "w1") == 0)) set_gpio (w1,argc,argv);
+	if ((strcasecmp (argv [1+ofset], "w1pin") == 0) || \
+		 (strcasecmp (argv [1+ofset], "w1") == 0)) set_gpio (argv[1+ofset], argc, argv);
 			/* edit overlays sda-scl i2c4 gpio */
-	if ((strcasecmp (argv [1+ofset], "sda_i2c4") == 0) || \
-		(strcasecmp (argv [1+ofset], "scl_i2c4") == 0) || \
+	else if ((strcasecmp (argv [1+ofset], "sda_i2c4") == 0) || \
+		 (strcasecmp (argv [1+ofset], "scl_i2c4") == 0) || \
 			(strcasecmp (argv [1+ofset], "sda-i2c4") == 0) || \
-				(strcasecmp (argv [1+ofset], "scl-i2c4") == 0)) set_gpio (argv [1+ofset], argc,argv);
+			(strcasecmp (argv [1+ofset], "scl-i2c4") == 0)) set_gpio (argv [1+ofset], argc,argv);
 			/* edit overlays pps gpio */
-	if ((strcasecmp (argv [1+ofset], "gpios_pps") == 0) || \
-		(strcasecmp (argv [1+ofset], "gpios-pps") == 0) || \
+	else if ((strcasecmp (argv [1+ofset], "gpios_pps") == 0) || \
+		 (strcasecmp (argv [1+ofset], "gpios-pps") == 0) || \
 			(strcasecmp (argv [1+ofset], "echo_pps") == 0) || \
-				(strcasecmp (argv [1+ofset], "echo-pps") == 0)) set_gpio (argv [1+ofset],argc,argv);
+			(strcasecmp (argv [1+ofset], "echo-pps") == 0)) set_gpio (argv [1+ofset],argc,argv);
 
 	if ((argc >= 4) || (strcasecmp (argv [1+ofset], "-g") == 0)) err_help (MODULE,argv); /* '4' or more input arguments. */
 

@@ -81,9 +81,6 @@ border: 3px solid #0000cc;
 border-radius: 10px;
 }
 </style>
-<script>
-function deleteschen(f) { if (confirm(\"Are you sure? \")) f.submit(); }
-</script>
 <br>"
 #***************************************************************
 board=$(cat /tmp/sysinfo/board_name)
@@ -338,7 +335,7 @@ echo "</td>
 #***************************************************************
 #*************   CPU-FREQ  **********************
 echo "<table align="center" class="b2" bgcolor="#ffffff" cellspacing="2">
-<form method="POST" action="conv.cgi" onsubmit=\"deleteschen(this);return true;\">"
+<form method="POST" action="conv.cgi">"
 cat /etc/rc.d/S30cpufreq_scaling &> /dev/null
 if [ $? != 1 ]; then
 works='astarok'
@@ -970,7 +967,7 @@ echo "
 <td align="center" bgcolor="$bgcolor">"gpio_keys_user: "</td><td bgcolor="$bgcolor"><b>"$sost2"</b></td>
 <td align="left">"
 echo "Gpio: "
-cat $dts | sed -n '/gpio_keys {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
+cat $dts | sed -n '/gpio_keys_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td>"
 else
 echo "
@@ -998,9 +995,9 @@ echo "
 <td align="center" bgcolor="$usbcolor">"rotary-encoder"</td><td bgcolor="$usbcolor"><b>"$sostusb2"</b></td>
 <td align="left">"
 echo "button: "
-cat $dts | sed -n '/pinctrl_button {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
+cat $dts | sed -n '/button_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "rotary-encoder: "
-cat $dts | sed -n '/pinctrl_rotary {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
+cat $dts | sed -n '/rotary_pins {/,/\};/p' | sed -n 's/.*pins = \"\(.*\)\".*/\1/p' | sed 's/\\0\|", "/, /g'
 echo "</td>"
 else
 echo "
@@ -1030,7 +1027,7 @@ echo "<table align="center" border=0 width=><tr><td>
 echo "</table></form>"
 #*****************************************************************
 echo "<table align="center" border=0 width=>
-<form method="POST" action="conv.cgi" onsubmit=\"deleteschen(this);return true;\"><tr><td>
+<form method="POST" action="conv.cgi"><tr><td>
 <a href=/cgi-bin/modules/boot-config/conv.cgi>
 <button class="button" $nomount type=submit name="reconv" value="$dtb" title="Compile_of_device_tree.">"Apply changes, and reboot device."</button></a>
 </td>

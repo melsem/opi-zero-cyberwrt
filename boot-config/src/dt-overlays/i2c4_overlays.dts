@@ -1,4 +1,12 @@
 
+&pio {
+	i2c4_pins: i2c4_pins {
+		pins = "PA19", "PA18";
+		function = "gpio_in";
+		pull = <0x00>;
+	};
+};
+
 / {
 	aliases {
 		i2c4 = &i2c4;
@@ -6,11 +14,13 @@
 
 	i2c4: i2c4 {
 		compatible = "i2c-gpio";
+		pinctrl-0 = <&i2c4_pins>;
 		pinctrl-names = "default";
-		scl-gpios = <&pio 0 18 7>;
 		sda-gpios = <&pio 0 19 7>;
+		scl-gpios = <&pio 0 18 7>;
 		i2c-gpio,delay-us = <0x0a>;
 		status = "okay";
 	};
 };
+
 
