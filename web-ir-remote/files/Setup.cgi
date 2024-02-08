@@ -26,6 +26,18 @@ ontxtoff='Желаете включить авто-запуск?'
 onoff=staroff
 cto=ON
 fi
+
+#_______________ time-javascript _____________________________
+
+if [ "$1" == "setup_irc" ]; then
+echo "<table align="center" border=0 width=><tr><td>
+<b><span hidden id="time"></span></b>
+<script type="text/javascript">var i = 0; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/cgi-bin/modules/web-ir-remote/Setup.html\"; }
+time(); setInterval(time, 500); </script>
+</td></tr></table>"
+fi
+#____________________________________________________________
+
 #===================================================================================
 echo "<body bgcolor="#f0f0f0">
 <style>

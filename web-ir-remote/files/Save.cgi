@@ -99,6 +99,6 @@ sost = 0
 }
 END
 {
-	if(sost == 0) system("/www/cgi-bin/modules/web-ir-remote/Setup.cgi")
-	else if(sost == 1) system("/www/cgi-bin/modules/web-ir-remote/Setuptryg.cgi")
+	if(sost == 0) system("/www/cgi-bin/modules/web-ir-remote/Setup.cgi setup_irc")
+	else if(sost == 1) system("/www/cgi-bin/modules/web-ir-remote/Setuptryg.cgi setup_tryg")
 }
