@@ -1,0 +1,23 @@
+
+/ {
+	aliases {
+		spi0 = "/soc/spi@1c68000";
+	};
+};
+
+&spi0 {
+	status = "okay";
+
+	flash@0 {
+		partitions: partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <0x01>;
+			#size-cells = <0x01>;
+
+			partition@0 {
+				label = "fullflash";
+				reg = <0x00 0x1000000>;
+			};
+		};
+	};
+};

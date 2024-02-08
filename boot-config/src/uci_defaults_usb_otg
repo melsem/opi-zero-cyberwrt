@@ -1,3 +1,9 @@
-uci -q set network.@device[0].ports='eth0 usb0'
-uci commit network
+uci -q set network.@device[0].ports='usb0'
+uci -q set network.lan.ipaddr="192.168.10.1"
+uci -q set network.wan=interface
+uci -q set network.wan.proto='dhcp'
+uci -q set network.wan.device='eth0'
+uci -q commit network
+uci -q set firewall.@zone[1].input='ACCEPT'
+uci -q commit firewall
 
