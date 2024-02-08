@@ -1,6 +1,18 @@
 
 
 # An example of using the build system.
+- * Wifi: xradio_wlan (xradio-xr819) - okay
+- * Soc: i2c0, i2c1, i2c2, spi0-flash, usb0-1-2-3 - okay
+- * Soc: usb0-otg g_ether gadget: Ethernet Gadget - okay
+- * Soc: H3 Audio Codec, lirc_dev - okay
+- 
+- Overlay modules - okay
+- * input: rotary-encoder rotary_axis rotary_button - okay
+- * input: gpio_keys_user - okay
+- * 1-wire Dallas network protocol - okay
+- * I2C4 (Any of the free pins.) - okay
+- 
+- 
 - [1.] Download sources for **[old-stable openwrt-v22.03.6](https://github.com/openwrt/openwrt/archive/refs/tags/v22.03.6.tar.gz)**
 * And unpack:
 ```
