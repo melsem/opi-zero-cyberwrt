@@ -72,7 +72,23 @@ border-radius:inherit;
 <script>
 function deleteschen(f) { if (confirm(\"Are you sure... Delete? \")) f.submit(); }
 </script>"
+#_______________ time-javascript _____________________________
+
+if [[ "$1" == "text" || "$1" == "add_nev_url" ]]; then
+echo "<table align="center" border=0 width=><tr><td>
+<span hidden id="time"></span>
+<script type="text/javascript">var i = 0; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/cgi-bin/modules/web-radio2/index.cgi\"; }
+time(); setInterval(time, 500); </script>
+</td></tr></table>"
+elif [ "$1" == "delchan" ]; then
+echo "<table align="center" border=0 width=><tr><td>The channel link has been removed.</br>The list sorting will be completed in:
+<b><span id="time"></span></b> seconds.
+<script type="text/javascript">var i = 10; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/cgi-bin/modules/web-radio2/index.cgi\"; }
+time(); setInterval(time, 1000); </script>
+</td></tr></table>"
+fi
 #____________________________________________________________
+
 echo "<table><tr><td>
 
 <table><tr><td>
@@ -220,4 +236,4 @@ echo "</textarea></td></tr><tr><td ><br><input type="submit" class="b1" value="S
 </form></td></tr></table>
 </td></tr></table>
  </body>"
-#____________________________________________________________
+#_______

@@ -18,11 +18,13 @@ RS = "&"
 FS = "="
 print "Content-type: text/html; charset=utf-8"
 print ""
+delchan=""
 }
 {
 	playlist="/etc/config/web-radio2"
 
 	if($1 == "delchan") {
+		delchan=$1
 		delstroki=dannie($2)
 #		print "delstroki - "delstroki
 		system("/www/cgi-bin/modules/web-radio2/sed.cgi delet "delstroki"")
@@ -100,16 +102,19 @@ END
 
 	if($1 == "text")
 	{
-		print "<br><br><br><table align=center border=0 size=18 width=><tr><td align=center bgcolor=#90f1f1><b><a href=/cgi-bin/modules/web-radio2/index.cgi>Play list saved. OK</a></b></td></tr></table>"
+		print "<b>Play list saved. OK</b><br>"
+		system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
 	}
 	else if($1 == "add_nev_url")
 	{
-		print "<br><br><br><table align=center border=0 size=18 width=><tr><td align=center bgcolor=#90f1f1><b><a href=/cgi-bin/modules/web-radio2/index.cgi>NEW URL saved. OK</a></b></td></tr></table>"
+		print "<b>NEW URL saved. OK</b><br>"
+		system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
 	}
-	else
-	{
-		system("sleep 2")
-		system("/www/cgi-bin/modules/web-radio2/setup.cgi")
-	}
-}
+	else if(delchan == "delchan")
 
+	{
+		print "<b>Delete. OK</b><br>"
+		system("/www/cgi-bin/modules/web-radio2/setup.cgi delchan")
+	}
+	else system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
+}
