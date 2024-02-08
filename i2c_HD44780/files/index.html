@@ -4,6 +4,17 @@ echo "<title>12c-LCD monitor (bonus clock and themperature)</title>"
 echo "<table align=center border=0><tr><td>"
 echo `cat /www/menu.html`
 echo "</td></tr></table>"
+#_______________ time-javascript ____________________________
+
+if [ "$1" == "save_setup" ]; then
+echo "<table align="center" border=0 width=><tr><td>
+<b><span hidden id="time"></span></b>
+<script type="text/javascript">var i = 0; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/cgi-bin/modules/i2c_hd44780/index.cgi\"; }
+time(); setInterval(time, 500); </script>
+</td></tr></table>"
+fi
+#____________________________________________________________
+
 echo "
 <body bgcolor="#f0f0f0">
 <style>

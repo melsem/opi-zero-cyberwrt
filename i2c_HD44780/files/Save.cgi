@@ -89,7 +89,7 @@ print ""
 END
 {
 	system("sleep 1s")
-	system("/www/cgi-bin/modules/i2c_hd44780/index.html")
+	system("/www/cgi-bin/modules/i2c_hd44780/index.html save_setup")
 }
 
 
