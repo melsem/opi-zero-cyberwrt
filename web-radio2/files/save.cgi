@@ -19,6 +19,8 @@ FS = "="
 print "Content-type: text/html; charset=utf-8"
 print ""
 delchan=""
+add_nev_url=""
+add_nev_name=""
 }
 {
 	playlist="/etc/config/web-radio2"
@@ -91,11 +93,15 @@ delchan=""
 	if($1 == "n_str") n=dannie($2)
 	if($1 == "add_nev_name")
 	{
+		add_nev_name=S1
 		nb=dannie($2)
 #		print "#EXTINF:-"n","dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
 		system("/www/cgi-bin/modules/web-radio2/sed.cgi addnev "n" "nb"")
 	}
-	if($1 == "add_nev_url") print dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
+	if($1 == "add_nev_url") {
+		add_nev_url="add_nev_url"
+		print dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
+	}
 }
 END
 {
@@ -105,10 +111,10 @@ END
 		print "<b>Play list saved. OK</b><br>"
 		system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
 	}
-	else if($1 == "add_nev_url")
+	else if(add_nev_url == "add_nev_url")
 	{
 		print "<b>NEW URL saved. OK</b><br>"
-		system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
+		system("/www/cgi-bin/modules/web-radio2/setup.cgi add_nev_url")
 	}
 	else if(delchan == "delchan")
 
@@ -116,5 +122,6 @@ END
 		print "<b>Delete. OK</b><br>"
 		system("/www/cgi-bin/modules/web-radio2/setup.cgi delchan")
 	}
+	else if($1 == "next") { system("/www/cgi-bin/modules/web-radio2/setup.cgi next") }
 	else system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
 }
