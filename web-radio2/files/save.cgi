@@ -37,19 +37,19 @@ add_nev_name=""
 	if($1 == "nameURL") nameUrlStroki=dannie($2)
 	if($1 == "URL2")
 	{
-		system("amixer -c 0 -q set 'Line Out' off")
+		system("amixer -c 0 -q set 'DAC' 100%-")
 		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -u "dannie($2)" -n "nameUrlStroki" -p "nomerstroki" &")
-		system("amixer -c 0 -q set 'Line Out' on")
+		system("amixer -c 0 -q set 'DAC' 100%")
 	}
 #	===================================
 	if($1 == "next") {
-		system("amixer -c 0 -q set 'Line Out' off")
+		system("amixer -c 0 -q set 'DAC' 100%-")
 		system("sleep 1")
 		system("killall -9 madplay 2> /dev/null")
 		system("killall -9 curl 2> /dev/null")
-		system("amixer -c 0 -q set 'Line Out' on")
+		system("amixer -c 0 -q set 'DAC' 100%")
 	}
 	if($1 == "zapusk") system("/etc/init.d/web-radio2.init start")
 	if($1 == "ostanov") system("/etc/init.d/web-radio2.init stop")
@@ -59,31 +59,31 @@ add_nev_name=""
 #	========= play-new-URL ============
 	if($1 == "URL")
 	{
-		system("amixer -c 0 -q set 'Line Out' off")
+		system("amixer -c 0 -q set 'DAC' 100%-")
 		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -u "dannie($2)" &")
-		system("amixer -c 0 -q set 'Line Out' on")
+		system("amixer -c 0 -q set 'DAC' 100%")
 	}
 
 #	========= play-file ============
 	if($1 == "file")
 	{
-		system("amixer -c 0 -q set 'Line Out' off")
+		system("amixer -c 0 -q set 'DAC' 100%-")
 		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -f "dannie($2)" &")
-		system("amixer -c 0 -q set 'Line Out' on")
+		system("amixer -c 0 -q set 'DAC' 100%")
 	}
 
 #	========= play-folder ==========
 	if($1 == "folder")
 	{
-		system("amixer -c 0 -q set 'Line Out' off")
+		system("amixer -c 0 -q set 'DAC' 100%-")
 		system("sleep 1")
 		system("killall -9 web-radio2 2> /dev/null")
 		system("web-radio2 -l "dannie($2)" &")
-		system("amixer -c 0 -q set 'Line Out' on")
+		system("amixer -c 0 -q set 'DAC' 100%")
 	}
 
 #	========= edit play-list =========
@@ -125,3 +125,4 @@ END
 	else if($1 == "next") { system("/www/cgi-bin/modules/web-radio2/setup.cgi next") }
 	else system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
 }
+

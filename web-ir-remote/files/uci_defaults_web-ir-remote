@@ -36,7 +36,7 @@ echo -e "KEY_VOLUMEUP"'\t'"1"'\t'"/www/cgi-bin/modules/web-radio2/volume volume 
 echo -e "KEY_VOLUMEDOWN"'\t'"1"'\t'"/www/cgi-bin/modules/web-radio2/volume volume 1-" >> $triggerhappy
 echo -e "KEY_VOLUMEUP"'\t'"2"'\t'"tda7313 volume +" >> $triggerhappy
 echo -e "KEY_VOLUMEDOWN"'\t'"2"'\t'"tda7313 volume -" >> $triggerhappy
-echo -e "KEY_MUTE"'\t'"1"'\t'"tda7313 volume 0" >> $triggerhappy
+echo -e "KEY_MUTE"'\t'"1"'\t'"tda7313 volume 0; /etc/init.d/web-radio2.init restart 0" >> $triggerhappy
 echo -e "BTN_RIGHT"'\t'"1"'\t'"tda7313 streble +" >> $triggerhappy
 echo -e "BTN_RIGHT"'\t'"2"'\t'"tda7313 streble +" >> $triggerhappy
 echo -e "BTN_LEFT"'\t'"1"'\t'"tda7313 streble -" >> $triggerhappy

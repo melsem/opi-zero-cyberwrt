@@ -2,89 +2,94 @@
 
 START=99
 
-volsost=$(amixer -c 0 get 'Line Out' | sed '/Front Left: Playback/!d' | awk '{print $4}')
+tmp_dir="/tmp/radio"
+tmp_volume="/tmp/radio/volume_level"
+tmp_mute="/tmp/radio/tmp_mute"
 
-reload() {
+ls $tmp_dir &> /dev/null
+if [ $? == 1 ]; then mkdir $tmp_dir; touch $tmp_volume; touch $tmp_mute; else touch $tmp_volume; touch $tmp_mute; fi
 
-  if [ $1 == "0" ]; then
-    amixer -c 0 -q set "DAC" 100%-	# выкл
-    amixer -c 0 -q set "Line Out" 100%-
+# save_volume
+amixer -c 0 get 'Line Out' | sed -n 's/.*Front .*\: Playback \(.*\) \[.*%\].*/\1/p' | sed -n '1p' > $tmp_volume
+
+killed() {
 	killall -9 curl &> /dev/null &> /dev/null
 	killall -9 wget &> /dev/null &> /dev/null
 	killall -9 madplay &> /dev/null &> /dev/null
-   sleep 1
-    amixer -c 0 -q set "Line Out" $volsost
-    amixer -c 0 -q set "DAC" 100%	# вкл
-  else
-    amixer -c 0 -q set "DAC" 100%-	# выкл
-    amixer -c 0 -q set "Line Out" 100%-
-	killall -9 web-radio2 &> /dev/null > /dev/null
-	killall -9 curl &> /dev/null > /dev/null
-	killall -9 wget &> /dev/null > /dev/null
-	killall -9 madplay &> /dev/null > /dev/null
-    web-radio2 -p $1 &
-   sleep 1
-    amixer -c 0 -q set "Line Out" $volsost
-    amixer -c 0 -q set "DAC" 100%	# вкл
-  fi
+}
+
+offvolume() {
+	amixer -c 0 -q set 'Line Out' 0	# выкл
+	amixer -c 0 -q set "DAC" 100%-	# выкл
+}
+
+onvolume() {
+	read_volume=$(sed -n '1p' $tmp_volume)
+	amixer -c 0 -q set "DAC" 100%			# вкл
+	sleep 1
+	amixer -c 0 -q set 'Line Out' $read_volume	# вкл
+}
+
+reload() {
+	offvolume
+	if [ $1 == "0" ]; then
+		killed
+	else
+		killall -9 web-radio2 &> /dev/null > /dev/null
+		killed
+		web-radio2 -p $1 &
+	fi
+	onvolume
 }
 
 start() {
-
+   offvolume
    pidof web-radio2 &> /dev/null
- if [ $? == 1 ]; then
-    amixer -c 0 -q set "DAC" 100%-	# выкл
-    amixer -c 0 -q set "Line Out" 100%-
+   if [ $? == 1 ]; then
 	killall -9 web-radio2 &> /dev/null > /dev/null
-	killall -9 curl &> /dev/null > /dev/null
-	killall -9 wget &> /dev/null > /dev/null
-	killall -9 madplay &> /dev/null > /dev/null
-   web-radio2  -p 1 &
-   sleep 1
-    amixer -c 0 -q set "Line Out" $volsost
-   sleep 1
-    amixer -c 0 -q set "DAC" 100%	# вкл
-
- else
-    amixer -c 0 -q set "DAC" 100%-	# выкл
-    amixer -c 0 -q set "Line Out" 100%-
+	killed
+	cat /tmp/play_name &> /dev/null
+	if [ $? != 1 ]; then
+		playlist="/etc/config/web-radio2"
+		play_name=$(sed -n '1p' /tmp/play_name); t_href=$(sed -n '1p' /tmp/nl)
+		numb=$(sed -n '/^\#EXTINF.*'$play_name'/=' $playlist)
+		let "numb = (("$numb" / 2))"
+		# web-radio2 -p $numb &
+		web-radio2 -u $t_href -n $play_name -p $numb &
+	else
+		web-radio2 -p 1 &
+	fi
+   else
 	killall -9 web-radio2 &> /dev/null > /dev/null
-	killall -9 curl &> /dev/null > /dev/null
-	killall -9 wget &> /dev/null > /dev/null
-	killall -9 madplay &> /dev/null > /dev/null
-   sleep 1
-    amixer -c 0 -q set "Line Out" $volsost
-    amixer -c 0 -q set "DAC" 100%	# вкл
- fi
+	killed
+   fi
+   onvolume
 }
 
 stop() {
-    amixer -c 0 -q set "DAC" 100%-	# выкл
-    amixer -c 0 -q set "Line Out" 100%-
-
+	offvolume
 	killall -9 web-radio2 &> /dev/null > /dev/null
-	killall -9 curl &> /dev/null > /dev/null
-	killall -9 wget &> /dev/null > /dev/null
-	killall -9 madplay &> /dev/null > /dev/null
-   sleep 1
-    amixer -c 0 -q set "Line Out" $volsost
-    amixer -c 0 -q set "DAC" 100%	# вкл
+	killed
+	onvolume
 }
 
 restart() {
-    amixer -c 0 -q set "DAC" 100%-	# выкл
-    amixer -c 0 -q set "Line Out" 100%-
+    if [ $1 == "0" ]; then	# mute
+	read_tmp_mute=$(sed -n '1p' $tmp_mute )
+	read_card=$(amixer -c 0 get 'Line Out' | sed -n 's/.*Front .*\: Playback \(.*\) \[.*%\].*/\1/p' | sed -n '1p')
+	if [[ "$read_card" != "0" ]]; then
+		amixer -c 0 get 'Line Out' | sed -n 's/.*Front .*\: Playback \(.*\) \[.*%\].*/\1/p' | sed -n '1p' > $tmp_mute
+		amixer -c 0 -q set "Line Out" 0
+	else
+		amixer -c 0 get 'Line Out' | sed -n 's/.*Front .*\: Playback \(.*\) \[.*%\].*/\1/p' | sed -n '1p' > $tmp_mute
+		amixer -c 0 -q set "Line Out" $read_tmp_mute
+	fi
+    else
+	offvolume
 	killall -9 web-radio2 &> /dev/null > /dev/null
-	killall -9 curl &> /dev/null > /dev/null
-	killall -9 wget &> /dev/null > /dev/null
-	killall -9 madplay &> /dev/null > /dev/null
-
-    web-radio2 &
-   sleep 1
-    amixer -c 0 -q set "Line Out" $volsost
-    amixer -c 0 -q set "DAC" 100%	# вкл
-
+	killed
+	web-radio2 &
+	onvolume
+    fi
 }
-
-
 
