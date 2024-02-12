@@ -5,6 +5,7 @@ START=99
 tmp_dir="/tmp/radio"
 tmp_volume="/tmp/radio/volume_level"
 tmp_mute="/tmp/radio/tmp_mute"
+playlist="/etc/config/web-radio2"
 
 ls $tmp_dir &> /dev/null
 if [ $? == 1 ]; then mkdir $tmp_dir; touch $tmp_volume; touch $tmp_mute; else touch $tmp_volume; touch $tmp_mute; fi
@@ -19,15 +20,23 @@ killed() {
 }
 
 offvolume() {
-	amixer -c 0 -q set 'Line Out' 0	# выкл
-	amixer -c 0 -q set "DAC" 100%-	# выкл
+	off_volume=$(sed -n '1p' $tmp_volume)
+    while [ "$off_volume" -ge "0" ]; do
+	amixer -c 0 -q set 'Line Out' $off_volume	# OFF: while -=1
+	let "off_volume -= 1"
+    done
+#	amixer -c 0 -q set 'Line Out' 0	# выкл
+	amixer -c 0 -q set "DAC" 100%-			# OFF
 }
 
 onvolume() {
-	read_volume=$(sed -n '1p' $tmp_volume)
-	amixer -c 0 -q set "DAC" 100%			# вкл
-	sleep 1
-	amixer -c 0 -q set 'Line Out' $read_volume	# вкл
+	amixer -c 0 -q set "DAC" 100%			# ON
+	i="0"
+	on_volume=$(sed -n '1p' $tmp_volume)
+    while [ "$i" -le "$on_volume" ]; do
+	amixer -c 0 -q set 'Line Out' $i				# ON: while +=1
+	let "i += 1"
+    done
 }
 
 reload() {
@@ -50,12 +59,11 @@ start() {
 	killed
 	cat /tmp/play_name &> /dev/null
 	if [ $? != 1 ]; then
-		playlist="/etc/config/web-radio2"
-		play_name=$(sed -n '1p' /tmp/play_name); t_href=$(sed -n '1p' /tmp/nl)
-		numb=$(sed -n '/^\#EXTINF.*'$play_name'/=' $playlist)
-		let "numb = (("$numb" / 2))"
-		# web-radio2 -p $numb &
-		web-radio2 -u $t_href -n $play_name -p $numb &
+		play_name=$(sed -n '1p' /tmp/play_name | sed -e "s/\"\|\'//g")
+		t_href=$(sed -n '1p' /tmp/nl)
+		numb=$(sed -n 's/#EXTINF:-\(.*\),"'$play_name'"/\1/p' $playlist)
+		web-radio2 -p $numb &
+#		web-radio2 -u $t_href -n $play_name -p $numb &
 	else
 		web-radio2 -p 1 &
 	fi
