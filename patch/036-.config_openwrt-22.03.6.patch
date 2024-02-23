@@ -1,6 +1,6 @@
 --- a/.config	1970-01-01 03:00:00.000000000 +0300
-+++ b/.config	2024-02-02 01:32:58.427669577 +0200
-@@ -0,0 +1,9351 @@
++++ b/.config	2024-02-14 01:38:11.505025251 +0200
+@@ -0,0 +1,9358 @@
 +#
 +# Automatically generated file; DO NOT EDIT.
 +# OpenWrt Configuration
@@ -206,18 +206,26 @@
 +# Image Options
 +#
 +CONFIG_SUNXI_SD_BOOT_PARTSIZE=20
++CONFIG_TARGET_ROOTFS_PARTSIZE=256
++# CONFIG_TARGET_ROOTFS_PERSIST_VAR is not set
 +
 +#
-+# Boot (SPI-flash-16MB) images-Firmware
++# SPI-Flash Options
 +#
++
++#
++# SPI flash size for firmware image (in MB)
++#
++# CONFIG_SPI_FLASH_2MB is not set
++# CONFIG_SPI_FLASH_8MB is not set
++CONFIG_SPI_FLASH_16MB=y
++# CONFIG_SPI_FLASH_32MB is not set
 +# CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS is not set
 +CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS=y
 +# CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS is not set
 +# CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS is not set
-+# end of Boot (SPI-flash-16MB) images-Firmware
-+
-+CONFIG_TARGET_ROOTFS_PARTSIZE=256
-+# CONFIG_TARGET_ROOTFS_PERSIST_VAR is not set
++CONFIG_SPI_FLASH_OLIMEX_A20_OLINUXINO_LIME2=y
++# end of SPI flash size for firmware image (in MB)
 +# end of Target Images
 +
 +# CONFIG_EXPERIMENTAL is not set
@@ -498,7 +506,6 @@
 +CONFIG_FEED_luci=y
 +CONFIG_FEED_routing=y
 +CONFIG_FEED_telephony=y
-+CONFIG_FEED_oldpackages=y
 +# CONFIG_FEED_opicyberwrt is not set
 +# CONFIG_FEED_diskman is not set
 +

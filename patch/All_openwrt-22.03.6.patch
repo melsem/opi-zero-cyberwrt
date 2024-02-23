@@ -366,11 +366,96 @@
 +CONFIG_MTD_SPLIT_SUPPORT=y
 +CONFIG_MULTI_IRQ_HANDLER=y
 --- a/target/linux/sunxi/image/cortexa7.mk	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/image/cortexa7.mk	2024-01-21 05:31:55.358701578 +0200
-@@ -3,6 +3,18 @@
- # Copyright (C) 2013-2019 OpenWrt.org
- # Copyright (C) 2016 Yousong Zhou
++++ b/target/linux/sunxi/image/cortexa7.mk	2024-02-14 02:26:05.390831027 +0200
+@@ -179,7 +179,8 @@
+ define Device/xunlong_orangepi-one
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi One
+-  DEVICE_PACKAGES:=kmod-rtc-sunxi
++  DEVICE_PACKAGES:=kmod-rtc-sunxi \
++	boot-config
+   SOC := sun8i-h3
+ endef
+ TARGET_DEVICES += xunlong_orangepi-one
+@@ -211,7 +212,11 @@
+ define Device/xunlong_orangepi-r1
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi R1
+-  DEVICE_PACKAGES:=kmod-usb-net-rtl8152
++ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
++  $(spiparted)
++ endif
++  DEVICE_PACKAGES:=kmod-usb-net-rtl8152 \
++	boot-config
+   SOC := sun8i-h2-plus
+ endef
+ TARGET_DEVICES += xunlong_orangepi-r1
+@@ -219,11 +224,27 @@
+ define Device/xunlong_orangepi-zero
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi Zero
+-  DEVICE_PACKAGES:=kmod-rtc-sunxi
++ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
++  $(spiparted)
++ endif
++  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
++	boot-config
+   SOC := sun8i-h2-plus
+ endef
+ TARGET_DEVICES += xunlong_orangepi-zero
  
++define Device/xunlong_orangepi-zero-lts
++  DEVICE_VENDOR := Xunlong
++  DEVICE_MODEL := Orange Pi Zero Lts
++ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
++  $(spiparted)
++ endif
++  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
++	boot-config
++  SOC := sun8i-h2-plus
++endef
++TARGET_DEVICES += xunlong_orangepi-zero-lts
++
+ define Device/xunlong_orangepi-2
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi 2
+--- a/config/Config-images.in	2023-12-03 21:02:20.000000000 +0200
++++ b/config/Config-images.in	2024-02-14 01:41:30.619780214 +0200
+@@ -318,4 +318,6 @@
+ 		  across reboots. When enabled, /var/run will still be linked
+ 		  to /tmp/run.
+ 
++	source "target/linux/*/image/Config_spi.in"
++
+ endmenu
+--- a/target/linux/sunxi/image/spi-flash-layout	1970-01-01 03:00:00.000000000 +0300
++++ b/target/linux/sunxi/image/spi-flash-layout	2024-02-14 02:30:27.268081268 +0200
+@@ -0,0 +1,69 @@
++
++CONFIG_DEPENDS:= \
++	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS \
++	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS \
++	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS \
++	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS \
++	CONFIG_SPI_FLASH_2MB \
++	CONFIG_SPI_FLASH_8MB \
++	CONFIG_SPI_FLASH_16MB \
++	CONFIG_SPI_FLASH_32MB
++
++ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS
++endif
++ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS_LTS
++endif
++ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS
++endif
++ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS_LTS
++endif
++
++
 +define Build/append-uboot
 +       dd if=$(STAGING_DIR_IMAGE)/$(DEVICE_NAME)-u-boot-with-spl.bin >> $@
 +endef
@@ -383,79 +468,27 @@
 +       dd if=$(DTS_DIR)/$(SUNXI_DTS).dtb >> $@
 +endef
 +
- define Device/cubietech_cubieboard2
-   DEVICE_VENDOR := Cubietech
-   DEVICE_MODEL := Cubieboard2
-@@ -179,7 +191,8 @@
- define Device/xunlong_orangepi-one
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi One
--  DEVICE_PACKAGES:=kmod-rtc-sunxi
-+  DEVICE_PACKAGES:=kmod-rtc-sunxi \
-+	boot-config
-   SOC := sun8i-h3
- endef
- TARGET_DEVICES += xunlong_orangepi-one
-@@ -211,7 +224,23 @@
- define Device/xunlong_orangepi-r1
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi R1
--  DEVICE_PACKAGES:=kmod-usb-net-rtl8152
-+ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
-+  FILESYSTEMS := squashfs
-+  IMAGES := sysupgrade.bin dtb boot.bin fullflash.bin # boot.scr
-+  FULLFLASH_SIZE := 16384K
-+  IMAGE_SIZE := 15808k
-+  BOOT_SIZE := 512k
-+  DTB_SIZE := 64k
-+  BLOCKSIZE := 4k
-+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
-+  IMAGE/fullflash.bin := append-uboot | pad-to $$$$(BOOT_SIZE) | append-dtb | pad-to $$$$(DTB_SIZE) | \
-+			append-kernel | append-rootfs | pad-rootfs
-+  IMAGE/boot.bin := append-uboot | pad-to $$$$(BLOCKSIZE)
-+#  IMAGE/boot.scr := append-scr | pad-to $$$$(BLOCKSIZE)
-+  IMAGE/dtb := append-dtb | pad-to $$$$(BLOCKSIZE)
-+ endif
-+  DEVICE_PACKAGES:=kmod-usb-net-rtl8152 \
-+	boot-config
-   SOC := sun8i-h2-plus
- endef
- TARGET_DEVICES += xunlong_orangepi-r1
-@@ -219,11 +248,52 @@
- define Device/xunlong_orangepi-zero
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi Zero
--  DEVICE_PACKAGES:=kmod-rtc-sunxi
-+ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
-+  FILESYSTEMS := squashfs
-+  IMAGES := sysupgrade.bin dtb boot.bin fullflash.bin # boot.scr
-+  FULLFLASH_SIZE := 16384K
-+  IMAGE_SIZE := 15808k
-+  BOOT_SIZE := 512k
-+  DTB_SIZE := 64k
-+  BLOCKSIZE := 4k
-+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
-+  IMAGE/fullflash.bin := append-uboot | pad-to $$$$(BOOT_SIZE) | append-dtb | pad-to $$$$(DTB_SIZE) | \
-+			append-kernel | append-rootfs | pad-rootfs
-+  IMAGE/boot.bin := append-uboot | pad-to $$$$(BLOCKSIZE)
-+#  IMAGE/boot.scr := append-scr | pad-to $$$$(BLOCKSIZE)
-+  IMAGE/dtb := append-dtb | pad-to $$$$(BLOCKSIZE)
-+ endif
-+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
-+	boot-config
-   SOC := sun8i-h2-plus
- endef
- TARGET_DEVICES += xunlong_orangepi-zero
- 
-+define Device/xunlong_orangepi-zero-lts
 +
-+  DEVICE_VENDOR := Xunlong
-+  DEVICE_MODEL := Orange Pi Zero Lts
-+ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
++define spiparted
 +  FILESYSTEMS := squashfs
-+  IMAGES := sysupgrade.bin dtb boot.bin fullflash.bin # boot.scr
++  IMAGES := boot.bin dtb sysupgrade.bin fullflash.bin # boot.scr
++ifeq ($(CONFIG_SPI_FLASH_32MB),y)
++  FULLFLASH_SIZE := 32768K
++  IMAGE_SIZE := 32192k
++endif
++ifeq ($(CONFIG_SPI_FLASH_16MB),y)
 +  FULLFLASH_SIZE := 16384K
 +  IMAGE_SIZE := 15808k
++endif
++ifeq ($(CONFIG_SPI_FLASH_8MB),y)
++  FULLFLASH_SIZE := 8192K
++  IMAGE_SIZE := 7616k
++endif
++ifeq ($(CONFIG_SPI_FLASH_2MB),y)
++  FULLFLASH_SIZE := 1472K
++  IMAGE_SIZE := 1472k
++endif
++#####
 +  BOOT_SIZE := 512k
 +  DTB_SIZE := 64k
 +  BLOCKSIZE := 4k
@@ -465,49 +498,38 @@
 +  IMAGE/boot.bin := append-uboot | pad-to $$$$(BLOCKSIZE)
 +#  IMAGE/boot.scr := append-scr | pad-to $$$$(BLOCKSIZE)
 +  IMAGE/dtb := append-dtb | pad-to $$$$(BLOCKSIZE)
-+ endif
-+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
-+	boot-config
-+  SOC := sun8i-h2-plus
 +endef
-+TARGET_DEVICES += xunlong_orangepi-zero-lts
 +
- define Device/xunlong_orangepi-2
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi 2
 --- a/target/linux/sunxi/image/Makefile	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/image/Makefile	2024-01-21 05:30:00.122062547 +0200
-@@ -6,6 +6,22 @@
++++ b/target/linux/sunxi/image/Makefile	2024-02-14 00:53:00.798871186 +0200
+@@ -5,6 +5,7 @@
+ 
  include $(TOPDIR)/rules.mk
  include $(INCLUDE_DIR)/image.mk
++include ./spi-flash-layout
  
-+CONFIG_DEPENDS:= \
-+	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS \
-+	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS \
-+	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS \
-+	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS
-+
-+ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS
-+else ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS_LTS
-+else ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS
-+else ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS_LTS
-+endif
-+
  FAT32_BLOCK_SIZE=1024
  FAT32_BLOCKS=$(shell echo $$(($(CONFIG_SUNXI_SD_BOOT_PARTSIZE)*1024*1024/$(FAT32_BLOCK_SIZE))))
- 
---- a/target/linux/sunxi/image/Config.in	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/image/Config.in	2024-01-20 13:26:16.933437950 +0200
-@@ -3,3 +3,33 @@
- 	depends on TARGET_sunxi
- 	default 20
- 
-+menu "Boot (SPI-flash-16MB) images-Firmware"
+--- a/target/linux/sunxi/image/Config_spi.in	1970-01-01 03:00:00.000000000 +0300
++++ b/target/linux/sunxi/image/Config_spi.in	2024-02-14 02:29:42.305242264 +0200
+@@ -0,0 +1,44 @@
++menu "SPI flash size for firmware image (in MB)"
 +	depends on TARGET_sunxi
++
++	choice
++		prompt "Size SPI-flash"
++		default SPI_FLASH_2MB
++		help
++		  Enable 2Mb or 16Mb or 32Mb SPI-flash
++		config SPI_FLASH_2MB
++			bool "2Mb"
++		config SPI_FLASH_8MB
++			bool "8Mb"
++		config SPI_FLASH_16MB
++			bool "16Mb"
++		config SPI_FLASH_32MB
++			bool "32Mb"
++	endchoice
 +
 + config SPI_FLASH_ORANGEPI_ZERO_H2_PLUS
 +	bool "xunlong-orangepi-zero-h2+"
@@ -520,7 +542,6 @@
 +	default n
 +	help
 +           Enable SPI-flash  function interface.
-+
 +
 + config SPI_FLASH_ORANGEPI_R1_H2_PLUS
 +	bool "xunlong-orangepi-r1-h2+"
@@ -560,8 +581,8 @@
 + / {
 + 	model = "Xunlong Orange Pi Zero";
 --- a/target/linux/sunxi/patches-5.10/212-add-spi-flash-opi-zero.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/patches-5.10/212-add-spi-flash-opi-zero.patch	2024-01-20 13:26:16.933437950 +0200
-@@ -0,0 +1,19 @@
++++ b/target/linux/sunxi/patches-5.10/212-add-spi-flash-opi-zero.patch	2024-02-12 13:31:09.192905075 +0200
+@@ -0,0 +1,48 @@
 +--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
 ++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
 +@@ -60,6 +70,7 @@
@@ -581,12 +602,7 @@
 + 
 + 	flash@0 {
 + 		#address-cells = <1>;
---- a/target/linux/sunxi/patches-5.10/213-add-spi-flash-opi-zero.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/patches-5.10/213-add-spi-flash-opi-zero.patch	2024-01-20 13:26:16.933437950 +0200
-@@ -0,0 +1,31 @@
-+--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+@@ -174,6 +179,28 @@
++@@ -173,6 +179,28 @@
 + 		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
 + 		reg = <0>;
 + 		spi-max-frequency = <40000000>;
@@ -857,7 +873,7 @@
 ++CONFIG_SPI_FLASH_WINBOND=y
 ++CONFIG_SPI_FLASH_MACRONIX=y
 --- a/package/base-files/files/bin/config_generate	2023-12-03 21:02:20.000000000 +0200
-+++ b/package/base-files/files/bin/config_generate	2024-01-20 13:26:16.937437841 +0200
++++ b/package/base-files/files/bin/config_generate	2024-02-11 01:34:23.313008015 +0200
 @@ -3,6 +3,9 @@
  CFG=/etc/board.json
  
@@ -4162,7 +4178,7 @@
 + }
 + 
 --- a/feeds.conf.default	2023-12-03 21:02:20.000000000 +0200
-+++ b/feeds.conf.default	2024-01-20 13:26:16.941437732 +0200
++++ b/feeds.conf.default	2024-02-13 01:33:36.966900161 +0200
 @@ -2,3 +2,6 @@
  src-git-full luci https://git.openwrt.org/project/luci.git^74dd23bdb1c2ba00c68e3abf4d00233bb4f939cd
  src-git-full routing https://git.openwrt.org/feed/routing.git^777c115b0a6336d6582c5992d25b631b6d6d21fd
