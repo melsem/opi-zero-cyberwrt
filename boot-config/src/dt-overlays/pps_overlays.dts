@@ -11,8 +11,8 @@
 		compatible = "pps-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pps_pins>;
-		gpios = <&pio 0 7 0>;
-		echo-gpios = <&pio 0 6 0>;
+		gpios = <&pio 0 7 6>;
+		echo-gpios = <&pio 0 6 6>;
 		assert-falling-edge;
 		echo-active-ms = <100>;
 		status = "okay";

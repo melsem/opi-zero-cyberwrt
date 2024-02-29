@@ -14,7 +14,7 @@
 
 	w1: w1 {
 		compatible = "w1-gpio";
-		gpios = <&pio 0 10 7>;
+		gpios = <&pio 0 10 6>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&w1_pins>;
 		status = "okay";

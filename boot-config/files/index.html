@@ -452,7 +452,7 @@ echo "<tr><td align="center"><table>"
 echo "<tr><td align="center"><table class="b2" border="1" bgcolor="#ffffff" cellspacing="2">
 <caption>sun8i: Allwinner H2+, H3. General U-boot settings.</caption>"
 
-#**************************i2c1**********************************
+#**************************i2c0**********************************
 echo "
 <tr><td>"
 mod=$(cat $dts | sed -n '/'$i2c0'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')

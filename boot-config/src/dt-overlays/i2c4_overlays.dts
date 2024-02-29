@@ -16,9 +16,9 @@
 		compatible = "i2c-gpio";
 		pinctrl-0 = <&i2c4_pins>;
 		pinctrl-names = "default";
-		sda-gpios = <&pio 0 19 7>;
-		scl-gpios = <&pio 0 18 7>;
-		i2c-gpio,delay-us = <0x0a>;
+		sda-gpios = <&pio 0 19 6>;
+		scl-gpios = <&pio 0 18 6>;
+		i2c-gpio,delay-us = <0x02>;
 		status = "okay";
 	};
 };
