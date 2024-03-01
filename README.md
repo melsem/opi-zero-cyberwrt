@@ -1,5 +1,8 @@
 
-# OrangePi-zero, OrangePi-R1 MMC or spi-flash-16Mb. Stable openwrt-v22.03.6
+# OrangePi-zero, OrangePi-R1 MMC or spi-flash-16Mb. Stable openwrt-v22.03.6.
+ - Images can be collected for "MMS" or for spi-flash.
+ - By checking in "make menuconfig" > Target Images > SPI flash size for firmware image.
+ - 
 - * There is a "boot-config" utility to configure the boot configuration.
 - * Web utility "boot-config": 192.168.10.1/boot
 - * Console:
@@ -27,9 +30,6 @@ ls -l /etc/dt-overlays
 - * Using ready-made samples, you can add your overlays to the folder: /etc/dt-overlays
 - 
 - 
-![screenshots](https://github.com/melsem/opi-zero-cyberwrt/blob/master/patch/2024-03-01_22-05-06.png)
-![screenshots](https://github.com/melsem/opi-zero-cyberwrt/blob/master/patch/2024-03-01_22-05-16.png)
-![screenshots](https://github.com/melsem/opi-zero-cyberwrt/blob/master/patch/2024-03-01_22-05-26.png)
 - [1.] Download sources for **[old-stable openwrt-v22.03.6](https://github.com/openwrt/openwrt/archive/refs/tags/v22.03.6.tar.gz)**
 * And unpack:
 ```
@@ -52,6 +52,9 @@ patch -p1 < 036-.config_openwrt-22.03.6.patch
 make menuconfig
 make -j1 V=s
 ```
+![screenshots](https://github.com/melsem/opi-zero-cyberwrt/blob/master/patch/2024-03-01_22-05-06.png)
+![screenshots](https://github.com/melsem/opi-zero-cyberwrt/blob/master/patch/2024-03-01_22-05-16.png)
+![screenshots](https://github.com/melsem/opi-zero-cyberwrt/blob/master/patch/2024-03-01_22-05-26.png)
 
 ###############################
 
