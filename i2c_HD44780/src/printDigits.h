@@ -46,8 +46,8 @@ void simvol_Minus(int pos) {
 		write_CMD(LCD_SETSTROKA4 + pos); write_dat(LCD_PROBELPOZYTYV);
 	} else if ((wide_simvol == '3') || (wide_simvol == '4')) { // символ на четыре строки
 		write_CMD(LCD_SETSTROKA1 + pos); write_dat(LCD_PROBELPOZYTYV);
-		write_CMD(LCD_SETSTROKA2 + pos); write_dat(LCD_PROBELPOZYTYV);
-		write_CMD(LCD_SETSTROKA3 + pos); write_dat(LCD_CGRAM1);
+		write_CMD(LCD_SETSTROKA2 + pos); write_dat(LCD_CGRAM1);
+		write_CMD(LCD_SETSTROKA3 + pos); write_dat(LCD_PROBELPOZYTYV);
 		write_CMD(LCD_SETSTROKA4 + pos); write_dat(LCD_PROBELPOZYTYV);
 	}
    }
@@ -72,6 +72,8 @@ void great_15() { write_dat(LCD_PROBELPOZYTYV); write_dat(LCD_CGRAM1); write_dat
 void great_16() { write_dat(LCD_CGRAM6); write_dat(LCD_CGRAM1); write_dat(LCD_CGRAM1); }
 void great_17() { write_dat(LCD_CGRAM0); write_dat(LCD_CGRAM0); write_dat(LCD_CGRAM4); }
 void great_18() { write_dat(LCD_PROBELPOZYTYV); write_dat(LCD_CGRAM5); write_dat(LCD_PROBELPOZYTYV); }
+//void great_19() { write_dat(LCD_CGRAM5); write_dat(LCD_CGRAM0); }
+//void great_20() { write_dat(LCD_CGRAM6); write_dat(LCD_CGRAM1); }
 // ******************************************** //
 
 // ******************************************** //
@@ -273,16 +275,16 @@ void simvol_C(int pos) {
    if (lcd_l == 1) {
 		// символ на две строки
 	if (wide_simvol == '1') {
-		write_CMD(LCD_SETSTROKA1 + pos); great_0();
-		write_CMD(LCD_SETSTROKA2 + pos); great_16();
+		write_CMD(LCD_SETSTROKA1 + pos); write_dat(0x4f); write_dat(LCD_PROBELPOZYTYV); great_0();
+		write_CMD(LCD_SETSTROKA2 + pos); write_dat(LCD_PROBELPOZYTYV); write_dat(LCD_PROBELPOZYTYV); great_16();
 	} else if (wide_simvol == '2') {
-		write_CMD(LCD_SETSTROKA3 + pos); great_0();
-		write_CMD(LCD_SETSTROKA4 + pos); great_16();
+		write_CMD(LCD_SETSTROKA3 + pos); write_dat(0x4f); write_dat(LCD_PROBELPOZYTYV); great_0();
+		write_CMD(LCD_SETSTROKA4 + pos); write_dat(LCD_PROBELPOZYTYV); write_dat(LCD_PROBELPOZYTYV); great_16();
 	} else if ((wide_simvol == '3') || (wide_simvol == '4')) { // символ на четыре строки
-		write_CMD(LCD_SETSTROKA1 + pos); great_1();
-		write_CMD(LCD_SETSTROKA2 + pos); great_12();
-		write_CMD(LCD_SETSTROKA3 + pos); great_12();
-		write_CMD(LCD_SETSTROKA4 + pos); great_2();
+		write_CMD(LCD_SETSTROKA1 + pos); write_dat(0x4f); write_dat(LCD_PROBELPOZYTYV); great_1();
+		write_CMD(LCD_SETSTROKA2 + pos); write_dat(LCD_PROBELPOZYTYV); write_dat(LCD_PROBELPOZYTYV); great_12();
+		write_CMD(LCD_SETSTROKA3 + pos); write_dat(LCD_PROBELPOZYTYV); write_dat(LCD_PROBELPOZYTYV); great_12();
+		write_CMD(LCD_SETSTROKA4 + pos); write_dat(LCD_PROBELPOZYTYV); write_dat(LCD_PROBELPOZYTYV); great_2();
 	}
    }
 }

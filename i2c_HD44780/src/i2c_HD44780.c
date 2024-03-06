@@ -133,7 +133,8 @@ char
 	*nickname_sensor,
 	*stryng_thermoAllarm,
 	temp_sensor_data[7],
-	temp_sensor_txt[10],
+	temp_sensor_txt[11],
+//	*temp_sensor_txt,
 
 	temp_gpOut[256],
 	tst_gpOut[3],
@@ -1038,13 +1039,13 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 		printf(" %s -d 0 -a 0x27 -f NNN -u 1110\n\n", argv[0]);
 		printf("          DS181B20 LCD line-1\n");
 		printf("Example command line: \n");
-		printf(" %s -d 0 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a`\`28-000002d07b76`\`28-0000034b309e\n\n", argv[0]);
-		printf(" %s -d 0 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a`\`28-000002d07b76`\`28-0000034b309e`\`28-0000034b4dc6\n\n", argv[0]);
-		printf(" %s -a 0x27 -f NNN -u 10101 -b 28-000002d0797a`\`28-000002d07b76`\`28-0000034b309e`\`28-0000034b4dc6\n\n", argv[0]);
+		printf(" %s -d 0 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\\28-000002d07b76\\28-0000034b309e\n\n", argv[0]);
+		printf(" %s -d 0 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\\28-000002d07b76\\28-0000034b309e\\28-0000034b4dc6\n\n", argv[0]);
+		printf(" %s -a 0x27 -f NNN -u 10101 -b 28-000002d0797a\\28-000002d07b76\\28-0000034b309e\\28-0000034b4dc6\n\n", argv[0]);
 		printf("           Clock LCD line-1\n");
-		printf(" %s -a 0x27 -f NNN -u 111010000 -b 28-000002d0797a`\`28-000002d07b76`\`28-0000034b309e\n\n", argv[0]);
+		printf(" %s -a 0x27 -f NNN -u 111010000 -b 28-000002d0797a\\28-000002d07b76\\28-0000034b309e\n\n", argv[0]);
 		printf("           Clock LCD line-1 sensor and nick\n");
-		printf(" %s -a 0x27 -f NNN -u 111010000 -b 28-000002d0797a`\`28-000002d07b76`\`28-0000034b309e -c '  Dom: '/Ulica///\n\n", argv[0]);
+		printf(" %s -a 0x27 -f NNN -u 111010000 -b 28-000002d0797a\\28-000002d07b76\\28-0000034b309e -c '  Dom: '/Ulica///\n\n", argv[0]);
 		printf("Error-Not argumets! Read http://www.cyber-place.ru/showthread.php?t=2164\n\n");
 		errFl = 1;
 		error_log("Error-Not argumets! Read CONSOL-HELP");
