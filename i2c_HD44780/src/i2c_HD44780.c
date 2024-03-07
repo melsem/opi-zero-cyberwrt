@@ -133,8 +133,7 @@ char
 	*nickname_sensor,
 	*stryng_thermoAllarm,
 	temp_sensor_data[7],
-	temp_sensor_txt[11],
-//	*temp_sensor_txt,
+	temp_sensor_txt [10] = {'S', 'e', 'n', 's', 'o', 'r', '-', '0', ':', ' '},
 
 	temp_gpOut[256],
 	tst_gpOut[3],
@@ -738,7 +737,7 @@ void read_nickname() {
 		if ( i < 10) temp_sensor_txt[i++] = nickname_sensor[i_nick];
 		i_nick++;
 	}
-	if (i == 0) sprintf(temp_sensor_txt, "Sensor-%d: ", (iia+1));
+	if (i == 0) temp_sensor_txt [7] = iia += 1;
 	else while (i < 10) temp_sensor_txt[i++] = ' ';
 	i_nick++;
 }
@@ -785,7 +784,7 @@ void readd_content_file(void) {
 
 
 	} else {
-		tfail = 0; // зброс флаг присутствия файла
+		tfail = 0; // cброс флаг присутствия файла
 		
 		// Get content of w1_slave to variable
 		fseek(tempfile, 0, SEEK_END);	// fseek() устанавливает указатель положения в файле, связанном со  stream, в соответствии со значениями offset и origin.
@@ -1179,7 +1178,7 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 
 				if (iia == 3) if (BIT_CLOCK == 0 && kollw_sensor < 4 && wide_simvol == '0') write_CMD(LCD_SETSTROKA4);
 
-				if (ds_nik != 1) sprintf(temp_sensor_txt, "Sensor-%d: ", (iia+1));
+				if (ds_nik != 1) temp_sensor_txt [7] = iia += 1;
 				else read_nickname();
 
 				if (iia == 0) t_nick = fopen("/tmp/nick", "w");
