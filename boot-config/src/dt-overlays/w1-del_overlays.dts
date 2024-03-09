@@ -1,0 +1,11 @@
+
+&pio {
+	/delete-node/ w1_pins;
+};
+
+/ {
+	aliases {
+		/delete-property/ w1;
+	};
+	/delete-node/ w1;
+};

@@ -1,0 +1,8 @@
+
+&pio {
+	/delete-node/ gpio_keys_pins;
+};
+
+/ {
+	/delete-node/ gpio_keys_user;
+};

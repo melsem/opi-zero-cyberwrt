@@ -1,0 +1,11 @@
+
+&pio {
+	/delete-node/ i2c4_pins;
+};
+
+/ {
+	aliases {
+		/delete-property/ i2c4;
+	};
+	/delete-node/ i2c4;
+};

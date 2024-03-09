@@ -1,0 +1,14 @@
+
+&pio {
+	/delete-node/ pwm0;
+};
+
+&pwm {
+	/delete-property/ pinctrl-names;
+	/delete-property/ pinctrl-0;
+	/delete-property/ status;
+};
+
+&uart0 {
+			status = "okay";
+};

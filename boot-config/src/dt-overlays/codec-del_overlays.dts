@@ -1,0 +1,5 @@
+
+&codec {
+	status = "disabled";
+	/delete-property/ allwinner,audio-routing ;
+};

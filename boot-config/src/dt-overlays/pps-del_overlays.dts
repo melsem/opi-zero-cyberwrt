@@ -1,0 +1,8 @@
+
+&pio {
+	/delete-node/ pps_pins;
+};
+
+/ {
+	/delete-node/ pps;
+};

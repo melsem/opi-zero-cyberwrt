@@ -1,0 +1,27 @@
+
+&pio {
+	/delete-node/ wifi-wake;
+};
+
+&r_pio {
+	/delete-node/ r-wifi-rst;
+};
+
+&mmc1 {
+	/delete-property/ keep-power-in-suspend;
+	sdio_wifi@1 {
+		/delete-property/ compatible;
+		/delete-property/ pinctrl-names;
+		/delete-property/ pinctrl-0;
+		/delete-property/ interrupt-parent;
+		/delete-property/ interrupts;
+		/delete-property/ interrupt-names;
+	};
+};
+
+/ {
+	wifi_pwrseq {
+		/delete-property/ pinctrl-names;
+		/delete-property/ pinctrl-0;
+	};
+};

@@ -1,0 +1,10 @@
+
+&pio {
+	/delete-node/ rotary_pins;
+	/delete-node/ button_pins;
+};
+
+/ {
+	/delete-node/ rotary_axis;
+	/delete-node/ rotary_button;
+};
