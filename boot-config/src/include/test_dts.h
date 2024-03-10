@@ -25,7 +25,7 @@ void test_dts (int file_dts,int exi_dts) {
 
 
 		if ((tempfile = fopen(tmp_dts, "r")) == NULL) {	// Missing file tmp_dts??
-			printf ("  Error: Missing file: %s !!\n  DTB is not converted..\n   EXIT!!\n", tmp_dts);
+			printf ("   Error: Missing file: %s !!\n   DTB is not converted..\n   EXIT!!\n", tmp_dts);
 			if (exi_dts != OVERLAYS)
 					exit (EXIT_FAILURE);
 		}
@@ -45,7 +45,12 @@ void test_dts (int file_dts,int exi_dts) {
 		system (tempraw);
 
 		if ((tempfile = fopen(dtb_tmp, "r")) == NULL) {	// Missing file dtb_tmp??
-			printf ("  Error: Missing file: %s !!\n  dtb_tmp is not converted..\n   EXIT!!\n", dtb_tmp);
+			printf ("   Error: Missing file: %s !!\n   dtb_tmp is not converted..\n", dtb_tmp);
+			printf ("   Find an error in the DTS file.\n");
+			remove (dtb_tmp);
+			remove (tmp_dts);
+			remove (tmp_SPI);
+
 			if (exi_dts != OVERLAYS)
 					exit (EXIT_FAILURE);
 		}
@@ -64,6 +69,7 @@ void test_dts (int file_dts,int exi_dts) {
 			remove (dtb_tmp);
 			remove (tmp_dts);
 			remove (tmp_SPI);
+
 			if (exi_dts == CONV)
 					exit (EXIT_FAILURE);
 		}

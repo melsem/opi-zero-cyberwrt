@@ -21,7 +21,7 @@ void dts_add_overlays (int i)
 
 };
 
-void dt_overlays (int argc,char *argv []) {
+void dt_overlays (int over_lays,char *argv []) {
 
   char	number_of_strings [4];	/* количество строк */
   FILE	*fd ;
@@ -67,12 +67,24 @@ void dt_overlays (int argc,char *argv []) {
 		end_for: ;
 	}
 
-	sprintf (tempraw,"cat /etc/dt-overlays/%s_overlays.dts >> %s 2> %s", argv [2+ofset], tmp_dts, dev_null);
+	if (over_lays == OVERLAYS)
+		sprintf (tempraw,"cat /etc/dt-overlays/%s_overlays.dts >> %s 2> %s", argv [2+ofset], tmp_dts, dev_null);
+	else if (over_lays == OVERLAYS_ERASE)
+		sprintf (tempraw,"cat /etc/dt-overlays/%s-del_overlays.dts >> %s 2> %s", argv [2+ofset], tmp_dts, dev_null);
 
-	if (system (tempraw))
-		printf ("\n  Error: %s_overlays.dts is missing\n  or check the name you entered.\n\n", argv [2+ofset]);
+	if (system (tempraw)) {
+		if (over_lays == OVERLAYS)
+			printf ("   Error: < %s_overlays.dts > is missing\n   or check the name you entered.\n", argv [2+ofset]);
+		else if (over_lays == OVERLAYS_ERASE)
+			printf ("   Error: < %s-del_overlays.dts > is missing\n   or check the name you entered.\n", argv [2+ofset]);
+		remove (dtb_tmp);
+		remove (tmp_dts);
+		remove (tmp_SPI);
+	}
 	else
 	{
+		if (over_lays == OVERLAYS_ERASE) printf ("   Overlay module < %s > has been removed from the dts file.\n", argv [2+ofset]);
+		else if (over_lays == OVERLAYS) printf ("   Added < %s > overlay module to dts file.\n", argv [2+ofset]);
 //		sleep (1);
 		if (((fd = fopen (tmp_SPI, "r")) == NULL) && ((fd = fopen(tmp_dts, "r")) != NULL))
 									test_dts (DTS_TO_DTB_MMC, OVERLAYS);

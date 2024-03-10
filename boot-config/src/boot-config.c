@@ -65,7 +65,13 @@ int main (int argc, char *argv [])
 				else if ((fd = fopen (tmp_SPI, "r")) != NULL) test_dts (TEST_DTS_SPI, CONV); }
 
 
-	if ((argc == 3) && (strcasecmp (argv [1+ofset], "overlays") == 0)) dt_overlays (argc,argv);
+	/*	--------------------- Add, erase overlays  -----------------------------	*/
+	if ((argc == 3) && (strcasecmp (argv [1+ofset], "overlays") == 0)) dt_overlays (OVERLAYS,argv);
+	else if (((argc == 3) && (strcasecmp (argv [1+ofset], "erase") == 0)) || \
+			((argc == 3) && (strcasecmp (argv [1+ofset], "del") == 0)) || \
+				((argc == 3) && (strcasecmp (argv [1+ofset], "delete") == 0))) dt_overlays (OVERLAYS_ERASE,argv);
+	/*	------------------------------------------------------------------------	*/
+
 
 	if (argc != 3)				/* Not '3' input arguments. */
 	{

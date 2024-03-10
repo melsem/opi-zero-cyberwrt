@@ -23,6 +23,8 @@
 
 #define CONV		14
 
+#define OVERLAYS_ERASE	15
+
 #define err_help	mini_help
 
 #define GPIO_22_HEADER_26	22
