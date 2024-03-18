@@ -1,0 +1,99 @@
+Fixed a compilation issue when upgrading
+to backports-6.1.24 on mac80211.
+
+--- a/ap.c
++++ b/ap.c
+@@ -213,7 +213,7 @@
+ 	ap_printk(XRADIO_DBG_MSG, "%s mcast: %s.\n", __func__, 
+ 	          aid0_bit_set ? "ena" : "dis");
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	skb = ieee80211_beacon_get_tim(priv->hw, priv->vif, &tim_offset, &tim_length, 0);
+ #else
+ 	skb = ieee80211_beacon_get_tim(priv->hw, priv->vif, &tim_offset, &tim_length);
+@@ -353,7 +353,7 @@
+ 	return ret;
+ }
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ void xradio_bss_info_changed(struct ieee80211_hw *dev,
+ 			     struct ieee80211_vif *vif,
+ 			     struct ieee80211_bss_conf *info,
+@@ -367,7 +367,7 @@
+ {
+ 	struct xradio_common *hw_priv = dev->priv;
+ 	struct xradio_vif *priv = xrwl_get_vif_from_ieee80211(vif);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	struct ieee80211_vif_cfg *cfg = &vif->cfg;
+ #else
+ 	struct ieee80211_bss_conf *cfg = info;
+@@ -483,7 +483,7 @@
+ 				/* TODO:COMBO:Change this once
+ 				* mac80211 changes are available */
+ 				BUG_ON(!hw_priv->channel);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 				hw_priv->ht_oper.ht_cap = sta->deflink.ht_cap;
+ 				priv->bss_params.operationalRateSet =__cpu_to_le32(
+ 				  xradio_rate_mask_to_wsm(hw_priv, sta->deflink.supp_rates[hw_priv->channel->band]));
+@@ -982,7 +982,7 @@
+ 	if (priv->vif->p2p || hw_priv->channel->band == NL80211_BAND_5GHZ)
+ 		frame.rate = WSM_TRANSMIT_RATE_6;
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	frame.skb = ieee80211_beacon_get(priv->hw, priv->vif, 0);
+ #else
+ 	frame.skb = ieee80211_beacon_get(priv->hw, priv->vif);
+@@ -1145,7 +1145,7 @@
+ 		.rate = 0xFF,
+ 	};
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif, 0, false);
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 17))
+ 	frame.skb = ieee80211_nullfunc_get(priv->hw, priv->vif, false);
+@@ -1262,7 +1262,7 @@
+ 
+ #ifndef HIDDEN_SSID
+ 	/* Get SSID */
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	skb = ieee80211_beacon_get(priv->hw, priv->vif, 0);
+ #else
+ 	skb = ieee80211_beacon_get(priv->hw, priv->vif);
+@@ -1592,7 +1592,7 @@
+ 		.count = 1,
+ 	};
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	skb = ieee80211_beacon_get(priv->hw, priv->vif, 0);
+ #else
+ 	skb = ieee80211_beacon_get(priv->hw, priv->vif);
+--- a/ap.h
++++ b/ap.h
+@@ -29,7 +29,7 @@
+ void xradio_sta_notify(struct ieee80211_hw *dev, struct ieee80211_vif *vif,
+ 		       enum sta_notify_cmd notify_cmd,
+ 		       struct ieee80211_sta *sta);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ void xradio_bss_info_changed(struct ieee80211_hw *dev,
+ 			     struct ieee80211_vif *vif,
+ 			     struct ieee80211_bss_conf *info,
+@@ -64,7 +64,9 @@
+ void xradio_link_id_gc_work(struct work_struct *work);
+ #if defined(CONFIG_XRADIO_USE_EXTENSIONS)
+ /*in linux3.4 mac,it does't have the noa pass*/
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+-//void xradio_notify_noa(struct xradio_vif *priv, int delay);
++void xradio_notify_noa(struct xradio_vif *priv, int delay);
++#endif
+ #endif
+ int xrwl_unmap_link(struct xradio_vif *priv, int link_id);
+ #ifdef AP_HT_CAP_UPDATE

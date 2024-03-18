@@ -1,5 +1,5 @@
 --- a/target/linux/sunxi/config-5.10	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/config-5.10	2024-02-24 21:56:10.860180178 +0200
++++ b/target/linux/sunxi/config-5.10	2024-01-20 13:26:16.929438059 +0200
 @@ -90,7 +90,8 @@
  CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
  CONFIG_CPU_FREQ_GOV_POWERSAVE=y
@@ -157,7 +157,7 @@
  CONFIG_USERIO=y
  CONFIG_USE_OF=y
  CONFIG_VFAT_FS=y
-@@ -496,13 +540,13 @@
+@@ -496,8 +540,6 @@
  CONFIG_VHOST=y
  CONFIG_VHOST_IOTLB=y
  CONFIG_VHOST_NET=y
@@ -166,15 +166,8 @@
  CONFIG_VM_EVENT_COUNTERS=y
  CONFIG_VT=y
  CONFIG_VT_CONSOLE=y
- CONFIG_VT_CONSOLE_SLEEP=y
- CONFIG_VT_HW_CONSOLE_BINDING=y
-+CONFIG_W1=y
-+CONFIG_W1_MASTER_GPIO=y
- CONFIG_WATCHDOG_CORE=y
- CONFIG_XPS=y
- CONFIG_XXHASH=y
 --- a/target/linux/sunxi/modules.mk	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/modules.mk	2024-02-14 16:14:36.616997736 +0200
++++ b/target/linux/sunxi/modules.mk	2024-01-20 13:26:16.929438059 +0200
 @@ -23,15 +23,60 @@
  define KernelPackage/sunxi-ir
      SUBMENU:=$(OTHER_MENU)
@@ -358,7 +351,7 @@
 +
 +$(eval $(call KernelPackage,thermal-generic-adc))
 --- a/target/linux/sunxi/cortexa7/config-5.10	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/cortexa7/config-5.10	2024-02-14 16:14:36.616997736 +0200
++++ b/target/linux/sunxi/cortexa7/config-5.10	2024-01-20 13:26:16.929438059 +0200
 @@ -24,3 +24,12 @@
  # CONFIG_USB_MUSB_HOST is not set
  CONFIG_USB_MUSB_SUNXI=y
@@ -373,96 +366,11 @@
 +CONFIG_MTD_SPLIT_SUPPORT=y
 +CONFIG_MULTI_IRQ_HANDLER=y
 --- a/target/linux/sunxi/image/cortexa7.mk	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/image/cortexa7.mk	2024-02-14 16:14:36.616997736 +0200
-@@ -179,7 +179,8 @@
- define Device/xunlong_orangepi-one
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi One
--  DEVICE_PACKAGES:=kmod-rtc-sunxi
-+  DEVICE_PACKAGES:=kmod-rtc-sunxi \
-+	boot-config
-   SOC := sun8i-h3
- endef
- TARGET_DEVICES += xunlong_orangepi-one
-@@ -211,7 +212,11 @@
- define Device/xunlong_orangepi-r1
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi R1
--  DEVICE_PACKAGES:=kmod-usb-net-rtl8152
-+ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
-+  $(spiparted)
-+ endif
-+  DEVICE_PACKAGES:=kmod-usb-net-rtl8152 \
-+	boot-config
-   SOC := sun8i-h2-plus
- endef
- TARGET_DEVICES += xunlong_orangepi-r1
-@@ -219,11 +224,27 @@
- define Device/xunlong_orangepi-zero
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi Zero
--  DEVICE_PACKAGES:=kmod-rtc-sunxi
-+ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
-+  $(spiparted)
-+ endif
-+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
-+	boot-config
-   SOC := sun8i-h2-plus
- endef
- TARGET_DEVICES += xunlong_orangepi-zero
++++ b/target/linux/sunxi/image/cortexa7.mk	2024-01-21 05:31:55.358701578 +0200
+@@ -3,6 +3,18 @@
+ # Copyright (C) 2013-2019 OpenWrt.org
+ # Copyright (C) 2016 Yousong Zhou
  
-+define Device/xunlong_orangepi-zero-lts
-+  DEVICE_VENDOR := Xunlong
-+  DEVICE_MODEL := Orange Pi Zero Lts
-+ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
-+  $(spiparted)
-+ endif
-+  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
-+	boot-config
-+  SOC := sun8i-h2-plus
-+endef
-+TARGET_DEVICES += xunlong_orangepi-zero-lts
-+
- define Device/xunlong_orangepi-2
-   DEVICE_VENDOR := Xunlong
-   DEVICE_MODEL := Orange Pi 2
---- a/config/Config-images.in	2023-12-03 21:02:20.000000000 +0200
-+++ b/config/Config-images.in	2024-02-14 16:14:36.616997736 +0200
-@@ -318,4 +318,6 @@
- 		  across reboots. When enabled, /var/run will still be linked
- 		  to /tmp/run.
- 
-+	source "target/linux/*/image/Config_spi.in"
-+
- endmenu
---- a/target/linux/sunxi/image/spi-flash-layout	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/image/spi-flash-layout	2024-02-14 16:14:36.616997736 +0200
-@@ -0,0 +1,69 @@
-+
-+CONFIG_DEPENDS:= \
-+	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS \
-+	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS \
-+	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS \
-+	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS \
-+	CONFIG_SPI_FLASH_2MB \
-+	CONFIG_SPI_FLASH_8MB \
-+	CONFIG_SPI_FLASH_16MB \
-+	CONFIG_SPI_FLASH_32MB
-+
-+ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS
-+endif
-+ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS_LTS
-+endif
-+ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS
-+endif
-+ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS),y)
-+	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS_LTS
-+endif
-+
-+
 +define Build/append-uboot
 +       dd if=$(STAGING_DIR_IMAGE)/$(DEVICE_NAME)-u-boot-with-spl.bin >> $@
 +endef
@@ -475,27 +383,29 @@
 +       dd if=$(DTS_DIR)/$(SUNXI_DTS).dtb >> $@
 +endef
 +
-+
-+define spiparted
+ define Device/cubietech_cubieboard2
+   DEVICE_VENDOR := Cubietech
+   DEVICE_MODEL := Cubieboard2
+@@ -179,7 +191,8 @@
+ define Device/xunlong_orangepi-one
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi One
+-  DEVICE_PACKAGES:=kmod-rtc-sunxi
++  DEVICE_PACKAGES:=kmod-rtc-sunxi \
++	boot-config
+   SOC := sun8i-h3
+ endef
+ TARGET_DEVICES += xunlong_orangepi-one
+@@ -211,7 +224,23 @@
+ define Device/xunlong_orangepi-r1
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi R1
+-  DEVICE_PACKAGES:=kmod-usb-net-rtl8152
++ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
 +  FILESYSTEMS := squashfs
-+  IMAGES := boot.bin dtb sysupgrade.bin fullflash.bin # boot.scr
-+ifeq ($(CONFIG_SPI_FLASH_32MB),y)
-+  FULLFLASH_SIZE := 32768K
-+  IMAGE_SIZE := 32192k
-+endif
-+ifeq ($(CONFIG_SPI_FLASH_16MB),y)
++  IMAGES := sysupgrade.bin dtb boot.bin fullflash.bin # boot.scr
 +  FULLFLASH_SIZE := 16384K
 +  IMAGE_SIZE := 15808k
-+endif
-+ifeq ($(CONFIG_SPI_FLASH_8MB),y)
-+  FULLFLASH_SIZE := 8192K
-+  IMAGE_SIZE := 7616k
-+endif
-+ifeq ($(CONFIG_SPI_FLASH_2MB),y)
-+  FULLFLASH_SIZE := 1472K
-+  IMAGE_SIZE := 1472k
-+endif
-+#####
 +  BOOT_SIZE := 512k
 +  DTB_SIZE := 64k
 +  BLOCKSIZE := 4k
@@ -505,38 +415,99 @@
 +  IMAGE/boot.bin := append-uboot | pad-to $$$$(BLOCKSIZE)
 +#  IMAGE/boot.scr := append-scr | pad-to $$$$(BLOCKSIZE)
 +  IMAGE/dtb := append-dtb | pad-to $$$$(BLOCKSIZE)
-+endef
-+
---- a/target/linux/sunxi/image/Makefile	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/image/Makefile	2024-02-14 16:14:36.620997634 +0200
-@@ -5,6 +5,7 @@
++ endif
++  DEVICE_PACKAGES:=kmod-usb-net-rtl8152 \
++	boot-config
+   SOC := sun8i-h2-plus
+ endef
+ TARGET_DEVICES += xunlong_orangepi-r1
+@@ -219,11 +248,52 @@
+ define Device/xunlong_orangepi-zero
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi Zero
+-  DEVICE_PACKAGES:=kmod-rtc-sunxi
++ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
++  FILESYSTEMS := squashfs
++  IMAGES := sysupgrade.bin dtb boot.bin fullflash.bin # boot.scr
++  FULLFLASH_SIZE := 16384K
++  IMAGE_SIZE := 15808k
++  BOOT_SIZE := 512k
++  DTB_SIZE := 64k
++  BLOCKSIZE := 4k
++  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
++  IMAGE/fullflash.bin := append-uboot | pad-to $$$$(BOOT_SIZE) | append-dtb | pad-to $$$$(DTB_SIZE) | \
++			append-kernel | append-rootfs | pad-rootfs
++  IMAGE/boot.bin := append-uboot | pad-to $$$$(BLOCKSIZE)
++#  IMAGE/boot.scr := append-scr | pad-to $$$$(BLOCKSIZE)
++  IMAGE/dtb := append-dtb | pad-to $$$$(BLOCKSIZE)
++ endif
++  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
++	boot-config
+   SOC := sun8i-h2-plus
+ endef
+ TARGET_DEVICES += xunlong_orangepi-zero
  
++define Device/xunlong_orangepi-zero-lts
++
++  DEVICE_VENDOR := Xunlong
++  DEVICE_MODEL := Orange Pi Zero Lts
++ ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
++  FILESYSTEMS := squashfs
++  IMAGES := sysupgrade.bin dtb boot.bin fullflash.bin # boot.scr
++  FULLFLASH_SIZE := 16384K
++  IMAGE_SIZE := 15808k
++  BOOT_SIZE := 512k
++  DTB_SIZE := 64k
++  BLOCKSIZE := 4k
++  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
++  IMAGE/fullflash.bin := append-uboot | pad-to $$$$(BOOT_SIZE) | append-dtb | pad-to $$$$(DTB_SIZE) | \
++			append-kernel | append-rootfs | pad-rootfs
++  IMAGE/boot.bin := append-uboot | pad-to $$$$(BLOCKSIZE)
++#  IMAGE/boot.scr := append-scr | pad-to $$$$(BLOCKSIZE)
++  IMAGE/dtb := append-dtb | pad-to $$$$(BLOCKSIZE)
++ endif
++  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-xradio \
++	boot-config
++  SOC := sun8i-h2-plus
++endef
++TARGET_DEVICES += xunlong_orangepi-zero-lts
++
+ define Device/xunlong_orangepi-2
+   DEVICE_VENDOR := Xunlong
+   DEVICE_MODEL := Orange Pi 2
+--- a/target/linux/sunxi/image/Makefile	2023-12-03 21:02:20.000000000 +0200
++++ b/target/linux/sunxi/image/Makefile	2024-01-21 05:30:00.122062547 +0200
+@@ -6,6 +6,22 @@
  include $(TOPDIR)/rules.mk
  include $(INCLUDE_DIR)/image.mk
-+include ./spi-flash-layout
  
++CONFIG_DEPENDS:= \
++	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS \
++	CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS \
++	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS \
++	CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS
++
++ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS
++else ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_ZERO_H2_PLUS_LTS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_ZERO_H2_PLUS_LTS
++else ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS
++else ifeq ($(CONFIG_SPI_FLASH_ORANGEPI_R1_H2_PLUS_LTS),y)
++	EXTRA_CFLAGS = -DCONFIG_ORANGEPI_R1_H2_PLUS_LTS
++endif
++
  FAT32_BLOCK_SIZE=1024
  FAT32_BLOCKS=$(shell echo $$(($(CONFIG_SUNXI_SD_BOOT_PARTSIZE)*1024*1024/$(FAT32_BLOCK_SIZE))))
---- a/target/linux/sunxi/image/Config_spi.in	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/image/Config_spi.in	2024-02-14 16:14:36.620997634 +0200
-@@ -0,0 +1,44 @@
-+menu "SPI flash size for firmware image (in MB)"
+ 
+--- a/target/linux/sunxi/image/Config.in	2023-12-03 21:02:20.000000000 +0200
++++ b/target/linux/sunxi/image/Config.in	2024-01-20 13:26:16.933437950 +0200
+@@ -3,3 +3,33 @@
+ 	depends on TARGET_sunxi
+ 	default 20
+ 
++menu "Boot (SPI-flash-16MB) images-Firmware"
 +	depends on TARGET_sunxi
-+
-+	choice
-+		prompt "Size SPI-flash"
-+		default SPI_FLASH_2MB
-+		help
-+		  Enable 2Mb or 16Mb or 32Mb SPI-flash
-+		config SPI_FLASH_2MB
-+			bool "2Mb"
-+		config SPI_FLASH_8MB
-+			bool "8Mb"
-+		config SPI_FLASH_16MB
-+			bool "16Mb"
-+		config SPI_FLASH_32MB
-+			bool "32Mb"
-+	endchoice
 +
 + config SPI_FLASH_ORANGEPI_ZERO_H2_PLUS
 +	bool "xunlong-orangepi-zero-h2+"
@@ -549,6 +520,7 @@
 +	default n
 +	help
 +           Enable SPI-flash  function interface.
++
 +
 + config SPI_FLASH_ORANGEPI_R1_H2_PLUS
 +	bool "xunlong-orangepi-r1-h2+"
@@ -565,7 +537,7 @@
 +endmenu
 +
 --- a/target/linux/sunxi/base-files/etc/rc.local	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/base-files/etc/rc.local	2024-02-14 16:14:36.620997634 +0200
++++ b/target/linux/sunxi/base-files/etc/rc.local	2024-01-20 13:26:16.933437950 +0200
 @@ -0,0 +1,7 @@
 +# Put your custom commands here that should be executed once
 +# the system init finished. By default this file does nothing.
@@ -575,7 +547,7 @@
 +
 +exit 0
 --- a/target/linux/sunxi/patches-5.10/202-add0-pinctrl_wifi-xr819-opi-zero.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/patches-5.10/202-add0-pinctrl_wifi-xr819-opi-zero.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/target/linux/sunxi/patches-5.10/202-add0-pinctrl_wifi-xr819-opi-zero.patch	2024-01-20 13:26:16.933437950 +0200
 @@ -0,0 +1,10 @@
 +--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
 ++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
@@ -588,8 +560,8 @@
 + / {
 + 	model = "Xunlong Orange Pi Zero";
 --- a/target/linux/sunxi/patches-5.10/212-add-spi-flash-opi-zero.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/patches-5.10/212-add-spi-flash-opi-zero.patch	2024-02-14 16:14:36.620997634 +0200
-@@ -0,0 +1,48 @@
++++ b/target/linux/sunxi/patches-5.10/212-add-spi-flash-opi-zero.patch	2024-01-20 13:26:16.933437950 +0200
+@@ -0,0 +1,19 @@
 +--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
 ++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
 +@@ -60,6 +70,7 @@
@@ -609,7 +581,12 @@
 + 
 + 	flash@0 {
 + 		#address-cells = <1>;
-+@@ -173,6 +179,28 @@
+--- a/target/linux/sunxi/patches-5.10/213-add-spi-flash-opi-zero.patch	1970-01-01 03:00:00.000000000 +0300
++++ b/target/linux/sunxi/patches-5.10/213-add-spi-flash-opi-zero.patch	2024-01-20 13:26:16.933437950 +0200
+@@ -0,0 +1,31 @@
++--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
++@@ -174,6 +179,28 @@
 + 		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
 + 		reg = <0>;
 + 		spi-max-frequency = <40000000>;
@@ -639,7 +616,7 @@
 + };
 + 
 --- a/target/linux/sunxi/patches-5.10/213-dts-add-orangepi-zero-lts.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/patches-5.10/213-dts-add-orangepi-zero-lts.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/target/linux/sunxi/patches-5.10/213-dts-add-orangepi-zero-lts.patch	2024-01-20 13:26:16.933437950 +0200
 @@ -0,0 +1,31 @@
 +--- a/arch/arm/boot/dts/Makefile
 ++++ b/arch/arm/boot/dts/Makefile
@@ -673,7 +650,7 @@
 ++	hysteresis = <1000>;
 ++};
 --- a/target/linux/sunxi/base-files/etc/board.d/01_leds	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/base-files/etc/board.d/01_leds	2024-02-14 16:14:36.620997634 +0200
++++ b/target/linux/sunxi/base-files/etc/board.d/01_leds	2024-01-20 13:26:16.933437950 +0200
 @@ -12,6 +12,10 @@
  	ucidef_set_led_netdev "wan" "WAN" "nanopi:green:wan" "eth0"
  	ucidef_set_led_netdev "lan" "LAN" "nanopi:green:lan" "eth1"
@@ -686,7 +663,7 @@
  
  board_config_flush
 --- a/target/linux/sunxi/base-files/etc/board.d/02_network	2023-12-03 21:02:20.000000000 +0200
-+++ b/target/linux/sunxi/base-files/etc/board.d/02_network	2024-02-14 16:14:36.620997634 +0200
++++ b/target/linux/sunxi/base-files/etc/board.d/02_network	2024-01-20 13:26:16.933437950 +0200
 @@ -23,6 +23,9 @@
  	xunlong,orangepi-r1)
  		ucidef_set_interfaces_lan_wan "eth0" "eth1"
@@ -698,7 +675,7 @@
  		ucidef_set_interface_lan "eth0"
  		;;
 --- a/include/kernel-defaults.mk	2023-12-03 21:02:20.000000000 +0200
-+++ b/include/kernel-defaults.mk	2024-02-14 16:14:36.620997634 +0200
++++ b/include/kernel-defaults.mk	2024-01-20 13:26:16.933437950 +0200
 @@ -118,7 +118,8 @@
  		cp $(LINUX_DIR)/.config.set $(LINUX_DIR)/.config.prev; \
  	}
@@ -710,7 +687,7 @@
  
  define Kernel/Configure/Initramfs
 --- a/package/boot/uboot-sunxi/Makefile	2023-12-03 21:02:20.000000000 +0200
-+++ b/package/boot/uboot-sunxi/Makefile	2024-02-14 16:14:36.620997634 +0200
++++ b/package/boot/uboot-sunxi/Makefile	2024-01-20 13:26:16.933437950 +0200
 @@ -198,6 +198,12 @@
    BUILD_DEVICES:=xunlong_orangepi-zero
  endef
@@ -733,7 +710,7 @@
  	orangepi_one \
  	orangepi_one_plus \
 --- a/package/boot/uboot-sunxi/patches/001-add-distro_bootcmd.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/package/boot/uboot-sunxi/patches/001-add-distro_bootcmd.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/package/boot/uboot-sunxi/patches/001-add-distro_bootcmd.patch	2024-01-20 13:26:16.933437950 +0200
 @@ -0,0 +1,28 @@
 +--- a/include/config_distro_bootcmd.h
 ++++ b/include/config_distro_bootcmd.h
@@ -764,7 +741,7 @@
 + 		BOOTENV_SET_IDE_NEED_INIT                                 \
 + 		BOOTENV_SET_VIRTIO_NEED_INIT                              \
 --- a/package/boot/uboot-sunxi/patches/001-add-mtd-spi-orangepi-zero.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/package/boot/uboot-sunxi/patches/001-add-mtd-spi-orangepi-zero.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/package/boot/uboot-sunxi/patches/001-add-mtd-spi-orangepi-zero.patch	2024-01-20 13:26:16.933437950 +0200
 @@ -0,0 +1,19 @@
 +--- a/arch/arm/dts/sun8i-h2-plus-orangepi-zero.dts	2020-04-13 18:02:18.000000000 +0300
 ++++ b/arch/arm/dts/sun8i-h2-plus-orangepi-zero.dts	2021-02-11 12:02:27.730670592 +0200
@@ -786,7 +763,7 @@
 + 	flash@0 {
 + 		#address-cells = <1>;
 --- a/package/boot/uboot-sunxi/patches/001-add-orangepi-zero-lts.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/package/boot/uboot-sunxi/patches/001-add-orangepi-zero-lts.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/package/boot/uboot-sunxi/patches/001-add-orangepi-zero-lts.patch	2024-01-20 13:26:16.933437950 +0200
 @@ -0,0 +1,37 @@
 +--- a/arch/arm/dts/Makefile
 ++++ b/arch/arm/dts/Makefile
@@ -826,7 +803,7 @@
 ++CONFIG_USB_EHCI_HCD=y
 ++CONFIG_USB_OHCI_HCD=y
 --- a/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_r1_defconfig.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_r1_defconfig.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_r1_defconfig.patch	2024-01-20 13:26:16.933437950 +0200
 @@ -0,0 +1,15 @@
 +--- a/configs/orangepi_r1_defconfig	2020-04-13 18:02:18.000000000 +0300
 ++++ b/configs/orangepi_r1_defconfig	2021-02-11 11:56:03.965480643 +0200
@@ -844,7 +821,7 @@
 ++CONFIG_SPI_FLASH_WINBOND=y
 ++CONFIG_SPI_FLASH_MACRONIX=y
 --- a/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_zero_defconfig.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_zero_defconfig.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_zero_defconfig.patch	2024-01-20 13:26:16.937437841 +0200
 @@ -0,0 +1,15 @@
 +--- a/configs/orangepi_zero_defconfig	2020-04-13 18:02:18.000000000 +0300
 ++++ b/configs/orangepi_zero_defconfig	2021-02-11 11:56:03.965480643 +0200
@@ -862,7 +839,7 @@
 ++CONFIG_SPI_FLASH_WINBOND=y
 ++CONFIG_SPI_FLASH_MACRONIX=y
 --- a/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_zero_lts_defconfig.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_zero_lts_defconfig.patch	2024-02-14 16:14:36.620997634 +0200
++++ b/package/boot/uboot-sunxi/patches/001-add-spi-orangepi_zero_lts_defconfig.patch	2024-01-20 13:26:16.937437841 +0200
 @@ -0,0 +1,15 @@
 +--- a/configs/orangepi_zero_lts_defconfig	2020-04-13 18:02:18.000000000 +0300
 ++++ b/configs/orangepi_zero_lts_defconfig	2021-02-11 11:56:03.965480643 +0200
@@ -880,7 +857,7 @@
 ++CONFIG_SPI_FLASH_WINBOND=y
 ++CONFIG_SPI_FLASH_MACRONIX=y
 --- a/package/base-files/files/bin/config_generate	2023-12-03 21:02:20.000000000 +0200
-+++ b/package/base-files/files/bin/config_generate	2024-02-14 16:14:36.624997532 +0200
++++ b/package/base-files/files/bin/config_generate	2024-01-20 13:26:16.937437841 +0200
 @@ -3,6 +3,9 @@
  CFG=/etc/board.json
  
@@ -925,7 +902,7 @@
  
  			local compat_version
 --- a/package/base-files/image-config.in	2023-12-03 21:02:20.000000000 +0200
-+++ b/package/base-files/image-config.in	2024-02-14 16:14:36.624997532 +0200
++++ b/package/base-files/image-config.in	2024-01-20 13:26:16.937437841 +0200
 @@ -76,7 +76,7 @@
  config TARGET_PREINIT_IP
  	string
@@ -945,7 +922,7 @@
  		Broadcast address to which to send preinit network messages, as
  		as failsafe messages
 --- a/package/base-files/Makefile	2023-12-03 21:02:20.000000000 +0200
-+++ b/package/base-files/Makefile	2024-02-14 16:14:36.624997532 +0200
++++ b/package/base-files/Makefile	2024-01-20 13:26:16.937437841 +0200
 @@ -83,9 +83,9 @@
  	echo 'pi_init_cmd=$(if $(CONFIG_TARGET_INIT_CMD),$(CONFIG_TARGET_INIT_CMD),"/sbin/init")' >>$(1)/lib/preinit/00_preinit.conf
  	echo 'pi_init_suppress_stderr="$(CONFIG_TARGET_INIT_SUPPRESS_STDERR)"' >>$(1)/lib/preinit/00_preinit.conf
@@ -959,7 +936,7 @@
  	echo 'pi_preinit_no_failsafe_netmsg="$(CONFIG_TARGET_PREINIT_SUPPRESS_FAILSAFE_NETMSG)"' >>$(1)/lib/preinit/00_preinit.conf
  	echo 'pi_preinit_no_failsafe="$(CONFIG_TARGET_PREINIT_DISABLE_FAILSAFE)"' >>$(1)/lib/preinit/00_preinit.conf
 --- a/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2023-12-03 21:02:20.000000000 +0200
-+++ b/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2024-02-14 16:14:36.624997532 +0200
++++ b/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2024-01-20 13:26:16.937437841 +0200
 @@ -2,6 +2,9 @@
  
  append DRIVERS "mac80211"
@@ -1004,7 +981,7 @@
  		devidx=$(($devidx + 1))
  	done
 --- a/package/network/config/firewall/files/firewall.config	2023-12-03 21:02:20.000000000 +0200
-+++ b/package/network/config/firewall/files/firewall.config	2024-02-14 16:14:36.624997532 +0200
++++ b/package/network/config/firewall/files/firewall.config	2024-01-20 13:26:16.937437841 +0200
 @@ -17,7 +17,7 @@
  	option name		wan
  	list   network		'wan'
@@ -1060,7 +1037,7 @@
 -+
 - exit $FAILCOUNT
 --- a/package/utils/busybox/patches/521-revert_awk_busybox-1.33.1.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/package/utils/busybox/patches/521-revert_awk_busybox-1.33.1.patch	2024-02-14 16:14:36.624997532 +0200
++++ b/package/utils/busybox/patches/521-revert_awk_busybox-1.33.1.patch	2024-01-21 18:01:36.319510524 +0200
 @@ -0,0 +1,3107 @@
 +--- a/editors/awk.c	2021-12-26 18:53:20.000000000 +0200
 ++++ b/editors/awk.c	2021-01-01 12:52:27.000000000 +0200
@@ -4170,7 +4147,7 @@
 + 	/*return 0;*/
 + }
 --- a/feeds/packages/utils/triggerhappy/patches/001-add_REL-ABS-devices.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/feeds/packages/utils/triggerhappy/patches/001-add_REL-ABS-devices.patch	2024-02-05 14:51:16.940406739 +0200
++++ b/feeds/packages/utils/triggerhappy/patches/001-add_REL-ABS-devices.patch	2024-01-20 13:26:16.941437732 +0200
 @@ -0,0 +1,12 @@
 +--- a/devices.c
 ++++ b/devices.c
@@ -4185,7 +4162,7 @@
 + }
 + 
 --- a/feeds.conf.default	2023-12-03 21:02:20.000000000 +0200
-+++ b/feeds.conf.default	2024-02-14 16:19:05.218492358 +0200
++++ b/feeds.conf.default	2024-01-20 13:26:16.941437732 +0200
 @@ -2,3 +2,6 @@
  src-git-full luci https://git.openwrt.org/project/luci.git^74dd23bdb1c2ba00c68e3abf4d00233bb4f939cd
  src-git-full routing https://git.openwrt.org/feed/routing.git^777c115b0a6336d6582c5992d25b631b6d6d21fd
@@ -4300,218 +4277,3 @@
 - endif
 - 
 - glib_c_args = ['-DG_LOG_DOMAIN="GLib"', '-DGLIB_COMPILATION'] + pcre2_static_args + glib_hidden_visibility_args
---- a/target/linux/sunxi/patches-5.10/214-add-overlays-opi-zero.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/patches-5.10/214-add-overlays-opi-zero.patch	2024-02-26 20:26:24.226520247 +0200
-@@ -0,0 +1,157 @@
-+--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+@@ -61,6 +61,10 @@
-+ 		ethernet0 = &emac;
-+ 		ethernet1 = &xr819;
-+ 		spi0 = &spi0;
-++		i2c0 = "/soc/i2c@1c2ac00";
-++		i2c1 = "/soc/i2c@1c2b000";
-++		i2c4 = &i2c4;
-++		w1 = &w1;
-+ 	};
-+ 
-+ 	chosen {
-+@@ -81,6 +81,96 @@
-+ 			gpios = <&pio 0 17 GPIO_ACTIVE_HIGH>;
-+ 		};
-+ 	};
-++
-++	i2c4: i2c4 {
-++		compatible = "i2c-gpio";
-++		pinctrl-0 = <&i2c4_pins>;
-++		pinctrl-names = "default";
-++		sda-gpios = <0x0a 0x00 0x12 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN) = 0x06 */
-++		scl-gpios = <0x0a 0x00 0x13 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN) = 0x06 */
-++		i2c-gpio,delay-us = <0x0a>;
-++		status = "disabled";
-++	};
-++
-++	w1: w1 {
-++		compatible = "w1-gpio";
-++		gpios = <&pio 0x00 0x0a (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN) = 0x06 */
-++		pinctrl-names = "default";
-++		pinctrl-0 = <&w1_pins>;
-++		status = "disabled";
-++	};
-++
-++	pps {
-++		compatible = "pps-gpio";
-++		pinctrl-names = "default";
-++		pinctrl-0 = <&pps_pins>;
-++		gpios = <&pio 0x00 0x07 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN) = 0x06 */
-++		echo-gpios = <&pio 0x00 0x06 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN) = 0x06 */
-++		assert-falling-edge;
-++		echo-active-ms = <100>;
-++		status = "disabled";
-++	};
-++
-++	rotary_axis {
-++		compatible = "rotary-encoder";
-++		pinctrl-names = "default";
-++		pinctrl-0 = <&rotary_pins>;
-++		gpios = <&pio 0x00 0x01 0x00>, <&pio 0x00 0x03 0x00>;
-++		linux,axis = <0x01>;
-++		rotary-encoder,relative-axis;
-++		rotary-encoder,half-period;
-++		status = "disabled";
-++	};
-++
-++	rotary_button {
-++		compatible = "gpio-keys";
-++		pinctrl-names = "default";
-++		pinctrl-0 = <&button_pins>;
-++		status = "disabled";
-++
-++		rotary_button_enter {
-++			label = "keys_enter";
-++			linux,code = <99>;
-++			gpios = <&pio 0x00 0x00 0x00>;
-++		};
-++	};
-++
-++	gpio_keys_user {
-++		compatible = "gpio-keys";
-++		pinctrl-names = "default";
-++		pinctrl-0 = <&gpio_keys_pins>;
-++		status = "disabled";
-++
-++		keys_volup {
-++			label = "volume_up";
-++			linux,code = <115>;
-++			gpios = <&pio 0 16 0>; 
-++		};
-++
-++		keys_voldown {
-++			label = "volume_down";
-++			linux,code = <114>;
-++			gpios = <&pio 0 15 0>;
-++		};
-++
-++		keys_power {
-++			label = "keys_power";
-++			linux,code = <116>;
-++			gpios = <&pio 0 14 0>;
-++		};
-++
-++		keys_chanup {
-++			label = "channel_up";
-++			linux,code = <402>;
-++			gpios = <&pio 0 13 0>;
-++		};
-++
-++		keys_chandown {
-++			label = "channel_down";
-++			linux,code = <403>;
-++			gpios = <&pio 0 2 0>;
-++		};
-++	};
-+ 
-+ 	reg_vcc_wifi: reg_vcc_wifi {
-+ 		compatible = "regulator-fixed";
-+@@ -216,6 +217,46 @@
-+ 	pinctrl-0 = <&uart2_pins>;
-+ 	status = "disabled";
-+ };
-++
-++&pio {
-++	i2c4_pins: i2c4_pins {
-++		pins = "PA19", "PA18";
-++		function = "gpio_in";
-++		pull = <0x00>;
-++	};
-++
-++	w1_pins: w1_pins {
-++		pins = "PA10";
-++		function = "gpio_in";
-++		pull = <0x00>;
-++	};
-++
-++	pps_pins: pps_pins {
-++		pins = "PA7", "PA6";
-++		function = "gpio_in";
-++	};
-++
-++	rotary_pins: rotary_pins {
-++		pins = "PA1","PA3";
-++		function = "gpio_in";
-++		bias-pull-up;
-++		pull = <0x01>;
-++	};
-++
-++	button_pins: button_pins {
-++		pins = "PA0";
-++		function = "gpio_in";
-++		bias-pull-up;
-++		pull = <0x01>;
-++	};
-++
-++	gpio_keys_pins: gpio_keys_pins {
-++		pins = "PA13", "PA14", "PA15", "PA16", "PA2";
-++		function = "gpio_in";
-++		bias-pull-up;
-++		pull = <0x01>;
-++	};
-++};
-+ 
-+ &usb_otg {
-+ 	dr_mode = "peripheral";
---- a/target/linux/sunxi/patches-5.10/215-add-xradio-opi-zero.patch	1970-01-01 03:00:00.000000000 +0300
-+++ b/target/linux/sunxi/patches-5.10/215-add-xradio-opi-zero.patch	2024-02-24 06:13:14.539226000 +0200
-@@ -0,0 +1,52 @@
-+--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+@@ -201,6 +201,8 @@
-+ 
-+ 	wifi_pwrseq: wifi_pwrseq {
-+ 		compatible = "mmc-pwrseq-simple";
-++		pinctrl-names = "default";
-++		pinctrl-0 = <&r_wifi_rst>;
-+ 		reset-gpios = <&r_pio 0 7 GPIO_ACTIVE_LOW>;
-+ 		post-power-on-delay-ms = <200>;
-+ 	};
-+@@ -237,6 +253,7 @@
-+ 	mmc-pwrseq = <&wifi_pwrseq>;
-+ 	bus-width = <4>;
-+ 	non-removable;
-++	keep-power-in-suspend;
-+ 	status = "okay";
-+ 
-+ 	/*
-+@@ -245,6 +261,12 @@
-+ 	 */
-+ 	xr819: sdio_wifi@1 {
-+ 		reg = <1>;
-++		compatible = "xradio,xr819";
-++		pinctrl-names = "default";
-++		pinctrl-0 = <&wifi_wake>;
-++		interrupt-parent = <&pio>;
-++		interrupts = <6 10 1>;
-++		interrupt-names = "host-wake";
-+ 	};
-+ };
-+ 
-+@@ -347,7 +347,19 @@
-+ 		bias-pull-up;
-+ 		pull = <0x01>;
-+ 	};
-++
-++	wifi_wake: wifi-wake {
-++		pins = "PG10";
-++		function = "gpio_in";
-++	};
-+ };
-++
-++&r_pio {
-++	r_wifi_rst: r-wifi-rst {
-++		pins = "PL7";
-++		function = "gpio_out";
-++	};
-++};
-+ 
-+ &usb_otg {
-+ 	dr_mode = "peripheral";

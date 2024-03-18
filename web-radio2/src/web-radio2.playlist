@@ -1,13 +1,13 @@
 #EXTM3U
 #EXTINF:-1,"ПЕРЕЦ-Стильное-Радио"
 http://radio.stilnoe.fm:8080/radio-stilnoe
-#EXTINF:-2,"hit-fm"
+#EXTINF:-2,"Hit-FM"
 https://online.hitfm.ua/HitFM
-#EXTINF:-3,"radio-roks"
+#EXTINF:-3,"Radio-ROKS"
 https://online.radioroks.ua/RadioROKS
-#EXTINF:-4,"kiss-fm"
+#EXTINF:-4,"Kiss-FM"
 https://online.kissfm.ua/KissFM
-#EXTINF:-5,"radio-relax"
+#EXTINF:-5,"Radio-Relax"
 https://online.radiorelax.ua/RadioRelax
 #EXTINF:-6,"melodia-fm"
 https://online.melodiafm.ua/MelodiaFM

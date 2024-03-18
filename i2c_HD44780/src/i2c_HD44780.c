@@ -1254,7 +1254,7 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 	else if ((iia == 1) && ((wide_simvol == '0') || (wide_simvol == '1'))) stringout_lcd_Wide0(temp_sensor_data);
 	else if ((wide_simvol == '2') || (wide_simvol == '4')) { stringout_lcd_WideW1(temp_sensor_data,0,sizeof(temp_sensor_data)); sleep(5); }
 	else if (((iia == 2) || (iia == 3)) && (wide_simvol == '0')) stringout_lcd_Wide0(temp_sensor_data);
- usleep(500000);
+ usleep(200000);
 					if (iia == 0) t_nick = fopen("/tmp/sd", "w");
 					else t_nick = fopen("/tmp/sd", "a");
 

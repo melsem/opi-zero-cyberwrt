@@ -1,0 +1,14 @@
+Fixed a compilation issue when upgrading
+to backports-6.1.24 on mac80211.
+
+--- a/main.c
++++ b/main.c
+@@ -163,7 +163,7 @@
+ 	/*.channel_switch	 = xradio_channel_switch,		*/
+ 	.remain_on_channel = xradio_remain_on_channel,
+ 	.cancel_remain_on_channel = xradio_cancel_remain_on_channel,
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	.wake_tx_queue		= ieee80211_handle_wake_tx_queue,
+ #endif 	
+ };

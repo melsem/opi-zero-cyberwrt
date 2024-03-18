@@ -71,6 +71,7 @@ MODULE_LICENSE("GPL");
 
 
 // ioctl - I/O control
+/*
 static int hd44780_ioctl(struct inode *inode, struct file *file, 
 		unsigned int cmd, unsigned long arg) 
 {
@@ -100,7 +101,7 @@ static int hd44780_ioctl(struct inode *inode, struct file *file,
 
 	return 0;
 }
-
+*/
 // Write a nibble to the display
 static void WriteNibble(unsigned int val)
 {
@@ -151,7 +152,7 @@ static ssize_t hd44780_write(struct file *file, const char *buf, size_t count, l
 	if (err != 0)
 		return -EFAULT;
 
-	if (c&0xff == COMMAND_CHAR) // somehow, masking the char fixes a multiplying byte problem
+	if ((c&0xff) == COMMAND_CHAR) // somehow, masking the char fixes a multiplying byte problem
 	{ // if the first char is COMMAND_CHAR, we enter command mode for the rest of the string
 		ptr++;
 		for (i=1;i<count;i++)
@@ -183,7 +184,7 @@ static ssize_t hd44780_write(struct file *file, const char *buf, size_t count, l
 
 static struct file_operations hd44780_fops = {
 	.owner = THIS_MODULE,
-	//  .ioctl = hd44780_ioctl,  ioctl not supported for now.
+//	.ioctl = hd44780_ioctl,		//  ioctl not supported for now.
 	.write = hd44780_write,
 };
 

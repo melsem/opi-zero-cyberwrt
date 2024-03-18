@@ -1,0 +1,14 @@
+Fixed a compilation issue when upgrading
+to backports-6.1.24 on mac80211.
+
+--- a/sdio.c
++++ b/sdio.c
+@@ -208,7 +209,7 @@
+ 	xradio_core_deinit(func);
+ 	sdio_claim_host(func);
+ 	sdio_disable_func(func);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ 	mmc_hw_reset(card);
+ #else
+ 	mmc_hw_reset(card->host);

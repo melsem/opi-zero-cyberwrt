@@ -1,0 +1,25 @@
+Fixed a compilation issue when upgrading
+to backports-6.1.24 on mac80211.
+
+--- a/sta.c
++++ b/sta.c
+@@ -663,7 +663,7 @@
+ 	}
+ }
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ int xradio_conf_tx(struct ieee80211_hw *dev, struct ieee80211_vif *vif,
+                    unsigned int link_id, u16 queue,
+ 		   const struct ieee80211_tx_queue_params *params)
+--- a/sta.h
++++ b/sta.h
+@@ -47,7 +47,7 @@
+                              unsigned int changed_flags,
+                              unsigned int *total_flags,
+                              u64 multicast);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 137))
+ int xradio_conf_tx(struct ieee80211_hw *dev, struct ieee80211_vif *vif,
+                    unsigned int link_id, u16 queue,
+ 		   const struct ieee80211_tx_queue_params *params);
