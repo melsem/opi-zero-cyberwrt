@@ -12,8 +12,7 @@ res = ""
 	} while(p>0)
 	return res s
 }
-BEGIN
-{
+BEGIN {
 RS = "&"
 FS = "="
 print "Content-type: text/html; charset=utf-8"
@@ -109,8 +108,7 @@ rebut=0
 	}
 
 }
-END
-{ save_okay
+END { save_okay
 	if(rebut == "1") { 
 		system("sleep 1s")
 		system("/www/cgi-bin/modules/boot-config/index.html "rebut"")
