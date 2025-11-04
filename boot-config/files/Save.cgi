@@ -12,8 +12,7 @@ res = ""
 	} while(p>0)
 	return res s
 }
-BEGIN
-{
+BEGIN {
 RS = "&"
 FS = "="
 print "Content-type: text/html; charset=utf-8"
@@ -32,8 +31,7 @@ overl_ok=0
 		system("boot-config "driv" "stats" &> /dev/null")
 	}
 }
-END
-{
+END {
 	if (overl_ok == "1") {
 		print "<b>"overlays" -- "name"</b><br>"
 		system("/www/cgi-bin/modules/boot-config/index.html "overlays" "name"")
