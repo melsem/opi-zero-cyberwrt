@@ -1,0 +1,17 @@
+if PACKAGE_web-radio2
+
+choice
+	prompt "Select Web Variant"
+	default WEB_RADIO2_MODERN
+	help
+	  Choose which file variant should be installed into the firmware.
+
+	config WEB_RADIO2_CLASSIC
+		bool "Install web File classic (Standard)"
+
+	config WEB_RADIO2_MODERN
+		bool "Install web File modern (Alternative)"
+
+endchoice
+
+endif

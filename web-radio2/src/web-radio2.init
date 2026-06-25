@@ -20,23 +20,118 @@ killed() {
 }
 
 offvolume() {
-	off_volume=$(sed -n '1p' $tmp_volume)
-    while [ "$off_volume" -ge "0" ]; do
-	amixer -c 0 -q set 'Line Out' $off_volume	# OFF: while -=1
-	let "off_volume -= 1"
-    done
-#	amixer -c 0 -q set 'Line Out' 0	# выкл
-	amixer -c 0 -q set "DAC" 100%-			# OFF
+   /www/cgi-bin/modules/web-radio2/fade.sh sound_off
 }
 
 onvolume() {
-	amixer -c 0 -q set "DAC" 100%			# ON
-	i="0"
-	on_volume=$(sed -n '1p' $tmp_volume)
-    while [ "$i" -le "$on_volume" ]; do
-	amixer -c 0 -q set 'Line Out' $i				# ON: while +=1
-	let "i += 1"
-    done
+   /www/cgi-bin/modules/web-radio2/fade.sh sound_on#!/bin/sh /etc/rc.common
+
+# Сервіс запускається в самому кінці завантаження роутера (після мережі та аудіо)
+START=99
+
+playlist="/etc/config/web-radio2"
+tfile="/tmp/play_name"
+
+# =====================================================================
+# ПІДКЛЮЧЕННЯ БІБЛІОТЕКИ ПЛАВНОГО ЗВУКУ FADE.SH (АБСОЛЮТНИЙ ШЛЯХ)
+# =====================================================================
+if [ -f /www/cgi-bin/modules/web-radio2/fade.sh ]; then
+    . /www/cgi-bin/modules/web-radio2/fade.sh
+else
+    # Резервні пусті функції, якщо файл випадково видалили
+    sound_off() { amixer -c 0 -q set 'DAC' 0; }
+    sound_on() { amixer -c 0 -q set 'DAC' 59; }
+fi
+# =====================================================================
+
+# Функція безпечної зупинки всіх фонових процесів
+killed() {
+    killall madplay curl wget 2>/dev/null
+    # Коротка пауза 50 мс перед жорстким очищенням
+    echo 2>/dev/null
+    killall -9 madplay curl wget 2>/dev/null || true
+}
+
+start() {
+    # Плавно тушимо ЦАП перед запуском, щоб уникнути хлопка при ініціалізації
+    sound_off
+    
+   pidof web-radio2 &> /dev/null
+  if [ $? == 1 ]; then
+	killall -9 web-radio2 2>/dev/null
+	killed
+    
+    # Перевіряємо, чи є збережене ім'я останньої станції
+    if [ -f "$tfile" ] && [ -s "$tfile" ]; then
+        # Витягуємо чисту назву без лапок
+        play_name=$(sed -n '1p' "$tfile" | sed -e "s/\"\|\'//g")
+        # Шукаємо її порядковий номер у плейлисті
+        numb=$(sed -n 's/#EXTINF:-\(.*\),"'$play_name'"/\1/p' "$playlist")
+        
+        # Якщо номер знайшовся і є чистим числом
+        if echo "$numb" | grep -q '^[0-9]\+$'; then
+            web-radio2 -p "$numb" &
+        else
+            web-radio2 -p 1 &
+        fi
+    else
+        # Якщо файл порожній — стартуємо з першої станції
+        web-radio2 -p 1 &
+    fi
+   else
+	killall -9 web-radio2 &> /dev/null > /dev/null
+	killed
+   fi
+    
+    # Плавно піднімаємо звук до робочого рівня
+    sound_on
+}
+
+stop() {
+    # Плавно глушимо звук, притискаючи вихід до землі (GND)
+    sound_off
+    killall -9 web-radio2 2>/dev/null
+    killed
+}
+reload() {
+    # Плавно вимикаємо звук
+    sound_off
+    
+    # Перевіряємо аргумент (номер станції)
+    if [ "$1" = "0" ] || [ -z "$1" ]; then
+        killed
+    else
+        killall -9 web-radio2 2>/dev/null
+        killed
+        web-radio2 -p "$1" &
+    fi
+    
+    # Плавно повертаємо звук
+    sound_on
+}
+
+restart() {
+    # Перевіряємо, чи викликано команду mute (аргумент "0")
+    if [ "$1" = "0" ]; then
+        # Зчитуємо поточний відсоток саме з каналу DAC для перевірки стану
+        local current_dac
+        current_dac=$(amixer -c 0 get 'DAC' 2>/dev/null | grep -i "Front Left:" | grep -o '\[[0-9]\+%\]' | head -n1 | tr -d '[]')
+        : "${current_dac:=59}"
+
+        if [ "$current_dac" -gt 0 ]; then
+            sound_off  # Запускаємо плавне згасання (Mute)
+        else
+            sound_on   # Запускаємо плавне наростання (Unmute)
+        fi
+    else
+        # Звичайний повний перезапуск сервісу з плавним звуком
+        sound_off
+        killall -9 web-radio2 2>/dev/null
+        killed
+        web-radio2 &
+        sound_on
+    fi
+}
 }
 
 reload() {
@@ -60,8 +155,9 @@ start() {
 	cat /tmp/play_name &> /dev/null
 	if [ $? != 1 ]; then
 		play_name=$(sed -n '1p' /tmp/play_name | sed -e "s/\"\|\'//g")
-		t_href=$(sed -n '1p' /tmp/nl)
-		numb=$(sed -n 's/#EXTINF:-\(.*\),"'$play_name'"/\1/p' $playlist)
+#		t_href=$(sed -n '1p' /tmp/nl)
+#		numb=$(sed -n 's/#EXTINF:-\(.*\),"'$play_name'"/\1/p' $playlist)
+		numb=$(sed -n 's/#EXTINF:-\([0-9]*\),"\?'$play_name'"\?/\1/p' "$playlist")
 		web-radio2 -p $numb &
 #		web-radio2 -u $t_href -n $play_name -p $numb &
 	else

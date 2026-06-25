@@ -51,10 +51,10 @@ add_nev_name=""
 		system("killall -9 curl 2> /dev/null")
 		system("amixer -c 0 -q set 'DAC' 100%")
 	}
-	if($1 == "zapusk") system("/etc/init.d/web-radio2.init start")
-	if($1 == "ostanov") system("/etc/init.d/web-radio2.init stop")
-	if($1 == "autostarton") system("/etc/init.d/web-radio2.init enable")
-	if($1 == "autostartoff") system("/etc/init.d/web-radio2.init disable")
+	if($1 == "zapusk") system("/etc/init.d/web-radio2 start")
+	if($1 == "ostanov") system("/etc/init.d/web-radio2 stop")
+	if($1 == "autostarton") system("/etc/init.d/web-radio2 enable")
+	if($1 == "autostartoff") system("/etc/init.d/web-radio2 disable")
 
 #	========= play-new-URL ============
 	if($1 == "URL")

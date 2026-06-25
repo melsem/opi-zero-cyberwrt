@@ -45,6 +45,19 @@ int blop, buff1=1, nameBit=0;
 // *************************************************** //
 int main(int argc, char *argv[]) {
 
+    // --- НАЧАЛО БЛОКА АВТОМАТИЧЕСКОЙ ОЧИСТКИ ПРОЦЕССОВ-ДВОЙНИКОВ ---
+    char kill_cmd[128];
+    // Получаем PID текущего процесса, чтобы не убить самого себя
+    pid_t my_pid = getpid();
+    
+    // Формируем команду: находим все PID процессов web-radio2, исключаем наш текущий PID и убиваем старые
+    sprintf(kill_cmd, "pidof web-radio2 | tr ' ' '\\n' | grep -v %d | xargs kill -9 2>/dev/null", my_pid);
+    system(kill_cmd);
+    
+    // Также принудительно гасим запущенные старыми копиями декодеры
+    system("killall -9 madplay curl 2>/dev/null");
+    // --- КОНЕЦ БЛОКА ОЧИСТКИ ---
+
     int inputs, urlBit=0, fileBit=0, folderBit=0, listBit=0, helpBit=0, bf=0;
 		// ****************** input arguments ********************* //
 	while((inputs = getopt(argc, argv, "u:f:l:?:h:n:p:")) != -1) {
