@@ -1,0 +1,173 @@
+#!/bin/sh /etc/rc.common
+
+START=30
+EXTRA_COMMANDS="status"
+
+LOG_TAG="w1-gpio-custom"
+ARGS=""
+
+log_err() { logger -t "$LOG_TAG" -p daemon.err "$1"; echo "Error: $1"; }
+log_info() { logger -t "$LOG_TAG" -p daemon.info "$1"; echo "Info: $1"; }
+
+append_bus_param() {
+	local cfg="$1"
+	local enabled id pin od
+
+	config_get_bool enabled "$cfg" enabled 0
+	[ "$enabled" -eq 0 ] && return
+
+	config_get id "$cfg" id
+	config_get pin "$cfg" pin
+	config_get od "$cfg" od 0
+
+	if [ -z "$id" ] || [ -z "$pin" ]; then
+		log_err "Bus $cfg skipped: missing 'id' or 'pin' in configuration."
+		return
+	fi
+
+	if [ -d "/sys/class/gpio/gpio$pin" ]; then
+		log_err "Bus $cfg skipped: GPIO $pin is already exported or occupied."
+		return
+	fi
+
+	if [ -z "$ARGS" ]; then
+		ARGS="$cfg=$id,$pin,$od"
+	else
+		ARGS="$ARGS $cfg=$id,$pin,$od"
+	fi
+}
+
+start() {
+	# ХАК ДЛЯ ПЕРВОЙ УСТАНОВКИ OPKG:
+	# Если скрипт вызван из процесса opkg install (переменная IPKG_INSTROOT или специфичный маркер),
+	# или если мы видим, что нас принудительно включает автоматика opkg при установке,
+	# мы сами себя переводим в disable и выходим.
+	if [ "$1" = "boot" ] || [ -n "$IPKG_INSTROOT" ] || [ "${OPKG_OFFLINE_ROOT}" ]; then
+		# При обычной загрузке boot продолжаем работу, при установке пакета - гасим автозапуск
+		:
+	else
+		# Если это вызов 'enable' от opkg во время установки, отключаем его обратно
+		if [ -f "/etc/rc.d/S${START}w1-gpio-custom" ] && [ ! -f "/etc/config/w1-gpio-custom.installed" ]; then
+			/etc/init.d/w1-gpio-custom disable
+			rm -f /etc/rc.d/S${START}w1-gpio-custom /etc/rc.d/K${START}w1-gpio-custom
+			touch /etc/config/w1-gpio-custom.installed
+			log_info "Package installed. Set to DISABLED state by default."
+			return 0
+		fi
+	fi
+
+	if grep -q "^w1_gpio_custom" /proc/modules; then
+		log_info "Module is already loaded. Use 'restart' if you changed configuration."
+		return 0
+	fi
+
+	config_load w1-gpio-custom
+	config_foreach append_bus_param bus
+
+	if [ -z "$ARGS" ]; then
+		log_err "No valid or enabled buses found in configuration. Driver not loaded."
+		return 1
+	fi
+
+	log_info "Loading module with parameters: $ARGS"
+	
+	if /sbin/insmod w1-gpio-custom $ARGS 2>/dev/null; then
+		sleep 4
+		
+		if [ -d "/sys/bus/w1/drivers/w1_master_driver" ]; then
+			log_info "Driver successfully loaded and 1-Wire master bus initialized."
+			
+			apply_resolution() {
+				local cfg="$1"
+				local enabled id res
+				config_get_bool enabled "$cfg" enabled 0
+				[ "$enabled" -eq 0 ] && return
+				
+				config_get id "$cfg" id
+				config_get res "$cfg" resolution
+				
+				if [ -n "$res" ] && [ -d "/sys/bus/w1/devices/w1_bus_master$id" ]; then
+					for slave in $(ls "/sys/bus/w1/devices/w1_bus_master$id" 2>/dev/null | grep "^28\."); do
+						local res_file="/sys/bus/w1/devices/w1_bus_master$id/$slave/resolution"
+						if [ -f "$res_file" ]; then
+							echo "$res" > "$res_file" 2>/dev/null
+							log_info "Set resolution to $res bits for sensor $slave on bus $id"
+						fi
+					done
+				fi
+			}
+			config_foreach apply_resolution bus
+		else
+			log_err "Module loaded, but 1-Wire master driver failed to register buses."
+			return 1
+		fi
+	else
+		log_err "insmod failed. Kernel rejected parameters or module w1-gpio-custom.ko is missing."
+		return 1
+	fi
+}
+
+stop() {
+	if ! grep -q "^w1_gpio_custom" /proc/modules; then
+		log_info "Module is not loaded."
+		return 0
+	fi
+
+	log_info "Unloading module..."
+	if /sbin/rmmod w1-gpio-custom 2>/dev/null; then
+		log_info "Module unloaded successfully."
+	else
+		log_err "Failed to unload module (it might be in use)."
+		return 1
+	fi
+}
+
+status() {
+	if ! grep -q "^w1_gpio_custom" /proc/modules; then
+		echo "Status: NOT LOADED"
+		return 0
+	fi
+
+	echo "Status: LOADED"
+	echo "----------------------------------------"
+	
+	local masters=$(ls -d /sys/bus/w1/devices/w1_bus_master* 2>/dev/null)
+	if [ -z "$masters" ]; then
+		echo "No active 1-Wire master buses found in sysfs."
+		return 0
+	fi
+
+	for m in $masters; do
+		local m_name=$(basename "$m")
+		echo "Bus Master: $m_name"
+		
+		local slaves=$(ls "$m" 2>/dev/null | grep -v "w1_bus_master")
+		if [ -z "$slaves" ]; then
+			echo "  -> No connected 1-Wire sensors/devices found on this bus."
+		else
+			echo "  Connected devices:"
+			for s in $slaves; do
+				[ ! -d "$m/$s" ] && continue
+				
+				if [ -f "$m/$s/w1_slave" ]; then
+					local w1_output=$(cat "$m/$s/w1_slave" 2>/dev/null)
+					
+					if echo "$w1_output" | grep -q "YES"; then
+						local t_raw=$(echo "$w1_output" | grep "t=" | awk -F 't=' '{print $2}')
+						local t_fixed=$(awk -v t="$t_raw" 'BEGIN {print t / 1000}')
+						local cur_res="unknown"
+						[ -f "$m/$s/resolution" ] && cur_res=$(cat "$m/$s/resolution")
+						
+						echo "    * ID: $s [DS18B20 Temp Sensor] -> $t_fixed°C (${cur_res}-bit mode)"
+					else
+						echo "    * ID: $s [DS18B20 Temp Sensor] -> CRC Error (Bad connection/wire length)"
+					fi
+				else
+					echo "    * ID: $s [Generic 1-Wire Device]"
+				fi
+			done
+		fi
+		echo "----------------------------------------"
+	done
+}
+
