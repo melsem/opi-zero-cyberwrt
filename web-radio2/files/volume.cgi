@@ -5,6 +5,7 @@ echo ""
 
 MIXER_CH="Line Out"
 LAST_VOL_FILE="/tmp/radio_last_vol"
+tda_volume="/tmp/tda_volume"
 
 # =====================================================================
 # ФІКСАЦІЯ: ДИНАМІЧНЕ ВИЗНАЧЕННЯ ШЛЯХУ ТА ПІДКЛЮЧЕННЯ БІБЛІОТЕКИ FADE.SH
@@ -24,6 +25,7 @@ get_current_steps() {
 get_current_percent() {
     local pct
     pct=$(amixer -c 0 get "$MIXER_CH" 2>/dev/null | grep -i "Front Left:" | grep -o '\[[0-9]\+%\]' | head -n1 | tr -d '[]%')
+    echo $pct > $tda_volume
     echo "${pct:-100}"
 }
 
