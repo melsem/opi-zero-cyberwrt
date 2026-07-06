@@ -1,0 +1,27 @@
+#!/bin/sh /etc/rc.common
+
+START=94
+
+start() {
+    touch /tmp/play_name
+    [ ! -f /tmp/tda_volume ] && echo "0" > /tmp/tda_volume
+
+    if pidof greenwave-lcd-i2c > /dev/null; then
+        echo "Greenwave display driver is already running."
+        return 0
+    fi
+
+    echo "Starting Greenwave display driver..."
+    greenwave-lcd-i2c > /dev/null 2>&1 &
+}
+
+stop() {
+    echo "Stopping Greenwave display driver..."
+    killall greenwave-lcd-i2c 2> /dev/null
+    sleep 1
+}
+
+restart() {
+    stop
+    start
+}
