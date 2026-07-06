@@ -9,6 +9,36 @@ real_init="/etc/init.d/web-radio2.init"
 LAST_VOL_FILE="/tmp/radio_last_vol"
 
 # =====================================================================
+# АВТОМАТИЧНЕ ВИЗНАЧЕННЯ КАРТИ ТА ЗАХИСТ ВІД ВІДСУТНОСТІ ЗВУКУ
+# =====================================================================
+if amixer -c 1 get "Speaker" >/dev/null 2>&1; then
+    CARD_NUM=1
+    MIXER_CH="Speaker"
+    MUTE_CH="Speaker"
+    MAX_STEPS=30
+    MODE="usb"
+elif amixer -c 0 get "Speaker" >/dev/null 2>&1; then
+    CARD_NUM=0
+    MIXER_CH="Speaker"
+    MUTE_CH="Speaker"
+    MAX_STEPS=30
+    MODE="usb"
+elif amixer -c 0 get "Line Out" >/dev/null 2>&1; then
+    CARD_NUM=0
+    MIXER_CH="Line Out"
+    MUTE_CH="DAC"
+    MAX_STEPS=31
+    MODE="internal"
+else
+    CARD_NUM=0
+    MIXER_CH="Virtual"
+    MUTE_CH="Virtual"
+    MAX_STEPS=31
+    MODE="virtual"
+fi
+# =====================================================================
+
+# =====================================================================
 # ФІКСАЦІЯ: ДИНАМІЧНЕ ВИЗНАЧЕННЯ ШЛЯХУ ТА ПІДКЛЮЧЕННЯ БІБЛІОТЕКИ FADE.SH
 # =====================================================================
 #CURRENT_DIR=$(dirname "$0")
@@ -17,8 +47,16 @@ LAST_VOL_FILE="/tmp/radio_last_vol"
 
 # Функція плавного вимкнення звуку (Fade Out)
 sound_off() {
+    [ "$MODE" = "virtual" ] && return
+
+    if [ "$MODE" = "usb" ]; then
+        # USB-карта не підтримує плавний ЦАП-fade без затинань, тому робимо швидкий mute
+        amixer -c $CARD_NUM -q set "$MUTE_CH" mute
+        return
+    fi
+
     local current_dac
-    current_dac=$(amixer -c 0 get 'DAC' 2>/dev/null | grep -m1 -o '\[[0-9]\+%\]' | tr -d '[]%')
+    current_dac=$(amixer -c $CARD_NUM get "$MUTE_CH" 2>/dev/null | grep -m1 -o '\[[0-9]\+%\]' | tr -d '[]%')
     : "${current_dac:=59}"
     [ "$current_dac" -gt 59 ] && current_dac=59
 
@@ -28,15 +66,23 @@ sound_off() {
         while [ "$vol_loop" -gt 0 ]; do
             vol_loop=$((vol_loop - 1))
             [ "$vol_loop" -lt 0 ] && vol_loop=0
-            amixer -c 0 -q set 'DAC' "${vol_loop}"
+            amixer -c $CARD_NUM -q set "$MUTE_CH" "${vol_loop}"
             echo 2>/dev/null
         done
     fi
-    amixer -c 0 -q set 'DAC' 0
+    amixer -c $CARD_NUM -q set "$MUTE_CH" 0
 }
 
 # Функція плавного увімкнення звуку (Fade In)
 sound_on() {
+    [ "$MODE" = "virtual" ] && return
+
+    if [ "$MODE" = "usb" ]; then
+        # Повертаємо звук для USB-карти
+        amixer -c $CARD_NUM -q set "$MUTE_CH" unmute
+        return
+    fi
+
     local target_dac=59
     if [ -f "$LAST_VOL_FILE" ]; then
         target_dac=$(cat "$LAST_VOL_FILE")
@@ -51,10 +97,10 @@ sound_on() {
     while [ "$vol_loop" -lt "$target_dac" ]; do
         vol_loop=$((vol_loop + 1))
         [ "$vol_loop" -gt "$target_dac" ] && vol_loop=$target_dac
-        amixer -c 0 -q set 'DAC' "${vol_loop}"
+        amixer -c $CARD_NUM -q set "$MUTE_CH" "${vol_loop}"
         echo 2>/dev/null
     done
-    amixer -c 0 -q set 'DAC' "${target_dac}"
+    amixer -c $CARD_NUM -q set "$MUTE_CH" "${target_dac}"
     rm -f "$LAST_VOL_FILE"
 }
 
@@ -253,3 +299,4 @@ elif [ -n "$text_playlist" ]; then
     fi
     echo "OK"
 fi
+
