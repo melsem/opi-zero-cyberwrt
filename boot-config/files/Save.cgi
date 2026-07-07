@@ -1,44 +1,52 @@
-#!/usr/bin/awk -f
-function unescape(s)
-{
-gsub(/\+/," ",s)
-res = ""
-	do {
-	  p = match(s,/%[0-9a-fA-F]{2}/)
-	  if(p>0) {
-	  res = res substr(s,0,p-1) sprintf("%c",0+("0x" substr(s,p+1,2)))
-	  s = substr(s,p+3)
-	  }
-	} while(p>0)
-	return res s
+#!/bin/sh
+
+unescape() {
+    echo "$1" | sed 's/+/ /g; s/%/\\x/g' | xargs -0 printf "%b"
 }
-BEGIN
-{
-RS = "&"
-FS = "="
-print "Content-type: text/html; charset=utf-8"
-print ""
+
+echo "Content-type: text/html; charset=utf-8"
+echo ""
+
 overl_ok=0
-}
-{
-	if ($1 == "overlays") {
-		overlays = "overlays"
-		name=unescape($2)
-		overl_ok=1
-	}
-	else {
-		driv = $1
-		stats = unescape($2)
-		system("boot-config "driv" "stats" &> /dev/null")
-	}
-}
-END
-{
-	if (overl_ok == "1") {
-		print "<b>"overlays" -- "name"</b><br>"
-		system("/www/cgi-bin/modules/boot-config/index.html "overlays" "name"")
-	}
+overlays=""
+name=""
 
-	else system("/www/cgi-bin/modules/boot-config/index.html save_okay")
-}
+if [ "$REQUEST_METHOD" = "POST" ] && [ -n "$CONTENT_LENGTH" ] && [ "$CONTENT_LENGTH" -gt 0 ]; then
+    POST_DATA=$(dd bs=1 count=$CONTENT_LENGTH 2>/dev/null)
+else
+    POST_DATA="$QUERY_STRING"
+fi
 
+OLD_IFS=$IFS
+IFS='&'
+
+for pair in $POST_DATA; do
+    IFS=$OLD_IFS
+    key="${pair%%=*}"
+    val_raw="${pair#*=}"
+    
+    # Декодуємо значення
+    value=$(unescape "$val_raw")
+
+    if [ "$key" = "overlays" ]; then
+        overlays="overlays"
+        name="$value"
+        overl_ok=1
+    else
+        # Важливо: awk приймав сирий ключ $1, тому передаємо оригінальний key
+        driv="$key"
+        stats="$value"
+        # Виконуємо системну команду у фоні/тиші як було в awk (&> /dev/null замінено на сумісний >/dev/null 2>&1)
+        boot-config "$driv" "$stats" >/dev/null 2>&1
+    fi
+    IFS='&'
+done
+IFS=$OLD_IFS
+
+# Блок END
+if [ "$overl_ok" = "1" ]; then
+    echo "<b>$overlays -- $name</b><br>"
+    /www/cgi-bin/modules/boot-config/index.html "$overlays" "$name"
+else
+    /www/cgi-bin/modules/boot-config/index.html "save_okay"
+fi

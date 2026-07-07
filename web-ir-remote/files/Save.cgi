@@ -1,104 +1,119 @@
-#!/usr/bin/awk -f
-function unescape(s)
-{
-gsub(/\+/," ",s)
-res = ""
-	do {
-	  p = match(s,/%[0-9a-fA-F]{2}/)
-	  if(p>0) {
-	  res = res substr(s,0,p-1) sprintf("%c",0+("0x" substr(s,p+1,2)))
-	  s = substr(s,p+3)
-	  }
-	} while(p>0)
-	return res s
+#!/bin/sh
+
+# Функція декодування URL (видаляє каретки %0D, міняє + на пробіли, декодує %XX)
+unescape() {
+    echo "$1" | sed 's/%0[Dd]//g; s/+/ /g; s/%/\\x/g' | xargs -0 printf "%b"
 }
-BEGIN
-{
-RS = "&"
-FS = "="
-print "Content-type: text/html; charset=utf-8"
-print ""
+
+# 1. Обов'язкові HTTP-заголовки
+echo "Content-type: text/html; charset=utf-8"
+echo ""
+
+# Ініціалізація змінних (Блок BEGIN)
 rckeymaps="/etc/rc_keymaps/keyes"
 triggerhappy="/etc/triggerhappy/triggers.d/example.conf"
-sost = 0
-}
-{
+sost=0
 
-	if($1 == "nomerstroki") nomerstroki = unescape($2)
-	if($1 == "ircode_star") ircode_star = unescape($2)
-	if($1 == "keyname_star") keyname_star = unescape($2)
-	if($1 == "keysost_star") keysost_star = unescape($2)
-	if($1 == "command_star") command_star = unescape($2)
+# 2. Зчитування POST або GET даних
+if [ "$REQUEST_METHOD" = "POST" ] && [ -n "$CONTENT_LENGTH" ] && [ "$CONTENT_LENGTH" -gt 0 ]; then
+    POST_DATA=$(dd bs=1 count=$CONTENT_LENGTH 2>/dev/null)
+else
+    POST_DATA="$QUERY_STRING"
+fi
 
-	if($1 == "ircode") ircode = unescape($2)
-	if($1 == "keyname") keyname = unescape($2)
-	if($1 == "keysost") keysost = unescape($2)
-	if($1 == "command") command = unescape($2)
+# 3. Парсинг потоку даних (еквівалент RS="&" та FS="=")
+OLD_IFS=$IFS
+IFS='&'
 
-#  edit
-	if($1 == "edit")
-	{
-	print "<br>"
-			system("ir-remote rckeymaps '"ircode_star"' '"keyname_star"' '"ircode"' '"keyname"'")
-	print "<br>"
-			system("ir-remote triggerhappy '"keyname_star"' '"keysost_star"' '"command_star"' '"keyname"' '"keysost"' '"command"'")
-	print "<br>"
-			system("/etc/init.d/web-ir-remote restart")
-	}
+for pair in $POST_DATA; do
+    IFS=$OLD_IFS
+    key="${pair%%=*}"
+    val_raw="${pair#*=}"
+    
+    val=$(unescape "$val_raw")
 
-#  delete
-	if($1 == "delete")
-	{
-		system("ir-remote rckeymapsdelete '"ircode_star"' '"keyname_star"'")
-		system("ir-remote triggerhappydelete '"keyname_star"' '"keysost_star"' '"command_star"' '"nomerstroki"'")
-	print "DELETE-OK<br>"
-		system("/etc/init.d/web-ir-remote restart")
-	}
+    case "$key" in
+        nomerstroki)     nomerstroki="$val" ;;
+        ircode_star)     ircode_star="$val" ;;
+        keyname_star)    keyname_star="$val" ;;
+        keysost_star)    keysost_star="$val" ;;
+        command_star)    command_star="$val" ;;
+        ircode)          ircode="$val" ;;
+        keyname)         keyname="$val" ;;
+        keysost)         keysost="$val" ;;
+        command)         command="$val" ;;
+        add_nev_ircode)  add_nev_ircode="$val" ;;
+        add_nev_keyname) add_nev_keyname="$val" ;;
+        add_nev_keysost) add_nev_keysost="$val" ;;
+        add_nev_command) add_nev_command="$val" ;;
+        exampleconf)     exampleconf="$val" ;;
+        webirremoteinit) webirremoteinit="$val" ;;
 
-# Save_nev
-	if($1 == "add_nev_ircode") add_nev_ircode = unescape($2)
-	if($1 == "add_nev_keyname") add_nev_keyname = unescape($2)
-	if($1 == "add_nev_keysost") add_nev_keysost = unescape($2)
-	if($1 == "add_nev_command") add_nev_command = unescape($2)
-	if($1 == "Save_nev")
-	{
-#  print "Save_nev!!<br>"
-		if(add_nev_ircode == "keyboard")
-		{
-			system("ir-remote triggerhappy_add '"keyname_star"' '"keysost_star"' '"command_star"' '"add_nev_keyname"' '"add_nev_keysost"' '"add_nev_command"'")
-	print "<br>"
-			system("/etc/init.d/web-ir-remote restart")
-		}
-		else
-		{
-			system("ir-remote rckeymaps_add '"add_nev_ircode"' '"add_nev_keyname"'")
-	print "<br>"
-			system("ir-remote triggerhappy_add '"keyname_star"' '"keysost_star"' '"command_star"' '"add_nev_keyname"' '"add_nev_keysost"' '"add_nev_command"'")
-	print "<br>"
-			system("/etc/init.d/web-ir-remote restart")
-		}
-	}
-	if($1 == "staron") system("/etc/init.d/web-ir-remote enable")
-	if($1 == "staroff") system("/etc/init.d/web-ir-remote disable")
+        # --- ДІЯ: РЕДАГУВАННЯ ---
+        edit)
+            echo "<br>"
+            ir-remote rckeymaps "$ircode_star" "$keyname_star" "$ircode" "$keyname"
+            echo "<br>"
+            ir-remote triggerhappy "$keyname_star" "$keysost_star" "$command_star" "$keyname" "$keysost" "$command"
+            echo "<br>"
+            /etc/init.d/web-ir-remote restart
+            ;;
 
-	if($1 == "exampleconf") exampleconf = unescape($2)
-	if($1 == "text")
-	{
-		sost = 1
-		system("echo '"exampleconf"' | sed 's/\r//;/^$/d' > /etc/triggerhappy/triggers.d/example.conf")
-		#print "<b> Save example.conf OK</b><br>"
-		system("/etc/init.d/web-ir-remote restart")
-	}
+        # --- ДІЯ: ВИДАЛЕННЯ ---
+        delete)
+            ir-remote rckeymapsdelete "$ircode_star" "$keyname_star"
+            ir-remote triggerhappydelete "$keyname_star" "$keysost_star" "$command_star" "$nomerstroki"
+            echo "DELETE-OK<br>"
+            /etc/init.d/web-ir-remote restart
+            ;;
 
-	if($1 == "webirremoteinit") webirremoteinit = unescape($2)
-	if($1 == "textremoteinit")
-	{
-	#	system("echo '"webirremoteinit"' | sed 's/\r//;/^$/d' > /etc/init.d/web-ir-remote")
-	#	print "<b> Save web-ir-remote-init OK</b><br>"
-	}
-}
-END
-{
-	if(sost == 0) system("/www/cgi-bin/modules/web-ir-remote/Setup.cgi setup_irc")
-	else if(sost == 1) system("/www/cgi-bin/modules/web-ir-remote/Setuptryg.cgi setup_tryg")
-}
+        # --- ДІЯ: ЗБЕРЕЖЕННЯ НОВОГО ---
+        Save_nev)
+            if [ "$add_nev_ircode" = "keyboard" ]; then
+                ir-remote triggerhappy_add "$keyname_star" "$keysost_star" "$command_star" "$add_nev_keyname" "$add_nev_keysost" "$add_nev_command"
+                echo "<br>"
+                /etc/init.d/web-ir-remote restart
+            else
+                ir-remote rckeymaps_add "$add_nev_ircode" "$add_nev_keyname"
+                echo "<br>"
+                ir-remote triggerhappy_add "$keyname_star" "$keysost_star" "$command_star" "$add_nev_keyname" "$add_nev_keysost" "$add_nev_command"
+                echo "<br>"
+                /etc/init.d/web-ir-remote restart
+            fi
+            ;;
+
+        # --- КЕРУВАННЯ СЛУЖБОЮ ---
+        staron)
+            /etc/init.d/web-ir-remote enable
+            ;;
+        staroff)
+            /etc/init.d/web-ir-remote disable
+            ;;
+
+        # --- ЗАПИС ТЕКСТУ КОНФІГУ ТРИГЕРІВ ---
+        text)
+            sost=1
+            # Передаємо вміст змінної через потік, видаляючи порожні рядки (еквівалент sed '/^$/d')
+            echo "$exampleconf" | sed '/^$/d' > /etc/triggerhappy/triggers.d/example.conf
+            /etc/init.d/web-ir-remote restart
+            ;;
+
+        # --- ЗАПИС ТЕКСТУ ІНІЦІАЛІЗАЦІЇ (було закоментовано в awk) ---
+        textremoteinit)
+            # Якщо забажаєте розкоментувати логіку:
+            # sost=1
+            # echo "$webirremoteinit" | sed '/^$/d' > /etc/init.d/web-ir-remote
+            # chmod 755 /etc/init.d/web-ir-remote
+            ;;
+    esac
+    IFS='&'
+done
+IFS=$OLD_IFS
+
+# 4. Блок END (Редирект залежно від статусу збереження конфігу)
+if [ "$sost" -eq 0 ]; then
+    /www/cgi-bin/modules/web-ir-remote/Setup.cgi setup_irc
+elif [ "$sost" -eq 1 ]; then
+    /www/cgi-bin/modules/web-ir-remote/Setuptryg.cgi setup_tryg
+fi
+

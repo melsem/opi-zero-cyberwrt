@@ -1,128 +1,153 @@
-#!/usr/bin/awk -f
-function dannie(s)
-{
-gsub(/\+/," ",s)
-res = ""
-	do {
-	  p = match(s,/%[0-9a-fA-F]{2}/)
-	  if(p>0) {
-	  res = res substr(s,0,p-1) sprintf("%c",0+("0x" substr(s,p+1,2)))
-	  s = substr(s,p+3)
-	  }
-	} while(p>0)
-	return res s
+#!/bin/sh
+
+# Функція декодування URL (видаляє каретки %0D, міняє + на пробіли, декодує %XX)
+unescape() {
+    echo "$1" | sed 's/%0[Dd]//g; s/+/ /g; s/%/\\x/g' | xargs -0 printf "%b"
 }
-BEGIN
-{
-RS = "&"
-FS = "="
-print "Content-type: text/html; charset=utf-8"
-print ""
+
+# 1. Обов'язкові HTTP-заголовки
+echo "Content-type: text/html; charset=utf-8"
+echo ""
+
+# Константи
+playlist="/etc/config/web-radio2"
+
+# Змінні для відстеження дій в блоці END
 delchan=""
 add_nev_url=""
-add_nev_name=""
-}
-{
-	playlist="/etc/config/web-radio2"
+action_type=""
 
-	if($1 == "delchan") {
-		delchan=$1
-		delstroki=dannie($2)
-#		print "delstroki - "delstroki
-		system("/www/cgi-bin/modules/web-radio2/sed.cgi delet "delstroki"")
-	}
-	
-#	========= play-NAME-URL-(play-list) ========
-	if($1 == "nomerstroki") nomerstroki=dannie($2)
-	if($1 == "nameURL") nameUrlStroki=dannie($2)
-	if($1 == "URL2")
-	{
-		system("amixer -c 0 -q set 'DAC' 100%-")
-		system("sleep 1")
-		system("killall -9 web-radio2 2> /dev/null")
-		system("web-radio2 -u "dannie($2)" -n "nameUrlStroki" -p "nomerstroki" &")
-		system("amixer -c 0 -q set 'DAC' 100%")
-	}
-#	===================================
-	if($1 == "next") {
-		system("amixer -c 0 -q set 'DAC' 100%-")
-		system("sleep 1")
-		system("killall -9 madplay 2> /dev/null")
-		system("killall -9 curl 2> /dev/null")
-		system("amixer -c 0 -q set 'DAC' 100%")
-	}
-	if($1 == "zapusk") system("/etc/init.d/web-radio2 start")
-	if($1 == "ostanov") system("/etc/init.d/web-radio2 stop")
-	if($1 == "autostarton") system("/etc/init.d/web-radio2 enable")
-	if($1 == "autostartoff") system("/etc/init.d/web-radio2 disable")
+# 2. Зчитування POST або GET даних
+if [ "$REQUEST_METHOD" = "POST" ] && [ -n "$CONTENT_LENGTH" ] && [ "$CONTENT_LENGTH" -gt 0 ]; then
+    POST_DATA=$(dd bs=1 count=$CONTENT_LENGTH 2>/dev/null)
+else
+    POST_DATA="$QUERY_STRING"
+fi
 
-#	========= play-new-URL ============
-	if($1 == "URL")
-	{
-		system("amixer -c 0 -q set 'DAC' 100%-")
-		system("sleep 1")
-		system("killall -9 web-radio2 2> /dev/null")
-		system("web-radio2 -u "dannie($2)" &")
-		system("amixer -c 0 -q set 'DAC' 100%")
-	}
+# 3. Парсинг потоку даних (еквівалент RS="&" та FS="=")
+OLD_IFS=$IFS
+IFS='&'
 
-#	========= play-file ============
-	if($1 == "file")
-	{
-		system("amixer -c 0 -q set 'DAC' 100%-")
-		system("sleep 1")
-		system("killall -9 web-radio2 2> /dev/null")
-		system("web-radio2 -f "dannie($2)" &")
-		system("amixer -c 0 -q set 'DAC' 100%")
-	}
+for pair in $POST_DATA; do
+    IFS=$OLD_IFS
+    key="${pair%%=*}"
+    val_raw="${pair#*=}"
+    
+    val=$(unescape "$val_raw")
 
-#	========= play-folder ==========
-	if($1 == "folder")
-	{
-		system("amixer -c 0 -q set 'DAC' 100%-")
-		system("sleep 1")
-		system("killall -9 web-radio2 2> /dev/null")
-		system("web-radio2 -l "dannie($2)" &")
-		system("amixer -c 0 -q set 'DAC' 100%")
-	}
+    case "$key" in
+        # --- ВИДАЛЕННЯ КАНАЛУ ---
+        delchan)
+            delchan="delchan"
+            action_type="delchan"
+            delstroki="$val"
+            /www/cgi-bin/modules/web-radio2/sed.cgi delet "$delstroki"
+            ;;
+        
+        # --- ВІДТВОРЕННЯ З ПЛЕЙЛИСТА (ПОРЯДКОВИЙ НОМЕР + НАЗВА + URL) ---
+        nomerstroki)
+            nomerstroki="$val"
+            ;;
+        nameURL)
+            nameUrlStroki="$val"
+            ;;
+        URL2)
+            amixer -c 0 -q set 'DAC' 100%-
+            sleep 1
+            killall -9 web-radio2 2>/dev/null
+            web-radio2 -u "$val" -n "$nameUrlStroki" -p "$nomerstroki" &
+            amixer -c 0 -q set 'DAC' 100%
+            ;;
 
-#	========= edit play-list =========
- 	if($1 == "text") print dannie($2) | "sed 's/\r//;/^$/d' > "playlist
+        # --- КЕРУВАННЯ ВІДТВОРЕННЯМ ТА СЛУЖБОЮ ---
+        next)
+            action_type="next"
+            amixer -c 0 -q set 'DAC' 100%-
+            sleep 1
+            killall -9 madplay 2>/dev/null
+            killall -9 curl 2>/dev/null
+            amixer -c 0 -q set 'DAC' 100%
+            ;;
+        zapusk)
+            /etc/init.d/web-radio2 start
+            ;;
+        ostanov)
+            /etc/init.d/web-radio2 stop
+            ;;
+        autostarton)
+            /etc/init.d/web-radio2 enable
+            ;;
+        autostartoff)
+            /etc/init.d/web-radio2 disable
+            ;;
 
-#	========= add_nev_name_url ==========
-	if($1 == "n_str") n=dannie($2)
-	if($1 == "add_nev_name")
-	{
-		add_nev_name=S1
-		nb=dannie($2)
-#		print "#EXTINF:-"n","dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
-		system("/www/cgi-bin/modules/web-radio2/sed.cgi addnev "n" "nb"")
-	}
-	if($1 == "add_nev_url") {
-		add_nev_url="add_nev_url"
-		print dannie($2) | "sed 's/\r//' | sed '/^$/d' >> "playlist
-	}
-}
-END
-{
+        # --- ВІДТВОРЕННЯ ОДНОГО URL, ФАЙЛУ АБО ПАПКИ ---
+        URL)
+            amixer -c 0 -q set 'DAC' 100%-
+            sleep 1
+            killall -9 web-radio2 2>/dev/null
+            web-radio2 -u "$val" &
+            amixer -c 0 -q set 'DAC' 100%
+            ;;
+        file)
+            amixer -c 0 -q set 'DAC' 100%-
+            sleep 1
+            killall -9 web-radio2 2>/dev/null
+            web-radio2 -f "$val" &
+            amixer -c 0 -q set 'DAC' 100%
+            ;;
+        folder)
+            amixer -c 0 -q set 'DAC' 100%-
+            sleep 1
+            killall -9 web-radio2 2>/dev/null
+            web-radio2 -l "$val" &
+            amixer -c 0 -q set 'DAC' 100%
+            ;;
 
-	if($1 == "text")
-	{
-		print "<b>Play list saved. OK</b><br>"
-		system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
-	}
-	else if(add_nev_url == "add_nev_url")
-	{
-		print "<b>NEW URL saved. OK</b><br>"
-		system("/www/cgi-bin/modules/web-radio2/setup.cgi add_nev_url")
-	}
-	else if(delchan == "delchan")
+        # --- РЕДАГУВАННЯ ПЛЕЙЛИСТА ЦІЛКОМ ---
+        text)
+            action_type="text"
+            # Очищаємо від порожніх рядків та перезаписуємо файл
+            echo "$val" | sed '/^$/d' > "$playlist"
+            ;;
 
-	{
-		print "<b>Delete. OK</b><br>"
-		system("/www/cgi-bin/modules/web-radio2/setup.cgi delchan")
-	}
-	else if($1 == "next") { system("/www/cgi-bin/modules/web-radio2/setup.cgi next") }
-	else system("/www/cgi-bin/modules/web-radio2/setup.cgi text")
-}
+        # --- ДОДАВАННЯ НОВОГО КАНАЛУ ---
+        n_str)
+            n="$val"
+            ;;
+        add_nev_name)
+            nb="$val"
+            /www/cgi-bin/modules/web-radio2/sed.cgi addnev "$n" "$nb"
+            ;;
+        add_nev_url)
+            add_nev_url="add_nev_url"
+            action_type="add_nev_url"
+            echo "$val" | sed '/^$/d' >> "$playlist"
+            ;;
+    esac
+    IFS='&'
+done
+IFS=$OLD_IFS
+
+# 4. Блок END (Вивід результату та фінальний редирект)
+case "$action_type" in
+    text)
+        echo "<b>Play list saved. OK</b><br>"
+        /www/cgi-bin/modules/web-radio2/setup.cgi text
+        ;;
+    add_nev_url)
+        echo "<b>NEW URL saved. OK</b><br>"
+        /www/cgi-bin/modules/web-radio2/setup.cgi add_nev_url
+        ;;
+    delchan)
+        echo "<b>Delete. OK</b><br>"
+        /www/cgi-bin/modules/web-radio2/setup.cgi delchan
+        ;;
+    next)
+        /www/cgi-bin/modules/web-radio2/setup.cgi next
+        ;;
+    *)
+        /www/cgi-bin/modules/web-radio2/setup.cgi text
+        ;;
+esac
 
