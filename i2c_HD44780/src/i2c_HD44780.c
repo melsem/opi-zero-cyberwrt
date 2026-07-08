@@ -124,15 +124,15 @@ char
 	tempraw[256],
 	setlcd_patch[20],
 	set_ch[20],
-	ds0_path[15],
-	ds1_path[15],
-	ds2_path[15],
-	ds3_path[15],
+	ds0_path[16], // Увеличиваем размер на 1 байт для '\0'
+	ds1_path[16],
+	ds2_path[16],
+	ds3_path[16],
 	*w1_path,
 	*ds18b20_sensor,
 	*nickname_sensor,
 	*stryng_thermoAllarm,
-	temp_sensor_data[7],
+	temp_sensor_data[12],
 	temp_sensor_txt [10] = {'S', 'e', 'n', 's', 'o', 'r', '-', '0', ':', ' '},
 
 	temp_gpOut[256],
@@ -212,32 +212,32 @@ void add_tempFile() {
 void add_gpioOut() {	//	init add power gpio-out	//
 
       if ((bit_typ1 != 0) && (nGp1_out)) {
-	sprintf(temp_gpOut, "echo %d > /sys/class/gpio/export", nGp1_out);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo %d > /sys/class/gpio/export", nGp1_out); // Защита от Segfault
 	system(temp_gpOut);
-	sprintf(temp_gpOut, "echo out > /sys/class/gpio/gpio%d/direction", nGp1_out);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo out > /sys/class/gpio/gpio%d/direction", nGp1_out);
 	system(temp_gpOut);
       }
 
       if ((bit_typ2 != 0) && (nGp2_out)) {
-	sprintf(temp_gpOut, "echo %d > /sys/class/gpio/export", nGp2_out);
-	system(temp_gpOut);
-	sprintf(temp_gpOut, "echo out > /sys/class/gpio/gpio%d/direction", nGp2_out);
-	system(temp_gpOut);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo %d > /sys/class/gpio/export", nGp3_out);
+ 	system(temp_gpOut);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo out > /sys/class/gpio/gpio%d/direction", nGp3_out);
+ 	system(temp_gpOut);
       }
 
       if ((bit_typ3 != 0) && (nGp3_out)) {
-	sprintf(temp_gpOut, "echo %d > /sys/class/gpio/export", nGp3_out);
-	system(temp_gpOut);
-	sprintf(temp_gpOut, "echo out > /sys/class/gpio/gpio%d/direction", nGp3_out);
-	system(temp_gpOut);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo %d > /sys/class/gpio/export", nGp3_out);
+ 	system(temp_gpOut);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo out > /sys/class/gpio/gpio%d/direction", nGp3_out);
+ 	system(temp_gpOut);
       }
 
       if ((bit_typ4 != 0) && (nGp4_out)) {
-	sprintf(temp_gpOut, "echo %d > /sys/class/gpio/export", nGp4_out);
-	system(temp_gpOut);
-	sprintf(temp_gpOut, "echo out > /sys/class/gpio/gpio%d/direction", nGp4_out);
-	system(temp_gpOut);
-      }
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo %d > /sys/class/gpio/export", nGp4_out);
+ 	system(temp_gpOut);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo out > /sys/class/gpio/gpio%d/direction", nGp4_out);
+ 	system(temp_gpOut);
+       }
 }
 // ******************** end Вариант №1  ********************** //
 // *********************************************************** //
@@ -316,50 +316,16 @@ void add_gpioOut() {	//	init add power gpio-out	//
 // 	stryng_thermoAllarm init, read, setup	//
 //	4 - №-gpio, 4 - allarm, 4 - hister	//
 void set_thermoAllarm() {
-int
-	i=0,
-	str_i=0,
-	for_i=0,
-	th_i=0,
-	statHund=0,
-	statDec=0,
-	statUnit=0;
+
   if (gpioPin_est == 1) {
-    for (for_i=0; for_i<16; for_i++) {
-char	t_thermoAllarm[3];
-	th_i=0;
-	statHund=0;
-	statDec=0;
-	statUnit=0;
-
-	while (stryng_thermoAllarm[str_i] != '/') t_thermoAllarm[i++] = stryng_thermoAllarm[str_i++];
-	if ((i == 3) || (i == 2) || (i == 1)) {
-		if (i == 3) statHund = (t_thermoAllarm[th_i++] - 48)*100;
-		if (i >= 2) statDec = (t_thermoAllarm[th_i++] - 48)*10;
-		if (i >= 1) statUnit = (t_thermoAllarm[th_i++] - 48)*1;
-	}
-		if (for_i == 0) nGp1_out = (statHund + statDec + statUnit); 
-		if (for_i == 1) nGp2_out = (statHund + statDec + statUnit); 
-		if (for_i == 2) nGp3_out = (statHund + statDec + statUnit); 
-		if (for_i == 3) nGp4_out = (statHund + statDec + statUnit); 
-
-		if (for_i == 4) alarm1 = (statHund + statDec + statUnit); 
-		if (for_i == 5) alarm2 = (statHund + statDec + statUnit); 
-		if (for_i == 6) alarm3 = (statHund + statDec + statUnit); 
-		if (for_i == 7) alarm4 = (statHund + statDec + statUnit); 
-
-		if (for_i == 8) histe1 = (statHund + statDec + statUnit); 
-		if (for_i == 9) histe2 = (statHund + statDec + statUnit); 
-		if (for_i == 10) histe3 = (statHund + statDec + statUnit); 
-		if (for_i == 11) histe4 = (statHund + statDec + statUnit); 
-
-		if (for_i == 12) invers1 = (statHund + statDec + statUnit); 
-		if (for_i == 13) invers2 = (statHund + statDec + statUnit); 
-		if (for_i == 14) invers3 = (statHund + statDec + statUnit); 
-		if (for_i == 15) invers4 = (statHund + statDec + statUnit);
-	str_i++;
-	i=0;
-    }
+	// Безопасный и быстрый парсинг всей строки параметров через одну команду sscanf
+	// Шаблон %d/ автоматически извлекает число и пропускает косую черту
+	sscanf(stryng_thermoAllarm, 
+		"%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/",
+		&nGp1_out, &nGp2_out, &nGp3_out, &nGp4_out,
+		&alarm1,   &alarm2,   &alarm3,   &alarm4,
+		&histe1,   &histe2,   &histe3,   &histe4,
+		&invers1,  &invers2,  &invers3,  &invers4);
   }
 }
 // ******************************************** //
@@ -371,16 +337,25 @@ void read_id_ds18() {
 	ai=0,
 	aai=0,
 	ia;
+	int max_len = strlen(ds18b20_sensor); // Защита от выхода за границы строки
 
-	while (ai < kollw_sensor) {
+	while (ai < kollw_sensor && aai < max_len) {
+		// Пропуск экранирующего символа слэша (\)
 		if (ds18b20_sensor[aai] == 0x5C) aai++;
-		for (ia=0; ia<15; ia++) {
+		for (ia=0; ia<15 && aai < max_len; ia++) {
 			if (ai == 0) ds0_path[ia] = ds18b20_sensor[aai];
 			if (ai == 1) ds1_path[ia] = ds18b20_sensor[aai];
 			if (ai == 2) ds2_path[ia] = ds18b20_sensor[aai];
 			if (ai == 3) ds3_path[ia] = ds18b20_sensor[aai];
 			 aai++;
 		}
+		
+		// КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Явно закрываем каждую строку нулем!
+		if (ai == 0) ds0_path[ia] = '\0';
+		if (ai == 1) ds1_path[ia] = '\0';
+		if (ai == 2) ds2_path[ia] = '\0';
+		if (ai == 3) ds3_path[ia] = '\0';
+
 		ai++;
 	}
 }
@@ -423,35 +398,54 @@ void lcd_init() {
 // ******************************************** //
 
 
-
 // ******************************************** //
-// сложение и write команд для дисплей
+// Сложение и write команд для дисплей
 void write_CMD(char c) {
-	int senior = c & 0xF0, junior = (c<<4) & 0xF0; // побитный сдвиг влево на 4-разряда === left shift then and with 0xF0
-	digitalWrite_i2c(LCD_SENIORCMD+senior+led+Rw);
-	digitalWrite_i2c(LCD_JUNIORCMD+senior+led+Rw);
-	digitalWrite_i2c(LCD_SENIORCMD+junior+led+Rw);
-	digitalWrite_i2c(LCD_JUNIORCMD+junior+led+Rw);
+	char senior = c & 0xF0, junior = (c << 4) & 0xF0; 
+	digitalWrite_i2c((char)(LCD_SENIORCMD + senior + led + Rw)); usleep(1); // Задержка на удержание строба En
+	digitalWrite_i2c((char)(LCD_JUNIORCMD + senior + led + Rw)); usleep(1);
+	digitalWrite_i2c((char)(LCD_SENIORCMD + junior + led + Rw)); usleep(1);
+	digitalWrite_i2c((char)(LCD_JUNIORCMD + junior + led + Rw)); usleep(1);
 }
 
-// сложение и write данных для дисплей
+// Сложение и write данных для дисплей
 void write_dat(char c) {
-	int senior = c & 0xF0, junior = (c<<4) & 0xF0; // побитный сдвиг влево на 4-разряда === left shift then and with 0xF0
-	digitalWrite_i2c(LCD_SENIORDATA+senior+led+Rw);
-	digitalWrite_i2c(LCD_JUNIORDATA+senior+led+Rw);
-	digitalWrite_i2c(LCD_SENIORDATA+junior+led+Rw);
-	digitalWrite_i2c(LCD_JUNIORDATA+junior+led+Rw);
+	int senior = c & 0xF0, junior = (c << 4) & 0xF0; 
+	digitalWrite_i2c((char)(LCD_SENIORDATA + senior + led + Rw)); usleep(1);
+	digitalWrite_i2c((char)(LCD_JUNIORDATA + senior + led + Rw)); usleep(1);
+	digitalWrite_i2c((char)(LCD_SENIORDATA + junior + led + Rw)); usleep(1);
+	digitalWrite_i2c((char)(LCD_JUNIORDATA + junior + led + Rw)); usleep(1);
 }
-// Вывод на дисплей
+
+// Помехоустойчивый вывод на дисплей с автоповтором при NAK-сбоях
 void digitalWrite_i2c(char buf) {
-	usleep(50);
-	if (write(file,&buf,1) != 1) {
-		fprintf(stderr,"Write Error : %s (%d)\n",strerror(errno),errno);
+	int retry = 3; // Количество попыток пробить шину при аппаратной ошибке
+	int success = 0;
+
+	while (retry > 0) {
+		usleep(50); // Пауза перед отправкой байта
+		
+		if (write(file, &buf, 1) == 1) {
+			success = 1;
+			break; // Байт успешно улетел в шину, выходим из цикла повторов
+		}
+
+		// Если write вернул не 1, значит на шине произошел сбой (например, NAK)
+		retry--;
+		if (retry > 0) {
+			usleep(200); // Даем шине и чипу время восстановиться перед повтором
+		}
+	}
+
+	// Если после всех попыток байт так и не удалось протолкнуть
+	if (!success) {
+		fprintf(stderr, "Write Error (NAK Bailout) : %s (%d)\n", strerror(errno), errno);
 		errFl = 1;
-		sprintf(temp_gpOut,"Write Error: %s (%d)",strerror(errno),errno);
+		sprintf(temp_gpOut, "Write Error (NAK): %s (%d)", strerror(errno), errno);
 		error_log(temp_gpOut);
 	}
-	usleep(50);
+	
+	usleep(50); // Пауза после отправки байта
 }
 // ******************************************** //
 
@@ -459,9 +453,9 @@ void digitalWrite_i2c(char buf) {
 // ******************************************** //
 // Print output string
 void stringout_lcd_Wide0(char * c) {
-	int n=0;
+	int n = 0;
 	// Print characters
-	while(c[n]!=0) {
+	while (c[n] != 0) {
 		write_dat(c[n++]);
 	}
 }
@@ -480,11 +474,12 @@ i2c_HD44780 -d 0 -a 0x27 -f NNN -u 111011100 -b 28-000002d0797a\28-000002d07b76\
 int t_allarm;
 int t_histe;
 int t_invers;
+char gpio_path[256]; // Локальный буфер, чтобы не затирать read_file_ds18_path датчиков
 
 if (gpioPin_est == 1) {
 	prmb=0;
 	if ((iia == 0) && (bit_typ1 != 0)) {
-		sprintf(read_file_ds18_path, "/sys/class/gpio/gpio%d/value", nGp1_out);
+		snprintf(gpio_path, sizeof(gpio_path), "/sys/class/gpio/gpio%d/value", nGp1_out);
 		t_allarm = alarm1;
 		t_histe = histe1;
 		t_invers = invers1;
@@ -495,6 +490,7 @@ if (gpioPin_est == 1) {
 	if ((iia == 1) && (bit_typ2 != 0)) {
 		sprintf(read_file_ds18_path, "/sys/class/gpio/gpio%d/value", nGp2_out);
 		t_allarm = alarm2;
+		snprintf(gpio_path, sizeof(gpio_path), "/sys/class/gpio/gpio%d/value", nGp2_out);
 		t_histe = histe2;
 		t_invers = invers2;
 
@@ -511,7 +507,8 @@ if (gpioPin_est == 1) {
 		prmb=1;
 	}
 	if ((iia == 3) && (bit_typ4 != 0)) {
-		sprintf(read_file_ds18_path, "/sys/class/gpio/gpio%d/value", nGp4_out);
+		snprintf(gpio_path, sizeof(gpio_path), "/sys/class/gpio/gpio%d/value", nGp4_out);
+ 		t_allarm = alarm4;
 		t_allarm = alarm4;
 		t_histe = histe4;
 		t_invers = invers4;
@@ -520,63 +517,58 @@ if (gpioPin_est == 1) {
 		prmb=1;
 	}
 
+	// Чтение текущего состояния пина (в tempraw[0] запишется '0' или '1')
+	// Для этого временно подменяем глобальный путь, а затем возвращаем
+	char backup_path[256];
+	strncpy(backup_path, read_file_ds18_path, sizeof(backup_path));
+	strncpy(read_file_ds18_path, gpio_path, sizeof(read_file_ds18_path));
+	readd_content_file();
+	strncpy(read_file_ds18_path, backup_path, sizeof(read_file_ds18_path));
 
-		readd_content_file();	//*	read GPIO	* /
-	if (prmb == 1) {		//*	OK read GPIO	* /
+ 	if (prmb == 1) {		//*	OK read GPIO	* /
+	  char val_to_write[2] = "0"; // По умолчанию пишем 0
 	  if (t_invers == 0) {
 	  	    //******************************************** /
 	  	    //	echo 0-1 > /sys/class/gpio/gpio%d/value	//
 	  	    //******************************************** /
 	    if (t_allarm >= t_histe) {	//*	THERMOSTAT	* /
-	  	    	gpioTmp = fopen(read_file_ds18_path, "w");
-		if ((tempraw[0]-48) == 0) {
-	  		if (stat_data_termo < t_allarm) fputs("0", gpioTmp); 	// записать "0" в gpio
-	  		else fputs("1", gpioTmp); 				// записать "1" в gpio
-		} else {
-	  		if (stat_data_termo <= t_histe) fputs("0", gpioTmp); 	// записать "0" в gpio
-	  		else fputs("1", gpioTmp); 				// записать "1" в gpio
-		}
-	  	    	fclose (gpioTmp);
+			if ((tempraw[0]-48) == 0) {
+				if (stat_data_termo >= t_allarm) strcpy(val_to_write, "1");
+			} else {
+				if (stat_data_termo > t_histe) strcpy(val_to_write, "1");
+			}
 
-	    } else {			//*	CONDITIONING	* /
-	  	    	gpioTmp = fopen(read_file_ds18_path, "w");
-		if ((tempraw[0]-48) == 0) {
-	  		if (stat_data_termo > t_allarm) fputs("0", gpioTmp); 	// записать "0" в gpio
-	  		else fputs("1", gpioTmp); 				// записать "1" в gpio
-		} else {
-	  		if (stat_data_termo >= t_histe) fputs("0", gpioTmp); 	// записать "0" в gpio
-	  		else fputs("1", gpioTmp); 				// записать "1" в gpio
-		}
-	  	    	fclose (gpioTmp);
-	  	    //******************************************** /
+	    } else {
+			if ((tempraw[0]-48) == 0) {
+				if (stat_data_termo <= t_allarm) strcpy(val_to_write, "1");
+			} else {
+				if (stat_data_termo < t_histe) strcpy(val_to_write, "1");
+			}
 	    }
 	  } else if (t_invers == 1) {
-	  	    //******************************************** /
-	  	    //	echo 0-1 > /sys/class/gpio/gpio%d/value	//
-	  	    //******************************************** /
 	    if (t_allarm >= t_histe) {	//*	THERMOSTAT	* /
-	  	    	gpioTmp = fopen(read_file_ds18_path, "w");
-		if ((tempraw[0]-48) == 1) {
-	  		if (stat_data_termo < t_allarm) fputs("1", gpioTmp); 	// записать "1" в gpio
-	  		else fputs("0", gpioTmp); 				// записать "0" в gpio
-		} else {
-	  		if (stat_data_termo <= t_histe) fputs("1", gpioTmp); 	// записать "1" в gpio
-	  		else fputs("0", gpioTmp); 				// записать "0" в gpio
-		}
-	  	    	fclose (gpioTmp);
-
-	    } else {			//*	CONDITIONING	* /
-	  	    	gpioTmp = fopen(read_file_ds18_path, "w");
-		if ((tempraw[0]-48) == 1) {
-	  		if (stat_data_termo > t_allarm) fputs("1", gpioTmp); 	// записать "1" в gpio
-	  		else fputs("0", gpioTmp); 				// записать "0" в gpio
-		} else {
-	  		if (stat_data_termo >= t_histe) fputs("1", gpioTmp); 	// записать "1" в gpio
-	  		else fputs("0", gpioTmp); 				// записать "0" в gpio
-		}
-	  	    	fclose (gpioTmp);
-	  	    //******************************************** /
+			if ((tempraw[0]-48) == 1) {
+				if (stat_data_termo >= t_allarm) strcpy(val_to_write, "0");
+				else strcpy(val_to_write, "1");
+			} else {
+				if (stat_data_termo > t_histe) strcpy(val_to_write, "0");
+				else strcpy(val_to_write, "1");
+			}
+	    } else {
+			if ((tempraw[0]-48) == 1) {
+				if (stat_data_termo <= t_allarm) strcpy(val_to_write, "0");
+				else strcpy(val_to_write, "1");
+			} else {
+				if (stat_data_termo < t_histe) strcpy(val_to_write, "0");
+				else strcpy(val_to_write, "1");
+			}
 	    }
+	  }
+	  
+	  // Единое безопасное открытие файла на запись (исключает зависание дескрипторов)
+	  if ((gpioTmp = fopen(gpio_path, "w")) != NULL) {
+		  fputs(val_to_write, gpioTmp);
+		  fclose(gpioTmp);
 	  }
 	}
 	prmb=0;
@@ -608,14 +600,15 @@ void conv_w1_ds18() {
    readd_content_file();
 
 	// *		Обработка ошибок при чтении датчика		* //
-		if ((tempraw[36] == 'Y') &&
-				(tempraw[36] == 'E') && 
-					(tempraw[36] == 'S')) tfail = 0;
+		if ((tempraw[36] == 'Y') && \
+				(tempraw[37] == 'E') && \
+					(tempraw[38] == 'S')) tfail = 0;
 
 		// valid CRC (recheck cycle removed because it increased the load)
 		if (tempraw[36] != 'Y') {
 				// Auto re-read parameter sensor ('-r')
-				while (tempraw[36] == 'N' && re_read < 3) {
+				// Добавлена проверка strlen для защиты от вечного цикла
+				while (strlen(tempraw) > 36 && tempraw[36] == 'N' && re_read < 3) {
 					readd_content_file();
 					re_read++;
 				}
@@ -631,11 +624,15 @@ void conv_w1_ds18() {
 
 	// ************************************************************** //
  if (tfail != 1) {
+	
+	// Динамический поиск маркера температуры "t=" вместо жесткого смещения 69
+	char *t_ptr = strstr(tempraw, "t=");
+	if (t_ptr == NULL) return; // Защита от Segfault, если строка повреждена
+	t_ptr += 2; // Сдвигаем указатель на начало цифр (пропускаем "t=")
 
-	if (tempraw[69] == '-') {			/* проверим есть ли "-" минус */
-		/* да есть "-" минус */
-		temp_sensor_data[0]=tempraw[69];
-		i++;
+	if (t_ptr[0] == '-') {			/* проверим есть ли "-" минус */
+ 		/* да есть "-" минус */
+		temp_sensor_data[0]=t_ptr[0];
 		ib=i;
 		zu=1;
 	} else {					/* нету  "-" минус */
@@ -644,7 +641,8 @@ void conv_w1_ds18() {
 		ib=0;
 	}
 		iu=ib;
-	while (tempraw[69 + iu] != '\n') {		/* подщитаем колличество символов с ds18 БЕЗ ЗНАКА минус '-' минусовая температуура */
+	// Защита от выхода в чужую память (ищем конец строки или файла)
+	while (t_ptr[iu] != '\n' && t_ptr[iu] != '\0') {
 		iu++;
 		icount++;				/* колличество символов с ds18 БЕЗ ЗНАКА минус '-' минусовая температуура */
 	}
@@ -667,7 +665,7 @@ void conv_w1_ds18() {
 		 if (ik==uz-1) {
 		temp_sensor_data[i]='.';
 		} else {
-		temp_sensor_data[i]=tempraw[69 + ib];
+		temp_sensor_data[i]=t_ptr[ib];
 		ib++;
 		}
 		i++;
@@ -675,7 +673,7 @@ void conv_w1_ds18() {
 	} else if (icount == 3) {
 		temp_sensor_data[i++]='0';
 		temp_sensor_data[i++]='.';
-		temp_sensor_data[i++]=tempraw[69 + ib];
+		temp_sensor_data[i++]=t_ptr[ib];
 
 	} else if (icount < 3) {
 		i=0;
@@ -687,6 +685,7 @@ void conv_w1_ds18() {
 
 	temp_sensor_data[i++]='C';
 	temp_sensor_data[i++]=' ';
+	temp_sensor_data[i]='\0'; // ОБЯЗАТЕЛЬНЫЙ null-терминатор, блокирующий Segfault на экране!
 	// ************************************************************** //
  
 
@@ -696,24 +695,11 @@ void conv_w1_ds18() {
 	// *	ПОРАЗРЯДНО умножаем на 1000, 100, 10, 1 и их сумируем	* //
 	// *	для дальнейшей обработки в термостате			* //
 	// ************************************************************** //
-	if ((icount == 6) || (icount == 5) || (icount == 4) || (icount == 3)) {
-		if (icount == 6) 
-			stat_data_termo = ((tempraw[69 + zu++] - ascii)*1000 + 
-						(tempraw[69 + zu++] - ascii)*100 + 
-							(tempraw[69 + zu++] - ascii)*10 + 
-								(tempraw[69 + zu++] - ascii)*1); 
-		if (icount == 5) 
-			stat_data_termo = ((tempraw[69 + zu++] - ascii)*100 + 
-						(tempraw[69 + zu++] - ascii)*10 + 
-							(tempraw[69 + zu++] - ascii)*1); 
-		if (icount == 4) 
-			stat_data_termo = ((tempraw[69 + zu++] - ascii)*10 + 
-						(tempraw[69 + zu++] - ascii)*1); 
-		if (icount == 3) 
-			stat_data_termo = (tempraw[69 + zu++] - ascii)*1;
-	} else if (icount < 3) stat_data_termo = 0;
-	// ************************************************************** //
 
+	// Безопасный перевод всей строки в число через atoi. 
+	// Деление на 100 убирает сотые и тысячные доли, оставляя один знак после точки (например, 256)
+	if (icount >= 3) stat_data_termo = atoi(t_ptr) / 100;
+	else stat_data_termo = 0;
 
 	// **************  Проверим GPIO ТЕРМОРЕГУЛЯТОРА  ************** //
 	   if ((bit_typ1 == 1) || (bit_typ1 == 2) ||
@@ -737,8 +723,13 @@ void read_nickname() {
 		if ( i < 10) temp_sensor_txt[i++] = nickname_sensor[i_nick];
 		i_nick++;
 	}
-	if (i == 0) temp_sensor_txt [7] = iia += 1;
-	else while (i < 10) temp_sensor_txt[i++] = ' ';
+	if (i == 0) {
+		// БЕЗОПАСНЫЙ перевод индекса в ASCII-символ без изменения переменной iia
+		temp_sensor_txt[7] = (iia + 1) + 48; 
+	} else {
+		while (i < 10) temp_sensor_txt[i++] = ' ';
+	}
+	temp_sensor_txt[10] = '\0'; // Гарантированный терминатор строки для защиты от Segfault
 	i_nick++;
 }
 // ******************************************** //
@@ -781,7 +772,10 @@ void readd_content_file(void) {
 			sprintf(temp_gpOut,"Error: Nou pin.GPIO-OUT 'Sensor-%d'", ji);
 			error_log(temp_gpOut);
 	     }
-
+		// КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: прерываем выполнение функции. 
+		// Без этого программа пойдет дальше работать с пустым буфером и вызовет Segfault.
+	     tempraw[0] = '\0'; 
+	     return; 
 
 	} else {
 		tfail = 0; // cброс флаг присутствия файла
@@ -795,7 +789,10 @@ void readd_content_file(void) {
 
 		// Close file stream
 		fclose(tempfile); // fclose закрывает и разъединяет файл tempfile ,  связанный с потоком. 
-		strcpy(tempraw, tempbuf); // strcpy() используется для копирования содержимого str2 в str1.  Аргумент str2 должен быть указателем на строку, оканчивающуюся нулем.
+
+		// Безопасное копирование с ограничением размера буфера во избежание порчи памяти
+		strncpy(tempraw, tempbuf, sizeof(tempraw) - 1);
+		tempraw[sizeof(tempraw) - 1] = '\0';
 		free(tempbuf); // free() возвращает память, на которую указывает параметр tempbuf, назад  в кучу. В результате эта память может выделяться снова
 	}
 }
@@ -815,8 +812,11 @@ void read_ffile(void) {
 			
 	if (tfail != 1) {
 			// find_boom - delete "\xEF\xBB\xBF" utf8
-		if ((tempraw[0] == 0xFFFFFFEF) && (tempraw[1] == 0xFFFFFFBB) && (tempraw[2] == 0xFFFFFFBF)) {
-			ii=3;
+		// Явное приведение к unsigned char для корректного сравнения байт UTF-8 BOM
+		if (((unsigned char)tempraw[0] == 0xEF) && \
+			((unsigned char)tempraw[1] == 0xBB) && \
+				((unsigned char)tempraw[2] == 0xBF)) {
+ 			ii=3;
 			buff = strlen(tempraw) - 3;
 		}	// end find_boom
 		else buff = strlen(tempraw);
@@ -859,6 +859,13 @@ void read_ffile(void) {
 			    fl++;
 			}
 		}
+		
+		// КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Обязательно закрываем каждую строку нулем!
+		// Без этого функции вывода уйдут читать чужую память и вызовут Segfault.
+		stroka1[20] = '\0';
+		stroka2[20] = '\0';
+		stroka3[20] = '\0';
+		stroka4[20] = '\0';
 	}
 }
 // ******************************************** //
@@ -874,7 +881,7 @@ void print_lcd(void) {
 	else write_CMD(LCD_SETSTROKA1);
    }
    else write_CMD(LCD_SETSTROKA1);
-	usleep(500);
+	usleep(2000);
 	stringout_lcd_Wide0(stroka1);
 
    if(BIT_WHILE == 1) {
@@ -882,7 +889,7 @@ void print_lcd(void) {
 	else write_CMD(LCD_SETSTROKA2);
    }
    else write_CMD(LCD_SETSTROKA2);
-	usleep(500);
+	usleep(2000);
 	stringout_lcd_Wide0(stroka2);
 
    if(BIT_WHILE == 1) {
@@ -890,12 +897,12 @@ void print_lcd(void) {
 	else write_CMD(LCD_SETSTROKA3);
    }
    else write_CMD(LCD_SETSTROKA3);
-	usleep(500);
+	usleep(2000);
 	stringout_lcd_Wide0(stroka3);
 
 	if(BIT_CLOCK != 1) {
 	write_CMD(LCD_SETSTROKA4);
-	usleep(500);
+	usleep(2000);
 	stringout_lcd_Wide0(stroka4);
 	}
 }
@@ -1054,7 +1061,8 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 	// ************************************************************************************************************ //
 	// ********* I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C ********* //
 
-	sprintf(setlcd_patch, "%s", setlcd);
+	// Защита от переполнения буфера setlcd_patch (максимум 20 байт)
+	snprintf(setlcd_patch, sizeof(setlcd_patch), "%s", setlcd);
 
 		// I2C device
 	if (I2C_id == 1) sprintf(dev_path, "/dev/i2c-%s", I2C_Device);
@@ -1178,7 +1186,10 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 
 				if (iia == 3) if (BIT_CLOCK == 0 && kollw_sensor < 4 && wide_simvol == '0') write_CMD(LCD_SETSTROKA4);
 
-				if (ds_nik != 1) temp_sensor_txt [7] = iia += 1;
+				if (ds_nik != 1) {
+					// ИСПРАВЛЕНИЕ: Безопасный перевод номера в ASCII без порчи шага цикла iia++
+					temp_sensor_txt[7] = (iia + 1) + 48; 
+				}
 				else read_nickname();
 
 				if (iia == 0) t_nick = fopen("/tmp/nick", "w");
@@ -1193,10 +1204,14 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 
  			while(1) {
 					int wdr=0;
+				// ИСПРАВЛЕНИЕ: Вызываем часы на каждом круге опроса датчиков.
+				// Если BIT_CLOCK взведен, они обновят верхнюю строку экрана
+				if (BIT_CLOCK == 1) {
+					clock_plus_ds18(); 
+				}
 				for (iia=0; iia<kollw_sensor; iia++) {
 					memset(temp_sensor_data, ' ', sizeof(temp_sensor_data)); //очищаем
 					if (iia == 0) {
-						clock_plus_ds18();
 						sprintf(read_file_ds18_path, "/sys/bus/w1/devices/%s/w1_slave", ds0_path);
 						if (BIT_CLOCK == 1 && kollw_sensor < 4 && wide_simvol == '0') write_CMD(LCD_SETSTROKA2+11);
 						else if (BIT_CLOCK == 1 && kollw_sensor < 4 && wide_simvol == '1') write_CMD(LCD_SETSTROKA3+11);

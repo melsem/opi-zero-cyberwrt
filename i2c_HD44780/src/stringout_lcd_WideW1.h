@@ -8,7 +8,7 @@ void stringout_lcd_WideW1(char *c, int a, int b) {
 //	if (c[a] == '-') { simvol_Minus(pos_right_shift); pos_right_shift+=1; probel(pos_right_shift); pos_right_shift+=1; a=1;
 //		if (sizeof(c) < 5) { probel(pos_right_shift); pos_right_shift+=1; } }	// lcd 200x
 //	else if ((lcd_number == 20) && (c[a] != '-')) { probel(pos_right_shift); pos_right_shift+=1; }	// lcd 200x	// lcd 200x
-	if (sizeof(c) < 4) { probel(pos_right_shift); pos_right_shift+=1; }
+	if (strlen(c) < 4) { probel(pos_right_shift); pos_right_shift+=1; }
 	for (i=a; i<b; i++) {
 //	for (i=a; i<sizeof(c); i++) {			// Test!!!
 	    if (c[i] != ' ') {
