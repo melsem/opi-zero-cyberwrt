@@ -1,0 +1,14 @@
+package tda7313
+
+config tda7313
+	option i2c_dev '1'
+	option lcd_adres '0x27'
+	option lcd_cols '20'
+	option lcd_rows '4'
+	option lcd_backlight '1'
+	option tmp_file '/tmp/play_name'
+	option vol_file '/tmp/tda_volume'
+	option language 'en_en'
+	option scroll_gap '5'
+	option vol_style '4'
+

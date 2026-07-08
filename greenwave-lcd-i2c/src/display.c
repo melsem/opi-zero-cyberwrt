@@ -6,12 +6,11 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
+#include <uci.h> // Офіційне швидке C-API для роботи з конфігурацією OpenWrt
 
 #define LCD_CHR        1
 #define LCD_CMD        0
 #define PIN_ENABLE     0x04
-
-#define UCI_CFG "uci -q get greenwave-lcd-i2c.@greenwave[0]."
 
 int lcd_i2c_dev;
 int lcd_addr = 0x27; 
@@ -21,59 +20,82 @@ int lcd_rows = 2;
 uint8_t pin_backlight = 0x08; 
 char tmp_file_path[128] = "/tmp/play_name";
 char vol_file_path[128] = "/tmp/tda_volume";
-char lcd_language[16] = "en_en";
-int lcd_scroll_gap = 3; // Нова глобальна змінна для відступу бігучого рядка
-int lcd_vol_style = 1; // Нова опція стилю шкали (від 1 до 5)
+char lcd_language[16] = "en_en"; // Усунено warning (чітко вказано розмір масиву)
+int lcd_scroll_gap = 3; 
+int lcd_vol_style = 1; 
 
 uint8_t cyr_custom_chars[8][8] = {
-    {0x1F, 0x10, 0x10, 0x1E, 0x11, 0x11, 0x1E, 0x00}, // Б
-    {0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // Г
-    {0x06, 0x0A, 0x0A, 0x0A, 0x0A, 0x1F, 0x11, 0x00}, // Д
-    {0x15, 0x15, 0x15, 0x0E, 0x15, 0x15, 0x15, 0x00}, // Ж
-    {0x11, 0x11, 0x13, 0x15, 0x19, 0x11, 0x11, 0x00}, // И / Й
-    {0x1F, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x00}, // П
-    {0x04, 0x0E, 0x15, 0x15, 0x0E, 0x04, 0x04, 0x04}, // Ф
-    {0x12, 0x15, 0x15, 0x1D, 0x15, 0x15, 0x12, 0x00}  // 0x07: Ю (Нова графічна маска літери Ю)
+    {0x1F, 0x10, 0x10, 0x1E, 0x11, 0x11, 0x1E, 0x00}, // 0x00: Б
+    {0x1F, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00}, // 0x01: Г / Ґ
+    {0x06, 0x0A, 0x0A, 0x0A, 0x0A, 0x1F, 0x11, 0x00}, // 0x02: Д
+    {0x15, 0x15, 0x15, 0x0E, 0x15, 0x15, 0x15, 0x00}, // 0x03: Ж
+    {0x11, 0x11, 0x13, 0x15, 0x19, 0x11, 0x11, 0x00}, // 0x04: И / Й
+    {0x07, 0x09, 0x09, 0x09, 0x09, 0x11, 0x11, 0x00}, // 0x05: РЕДАГОВАНО ДЛЯ ЛІТЕРИ "Л"
+    {0x04, 0x0E, 0x15, 0x15, 0x0E, 0x04, 0x04, 0x04}, // 0x06: Ф
+    {0x12, 0x15, 0x15, 0x1D, 0x15, 0x15, 0x12, 0x00}  // 0x07: Ю
 };
 
-void get_uci_display_config(int *dev, int *lcd_addr, int *cols, int *rows, uint8_t *backlight, char *file_path, char *vol_path, char *lang) {
-    FILE *fp;
-    char path[128];
+// Допоміжна утиліта для швидкого та безпечного зчитування опцій UCI
+static const char *get_uci_option(struct uci_context *ctx, struct uci_package *p, const char *section, const char *option) {
+    struct uci_section *s = uci_lookup_section(ctx, p, section);
+    if (!s) return NULL;
     
-    fp = popen(UCI_CFG "i2c_dev", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { *dev = atoi(path); pclose(fp); } else if (fp) pclose(fp);
+    struct uci_option *o = uci_lookup_option(ctx, s, option);
+    if (!o || o->type != UCI_TYPE_STRING) return NULL;
+    
+    return o->v.string;
+}
 
-    fp = popen(UCI_CFG "lcd_adres", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { *lcd_addr = (int)strtol(path, NULL, 16); pclose(fp); } else if (fp) pclose(fp);
+void get_uci_display_config(int *dev, int *lcd_addr_ptr, int *cols, int *rows, uint8_t *backlight, char *file_path, char *vol_path, char *lang) {
+    struct uci_context *ctx = uci_alloc_context();
+    if (!ctx) return;
 
-    fp = popen(UCI_CFG "lcd_cols", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { int val = atoi(path); if (val > 0) *cols = val; pclose(fp); } else if (fp) pclose(fp);
+    struct uci_package *p = NULL;
+    // Завантажуємо файл конфігурації /etc/config/greenwave-lcd-i2c
+    if (uci_load(ctx, "greenwave-lcd-i2c", &p) != UCI_OK) {
+        uci_free_context(ctx);
+        return;
+    }
 
-    fp = popen(UCI_CFG "lcd_rows", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { int val = atoi(path); if (val > 0) *rows = val; pclose(fp); } else if (fp) pclose(fp);
+    // Шукаємо першу анонімну секцію за типом "greenwave"
+    struct uci_element *e;
+    const char *section_name = NULL;
+    uci_foreach_element(&p->sections, e) {
+        struct uci_section *s = uci_to_section(e);
+        if (strcmp(s->type, "greenwave") == 0) {
+            section_name = s->e.name;
+            break;
+        }
+    }
 
-    fp = popen(UCI_CFG "lcd_backlight", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { *backlight = (atoi(path) == 0) ? 0x00 : 0x08; pclose(fp); } else if (fp) pclose(fp);
+    if (section_name) {
+        const char *val;
 
-    fp = popen(UCI_CFG "tmp_file", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { path[strcspn(path, "\r\n")] = 0; if (strlen(path) > 0) strcpy(file_path, path); pclose(fp); } else if (fp) pclose(fp);
+        if ((val = get_uci_option(ctx, p, section_name, "i2c_dev"))) *dev = atoi(val);
+        if ((val = get_uci_option(ctx, p, section_name, "lcd_adres"))) *lcd_addr_ptr = (int)strtol(val, NULL, 16);
+        if ((val = get_uci_option(ctx, p, section_name, "lcd_cols"))) { int v = atoi(val); if (v > 0) *cols = v; }
+        if ((val = get_uci_option(ctx, p, section_name, "lcd_rows"))) { int v = atoi(val); if (v > 0) *rows = v; }
+        if ((val = get_uci_option(ctx, p, section_name, "lcd_backlight"))) *backlight = (atoi(val) == 0) ? 0x00 : 0x08;
+        
+        // Безпечне копіювання з жорстким контролем розміру виділеного буфера (захист від Buffer Overflow)
+        if ((val = get_uci_option(ctx, p, section_name, "tmp_file"))) {
+            strncpy(file_path, val, 127);
+            file_path[127] = '\0';
+        }
+        if ((val = get_uci_option(ctx, p, section_name, "vol_file"))) {
+            strncpy(vol_path, val, 127);
+            vol_path[127] = '\0';
+        }
+        if ((val = get_uci_option(ctx, p, section_name, "language"))) {
+            strncpy(lang, val, 15);
+            lang[15] = '\0';
+        }
 
-    fp = popen(UCI_CFG "vol_file", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { path[strcspn(path, "\r\n")] = 0; if (strlen(path) > 0) strcpy(vol_path, path); pclose(fp); } else if (fp) pclose(fp);
+        if ((val = get_uci_option(ctx, p, section_name, "scroll_gap"))) { int v = atoi(val); if (v >= 0) lcd_scroll_gap = v; }
+        if ((val = get_uci_option(ctx, p, section_name, "vol_style"))) { int v = atoi(val); if (v >= 1 && v <= 5) lcd_vol_style = v; }
+    }
 
-    fp = popen(UCI_CFG "language", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { 
-        path[strcspn(path, "\r\n")] = 0; 
-        strcpy(lang, (strlen(path) > 0) ? path : "en_en");
-        pclose(fp); 
-    } else { strcpy(lang, "en_en"); if (fp) pclose(fp); }
-
-    fp = popen(UCI_CFG "scroll_gap", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { int val = atoi(path); if (val >= 0) lcd_scroll_gap = val; pclose(fp); } else if (fp) pclose(fp);
-
-    // Зчитуємо стиль гучності
-    fp = popen(UCI_CFG "vol_style", "r");
-    if (fp && fgets(path, sizeof(path), fp)) { int val = atoi(path); if (val >= 1 && val <= 5) lcd_vol_style = val; pclose(fp); } else if (fp) pclose(fp);
+    uci_free_context(ctx); // Повністю звільняємо контекст UCI
 }
 
 void lcd_strobe(uint8_t data) {
@@ -106,7 +128,11 @@ void lcd_init() {
     lcd_send(LCD_CMD, 0x0C);
     lcd_send(LCD_CMD, 0x01); usleep(2000);
 
-    if (strcmp(lcd_language, "en_en") == 0) lcd_load_custom_chars();
+    // Кастомні символи вантажимо ТІЛЬКИ для en_en. 
+    // Для апаратних кириличних прошивок (en_ua / en_ru) вони не потрібні.
+    if (strcmp(lcd_language, "en_en") == 0) {
+        lcd_load_custom_chars();
+    }
 }
 
 void lcd_set_cursor(int row, int col) {
@@ -122,7 +148,8 @@ unsigned char* get_utf8_offset(unsigned char *str, int offset_chars) {
         if ((*str & 0xC0) != 0x80) offset_chars--;
         str++;
     }
-    while ((*str & 0xC0) == 0x80) str++;
+    // Захист від виходу за межі пам'яті (Buffer Overflow) на обірваних UTF-8 символах
+    while (*str && (*str & 0xC0) == 0x80) str++;
     return str;
 }
 

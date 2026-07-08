@@ -1,10 +1,11 @@
 BINS = greenwave-lcd-i2c
-
 OBJS = main.o display.o lcd_print_cyr.o
+LIBS = -luci
+
 all: $(BINS)
 
 $(BINS): $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -o $(BINS)
+	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BINS)
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o main.o
