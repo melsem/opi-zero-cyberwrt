@@ -1,7 +1,9 @@
-obj-m := hd44780.o
+obj-m := hd44780_mod.o
+hd44780_mod-y := hd44780.o cmd_write_init.o
 
-ifeq ($(MAKING_MODULES),1)
+all:
+	$(MAKE) -C $(LINUX_DIR) M=$(PWD) modules
 
--include $(TOPDIR)/Rules.make
-endif
+clean:
+	$(MAKE) -C $(LINUX_DIR) M=$(PWD) clean
 

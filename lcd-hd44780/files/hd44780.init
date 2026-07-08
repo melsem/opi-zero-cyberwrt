@@ -1,0 +1,66 @@
+#!/bin/sh /etc/rc.common
+
+# Приоритет запуска. 90 гарантирует, что файловая система и UCI уже полностью готовы.
+START=90
+STOP=10
+
+# Функция-колбэк для разбора параметров из UCI секции
+load_pins() {
+	local section="$1"
+	local rs e db4 db5 db6 db7
+
+	# Чтение параметров UCI с дефолтными значениями (OrangePi Zero)
+	config_get rs "$section" hd_rs "0"
+	config_get rw "$section" hd_rw "1"
+	config_get e "$section" hd_e "2"
+	config_get db4 "$section" hd_db4 "3"
+	config_get db5 "$section" hd_db5 "15"
+	config_get db6 "$section" hd_db6 "16"
+	config_get db7 "$section" hd_db7 "14"
+
+	# Проверяем, не загружен ли модуль ядра ранее
+	if ! lsmod | grep -q "hd44780_mod"; then
+		# Универсальный синтаксис передачи параметров ядра (работает в 5.x и 6.x)
+		insmod hd44780_mod.ko hd_rs="$rs" hd_rw="$rw" hd_e="$e" hd_db4="$db4" hd_db5="$db5" hd_db6="$db6" hd_db7="$db7"
+	fi
+}
+
+start() {
+	# Подгружаем стандартную библиотеку OpenWRT для парсинга UCI
+	if [ -f /lib/functions.sh ]; then
+		. /lib/functions.sh
+	else
+		include /lib/functions
+	fi
+	
+	# Загружаем файл конфигурации /etc/config/hd44780
+	config_load hd44780
+	
+	# Находим в конфиге секцию с типом 'display' и передаем ее в обработчик
+	config_foreach load_pins display
+
+	# Запускаем фоновый мониторинг, если файл скрипта существует и исполняемый
+	if [ -x /usr/bin/lcd_monitor.sh ] && ! pidof lcd_monitor.sh > /dev/null; then
+		# Небольшая задержка, чтобы контроллер дисплея завершил внутренний сброс
+		sleep 1
+		/usr/bin/lcd_monitor.sh &
+	fi
+}
+
+stop() {
+	# Первым делом завершаем скрипт мониторинга, чтобы он не слал данные в закрывающийся драйвер
+	if pidof lcd_monitor.sh > /dev/null; then
+		killall -9 lcd_monitor.sh 2>/dev/null
+	fi
+
+	# Если устройство еще доступно, очищаем экран перед выгрузкой модуля
+	if [ -c /dev/hd44780 ]; then
+		printf "\xff\x01" > /dev/hd44780 2>/dev/null
+	fi
+
+	# Выгружаем модуль ядра из системы
+	if lsmod | grep -q "hd44780_mod"; then
+		rmmod hd44780
+	fi
+}
+
