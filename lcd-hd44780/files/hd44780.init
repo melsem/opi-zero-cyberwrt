@@ -7,7 +7,7 @@ STOP=10
 # Функция-колбэк для разбора параметров из UCI секции
 load_pins() {
 	local section="$1"
-	local rs e db4 db5 db6 db7
+	local rs rw e db4 db5 db6 db7
 
 	# Чтение параметров UCI с дефолтными значениями (OrangePi Zero)
 	config_get rs "$section" hd_rs "0"

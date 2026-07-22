@@ -219,9 +219,9 @@ void add_gpioOut() {	//	init add power gpio-out	//
       }
 
       if ((bit_typ2 != 0) && (nGp2_out)) {
-	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo %d > /sys/class/gpio/export", nGp3_out);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo %d > /sys/class/gpio/export", nGp2_out);
  	system(temp_gpOut);
-	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo out > /sys/class/gpio/gpio%d/direction", nGp3_out);
+	snprintf(temp_gpOut, sizeof(temp_gpOut), "echo out > /sys/class/gpio/gpio%d/direction", nGp2_out);
  	system(temp_gpOut);
       }
 
