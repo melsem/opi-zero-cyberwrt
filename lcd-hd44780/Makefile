@@ -12,7 +12,6 @@ PKG_NAME:=lcd-hd44780
 PKG_VERSION:=1.3
 PKG_RELEASE:=4
 
-# Использование KERNEL_BUILD_DIR гарантирует изоляцию под конкретную версию ядра
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
@@ -35,8 +34,6 @@ define Build/Prepare
 	$(CP) ./src/* $(PKG_BUILD_DIR)/
 endef
 
-# Совместимый блок компиляции.
-# Если макрос KERNEL_MAKE не определен в старой OpenWRT, конструируем вызов вручную.
 ifdef KERNEL_MAKE
   define Build/Compile
 	$(KERNEL_MAKE) M="$(PKG_BUILD_DIR)" modules
@@ -52,8 +49,6 @@ else
   endef
 endif
 
-# Установка конфигурационных файлов интерфейса UCI и скриптов инициализации
-# Установка конфигурационных файлов интерфейса UCI и скриптов инициализации
 define KernelPackage/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DATA) ./files/hd44780.conf $(1)/etc/config/hd44780
@@ -61,6 +56,4 @@ define KernelPackage/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./files/hd44780.init $(1)/etc/init.d/hd44780
 endef
 
-
 $(eval $(call KernelPackage,$(PKG_NAME)))
-
