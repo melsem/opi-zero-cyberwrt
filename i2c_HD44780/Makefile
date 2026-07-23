@@ -22,18 +22,14 @@ define Package/i2c_HD44780/description
  help(RU) http://www.cyber-place.ru/showthread.php?t=2164
 endef
 
-define Package/i2c_HD44780/postinst
-endef
-
-define Package/i2c_HD44780/prerm
+define Package/$(PKG_NAME)/postrm
 #!/bin/sh
-	killall -9 i2c_HD44780 2> /dev/null > /dev/null
-endef
-
-define Package/i2c_HD44780/postrm
-#!/bin/sh
-sed -i "/i2c_HD44780\/index.cgi/d" /www/menu.html 2> /dev/null
-rmdir /www/cgi-bin/modules/i2c_HD44780 2> /dev/null
+if grep -qi "i2c_hd44780" /www/menu.html; then
+    sed -i '/i2c_[hH][dD]44780/d' /www/menu.html
+fi
+rm -rf /www/modules/i2c_hd44780
+rm -rf /www/cgi-bin/modules/i2c_hd44780
+exit 0
 endef
 
 define Build/Prepare
@@ -57,7 +53,7 @@ define Package/i2c_HD44780/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/i2c_HD44780.init $(1)/etc/init.d/
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./src/uci_defaults_i2c_HD44780 $(1)/etc/uci-defaults/50-i2c_HD44780
+	$(INSTALL_BIN) ./files/uci_defaults_i2c_HD44780 $(1)/etc/uci-defaults/50-i2c_HD44780
 
 ##		WEB-MORDA_Cyberwrt
 	$(INSTALL_DIR) $(1)/www/modules/i2c_hd44780
@@ -66,8 +62,13 @@ define Package/i2c_HD44780/install
 	$(INSTALL_DIR) $(1)/www/cgi-bin/modules/i2c_hd44780
 	$(INSTALL_BIN) ./files/index.cgi $(1)/www/cgi-bin/modules/i2c_hd44780/
 	$(INSTALL_BIN) ./files/index.html $(1)/www/cgi-bin/modules/i2c_hd44780/
-	$(INSTALL_BIN) ./files/Setup.cgi $(1)/www/cgi-bin/modules/i2c_hd44780/
 	$(INSTALL_BIN) ./files/Save.cgi $(1)/www/cgi-bin/modules/i2c_hd44780/
+	$(INSTALL_BIN) ./files/get_temp.cgi $(1)/www/cgi-bin/modules/i2c_hd44780/
+	$(INSTALL_BIN) ./files/Setup.cgi $(1)/www/cgi-bin/modules/i2c_hd44780/Setup.cgi
+
+	# 2. Додаємо хук для автоматичного вимкнення після встановлення:
+	$(INSTALL_DIR) $(1)/usr/lib/opkg/info
+	$(INSTALL_BIN) ./files/disable_service.sh $(1)/usr/lib/opkg/info/$(PKG_NAME).postinst
 endef
 
 $(eval $(call BuildPackage,i2c_HD44780))

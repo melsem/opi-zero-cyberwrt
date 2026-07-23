@@ -1,75 +1,124 @@
 #!/bin/sh
-echo 
-echo "<title>12c-LCD monitor (bonus clock and themperature)</title>"
-echo "<table align=center border=0><tr><td>"
-echo `cat /www/menu.html`
-echo "</td></tr></table>"
-#_______________ time-javascript ____________________________
+echo "Content-type: text/html; charset=utf-8"
+echo ""
 
-if [ "$1" == "save_setup" ]; then
-echo "<table align="center" border=0 width=><tr><td>
-<b><span hidden id="time"></span></b>
-<script type="text/javascript">var i = 0; function time(){ document.getElementById(\"time\").innerHTML = i; i--; if (i < 0) location.href = \"/cgi-bin/modules/i2c_hd44780/index.cgi\"; }
+echo "<!DOCTYPE html>"
+echo "<title>12c-LCD monitor (bonus clock and themperature)</title>"
+echo "<table align='center' border='0'><tr><td>"
+if [ -f /www/menu.html ]; then
+    cat /www/menu.html
+fi
+echo "</td></tr></table>"
+
+echo "<script type='text/javascript'>
+function updateTemperature() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'get_temp.cgi', true);
+    xhr.onload = function() {
+        if (xhr.status === 200 && xhr.responseText.trim()) {
+            var data = xhr.responseText.trim().split('|');
+            for (var i = 0; i < data.length; i++) {
+                var el = document.getElementById('t' + (i + 1));
+                if (el) { el.innerHTML = data[i]; }
+            }
+        }
+    };
+    xhr.send();
+}
+
+function startLiveUpdate() {
+    setInterval(updateTemperature, 3000);
+}
+</script>"
+#____________________________________________________________
+
+#_______________ time-javascript ____________________________
+if [ "$1" = "save_setup" ]; then
+echo "<table align='center' border='0'><tr><td>
+<b><span hidden id='time'></span></b>
+<script type='text/javascript'>var i = 0; function time(){ document.getElementById('time').innerHTML = i; i--; if (i < 0) location.href = '/cgi-bin/modules/i2c_hd44780/index.cgi'; }
 time(); setInterval(time, 500); </script>
 </td></tr></table>"
 fi
 #____________________________________________________________
 
-echo "
-<body bgcolor="#f0f0f0">
+echo "<body bgcolor='#f0f0f0'>
 <style>
   .b1 {
-font-size: 15pt;
-text-align: center;
-padding: 20px 40px;
-margin-left: 1px;
-cursor: pointer;
-border-radius:inherit;
-}
-</style><table align="center" border=0 width=>"; flconf="i2c_HD44780"; f=$(uci get $flconf.@display[0].read_file); kollw_str=$(sed -n '$=' /tmp/$f)
-if [ "`uci get $flconf.@displ_tip[0].on_ds18`" == "0" ]; then
-echo "<tr>read file<td align="center"><textarea name="00" rows="$kollw_str" cols="">"; cat /tmp/$f; echo "</textarea></td></tr>"
-elif [ "`uci get $flconf.@displ_tip[0].on_ds18`" == "1" ]; then
-echo read gpio-sensor ds18b20
-echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '1p' /tmp/nick
-echo "</span></span></span></td>"
-echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '1p' /tmp/d_s
-echo "</span></span></span></td></tr>"
-echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '2p' /tmp/nick
-echo "</span></span></span></td>"
-echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '2p' /tmp/d_s
-echo "</span></span></span></td></tr>"
-echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '3p' /tmp/nick
-echo "</span></span></span></td>"
-echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '3p' /tmp/d_s
-echo "</span></span></span></td></tr>"
-echo "<tr><td style='text-align: center; '><span style='color:#383838;'><span style='font-size: 30px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '4p' /tmp/nick
-echo "</span></span></span></td>"
-echo "<td style='text-align: center; '><span style='color:#66cc00;'><span style='font-size: 60px;'><span style='font-family: verdana, geneva, sans-serif; '>"
-sed -n '4p' /tmp/d_s
-echo "</span></span></span></td></tr>"
-elif [ "`uci get $flconf.@displ_tip[0].on_ds18`" == "2" ]; then
-echo read usb-data sensor ds18b20
-echo "<tr><td align="center">"; sed -n '1,8p' /tmp/t_h; echo "</td></tr>"
+    font-size: 15pt;
+    text-align: center;
+    padding: 20px 40px;
+    margin-left: 1px;
+    cursor: pointer;
+    border-radius:inherit;
+  }
+</style>
+<table align='center' border='0'>"; 
+
+flconf="i2c_HD44780"
+f=$(uci -q get $flconf.@display[0].read_file)
+kollw_str=$(sed -n '$=' /tmp/$f 2>/dev/null)
+on_ds18_val=$(uci -q get $flconf.@displ_tip[0].on_ds18)
+
+if [ "$on_ds18_val" = "0" ]; then
+    echo "<tr><td>read file</td><td align='center'><textarea name='00' rows='$kollw_str' cols=''>"
+    if [ -f "/tmp/$f" ]; then cat "/tmp/$f"; fi
+    echo "</textarea></td></tr>"
+
+elif [ "$on_ds18_val" = "1" ]; then
+    echo "<tr><td colspan='2' align='center'><b>read gpio-sensor ds18b20</b></td></tr>"
+    
+    # Датчик 1 (Додано id='t1')
+    echo "<tr><td style='text-align: center;'><span style='color:#383838; font-size: 30px; font-family: verdana, geneva, sans-serif;'>"
+    sed -n '1p' /tmp/nick 2>/dev/null
+    echo "</span></td>"
+    echo "<td style='text-align: center;'><span style='color:#66cc00; font-size: 60px; font-family: verdana, geneva, sans-serif;' id='t1'>"
+    sed -n '1p' /tmp/d_s 2>/dev/null
+    echo "</span></td></tr>"
+    
+    # Датчик 2 (Додано id='t2')
+    echo "<tr><td style='text-align: center;'><span style='color:#383838; font-size: 30px; font-family: verdana, geneva, sans-serif;'>"
+    sed -n '2p' /tmp/nick 2>/dev/null
+    echo "</span></td>"
+    echo "<td style='text-align: center;'><span style='color:#66cc00; font-size: 60px; font-family: verdana, geneva, sans-serif;' id='t2'>"
+    sed -n '2p' /tmp/d_s 2>/dev/null
+    echo "</span></td></tr>"
+    
+    # Датчик 3 (Додано id='t3')
+    echo "<tr><td style='text-align: center;'><span style='color:#383838; font-size: 30px; font-family: verdana, geneva, sans-serif;'>"
+    sed -n '3p' /tmp/nick 2>/dev/null
+    echo "</span></td>"
+    echo "<td style='text-align: center;'><span style='color:#66cc00; font-size: 60px; font-family: verdana, geneva, sans-serif;' id='t3'>"
+    sed -n '3p' /tmp/d_s 2>/dev/null
+    echo "</span></td></tr>"
+    
+    # Датчик 4 (Додано id='t4')
+    echo "<tr><td style='text-align: center;'><span style='color:#383838; font-size: 30px; font-family: verdana, geneva, sans-serif;'>"
+    sed -n '4p' /tmp/nick 2>/dev/null
+    echo "</span></td>"
+    echo "<td style='text-align: center;'><span style='color:#66cc00; font-size: 60px; font-family: verdana, geneva, sans-serif;' id='t4'>"
+    sed -n '4p' /tmp/d_s 2>/dev/null
+    echo "</span></td></tr>"
+
+elif [ "$on_ds18_val" = "2" ]; then
+    echo "<tr><td align='center'><b>read usb-data sensor ds18b20</b></td></tr>"
+    echo "<tr><td align='center' id='t1'><pre>"
+    sed -n '1,8p' /tmp/t_h 2>/dev/null
+    echo "</pre></td></tr>"
 fi
-echo "</table><table align="center" border=0 width=><tr><td><a href=/cgi-bin/modules/i2c_hd44780/Setup.cgi><input title="Желаете_зайти_в_установки ???" class="b1" type=submit value="SETUP_i2c_hd44780" name=></a></td></tr><br></table>"
-echo "<table align="center" border=0 width=><tr><td><b>"
-cat /tmp/Err_i2c_hd44780.log &> /dev/null
-if [ $? = 0 ]; then
-cat /tmp/Err_i2c_hd44780.log
+
+echo "</table>"
+echo "<table align='center' border='0'><tr><td><a href='/cgi-bin/modules/i2c_hd44780/Setup.cgi'><input title='Желаете_зайти_в_установки ???' class='b1' type='submit' value='SETUP_i2c_hd44780'></a></td></tr><br></table>"
+
+echo "<table align='center' border='0'><tr><td><b>"
+if [ -f /tmp/Err_i2c_hd44780.log ]; then
+    cat /tmp/Err_i2c_hd44780.log
 fi
 echo "</b></td></tr><br><br><br></table>"
-pidof i2c_HD44780 &> /dev/null
-if [ $? = 1 ]; then
-:
-else
-echo "<meta http-equiv="refresh" content="10">"
+
+# Перевірка запуску демона для активації фонового AJAX оновлення
+if pidof i2c_HD44780 >/dev/null 2>&1; then
+    echo "<script type='text/javascript'>startLiveUpdate();</script>"
 fi
+echo "</body></html>"
 
