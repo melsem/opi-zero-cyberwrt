@@ -1,25 +1,49 @@
 #!/bin/sh
+# --- КОНСТАНТИ ТА ПОЧАТКОВЕ СКИДАННЯ ---
+TTESTT="/var/zawis.gp"
 
-ttestt=$'/var/zawis.gp'
-echo "zwser 1" > $ttestt
+echo "zwser 1" > "$TTESTT"
+
+# --- ГОЛОВНИЙ ЦИКЛ МОНІТОРИНГУ ---
 while true; do
-mrd=$(grep zwser $ttestt | awk '{print $2}')
-if [ "10" == "$mrd" ]; then
-osb=2
-while [ "1" -ne  "$osb" ]; do
-/etc/init.d/ds18b20_init stop
-sleep 1s
-pidof ds18b20 > /dev/null
-if [ $? = 1 ]; then	# 
-/etc/init.d/ds18b20_init start
-osb=1
-sleep 10s
-fi
+    # Швидке читання значення без grep та awk
+    read -r label mrd < "$TTESTT" 2>/dev/null
+    
+    # Захист на випадок, якщо файл виявився порожнім
+    [ -z "$mrd" ] && mrd=1
+
+    if [ "$mrd" = "10" ]; then
+        osb=2
+        # Спроба перезапуску з лічильником аварійного виходу (max 5 спроб)
+        retry_count=0
+        
+        while [ "1" != "$osb" ] && [ "$retry_count" -lt 5 ]; do
+            /etc/init.d/ds18b20_init stop 2>/dev/null
+            sleep 1
+            
+            # Перевіряємо, чи процес реально закрився
+            if ! pidof ds18b20 > /dev/null; then
+                /etc/init.d/ds18b20_init start 2>/dev/null
+                osb=1
+                sleep 10
+            else
+                # Якщо процес «зомбі» або завис, пробуємо вбити його примусово
+                killall -9 ds18b20 2>/dev/null
+            fi
+            retry_count=$((retry_count + 1))
+        done
+
+# --- ПРОДОВЖЕННЯ ЦИКЛУ WATCHDOG ---
+        # Після успішного (або вимушеного) перезапуску обнуляємо таймер зависання
+        echo "zwser 1" > "$TTESTT"
+    else
+        # Безпечне збільшення лічильника
+        mrd=$((mrd + 1))
+        echo "zwser $mrd" > "$TTESTT"
+    fi
+    
+    # Інтервал перевірки основного скрипта
+    sleep 1
 done
-echo "zwser 1" > $ttestt
-else
-: $((mrd = $mrd + 1))
-echo "zwser" $mrd > $ttestt
-fi
-sleep 1s
-done
+
+

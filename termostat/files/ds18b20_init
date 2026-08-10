@@ -6,17 +6,10 @@ START=99
 
 
 start() {
+CNF_REAL="ds18b20"
+w1_gpio=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].gpio1wr")
+insmod w1-gpio-custom bus0=0,$w1_gpio,0 2>/dev/null
 
-ps > /tmp/1.ds18
-sleep 1
-grep -q ds18b20 /tmp/1.ds18
-if [ $? -eq 1 ]; then
- dserr18=$(awk -F" " '/dserr18/ {print $1}' /tmp/1.ds18)
- ds18b20=$(awk -F" " '/ds18b20/ {print $1}' /tmp/1.ds18)
- kill $dserr18 &>/dev/null
- kill $ds18b20 &>/dev/null
-fi
- rm /tmp/1.ds18
  cp -f /usr/bin/tstatgpio.html /tmp/
  ds18b20 &
  dserr18 &
@@ -24,33 +17,41 @@ fi
 }
 
 stop() {
+CNF_REAL="ds18b20"
+killall dserr18 2>/dev/null
+killall ds18b20 2>/dev/null
 
+nomer_ds=0
+while [ "$nomer_ds" -ne "10" ]; do
+    # Зчитуємо конфігурацію з /tmp за допомогою uci
+    out_power=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].pwout")
+    oInvert=$(uci -q get "${CNF_REAL}.@Gpio1Wr.oInvert")
+    # 1. Перевірка на пусте значення
+    if [ -z "$out_power" ]; then
+        : $((nomer_ds = $nomer_ds + 1))
+        continue
+    fi
+    if [ ! -d "/sys/class/gpio/gpio${out_power}" ]; then
+        rm /tmp/log/narodmon.Dev"$nomer_ds" &> /dev/null
+        : $((nomer_ds = $nomer_ds + 1))
+        continue
+    fi
+    # Керування GPIO залежно від інверсії
+    if [ "$oInvert" = "0" ]; then
+        echo 0 > "/sys/class/gpio/gpio${out_power}/value"
+    else
+        echo 1 > "/sys/class/gpio/gpio${out_power}/value"
+    fi
+    rm /tmp/log/narodmon.Dev"$nomer_ds" &> /dev/null
+    # Інкремент лічильника для успішного кроку
+    : $((nomer_ds = $nomer_ds + 1))
+done
 	rm /tmp/zawis.gp &> /dev/null
-	rm /etc/config/.ds18* &> /dev/null
-
 	rm /tmp/d_x &> /dev/null
 	rm /tmp/shrzs &> /dev/null
 	rm /tmp/tstatgpio.html &> /dev/null
-	rm /tmp/ds18b20 &> /dev/null
 	rm /tmp/gpiotemp &> /dev/null
 	rm /tmp/thermgpio &> /dev/null
 	rm /tmp/log/narodgpiomon.log2 &> /dev/null
 	rm /tmp/log/narodgpiomon_all &> /dev/null
-	rm /var/zawis.gp &> /dev/null
-
-				trmst=0
-			while [ "$trmst" -ne  "10" ]; do
-				ertf=$(sed -e '/./{H;$!d;}' -e 'x;/ds18b20_s'$trmst'/!d;/pwout/!d' /etc/config/ds18b20 | sed -n '/pwout/p' | awk '{print $3}'); ertf1=$(echo "${ertf} = ${#ertf}" | awk '{print $3}'); ertf12=$(echo $(( ${ertf1} - 2 )))
-				gp_conf=$(echo ${ertf:1:$ertf12})
-				echo 0 > /sys/class/gpio/gpio"$gp_conf"/value
-				rm /tmp/log/narodmon.Dev"$trmst" &> /dev/null
-				: $((trmst = $trmst + 1))
-			done
-ps > /tmp/1.ds18
-dserr18=$(awk -F" " '/dserr18/ {print $1}' /tmp/1.ds18)
-ds18b20=$(awk -F" " '/ds18b20/ {print $1}' /tmp/1.ds18)
-kill $dserr18 &>/dev/null
-kill $ds18b20 &>/dev/null
-rm /tmp/1.ds18
 }
-

@@ -68,7 +68,9 @@ for pair in $POST_DATA; do
 done
 IFS=$OLD_IFS
 
-# 4. Блок END (вивід кінця HTML сторінки)
-# Примітка: оригінальний скрипт обірвався на тегу <b... , виправляємо на красиве завершення форми
-echo "<br><br><b>Налаштування збережено успішно.</b>"
-
+echo "<br><br><br>
+<table align=center border=0 size=18 width=>
+<tr><td align=center bgcolor=#8891f1><b><a href=/cgi-bin/modules/termostatGpio/Sset.cgi>In settings</a></b></td></tr>
+<tr><td></td></tr><tr>
+<td align=center bgcolor=#90f1f1><b><a href=/cgi-bin/modules/termostatGpio/index.cgi>Exit settings</a></b></td></tr>
+</table>"
