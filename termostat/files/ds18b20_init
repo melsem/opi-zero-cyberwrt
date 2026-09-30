@@ -18,8 +18,8 @@ insmod w1-gpio-custom bus0=0,$w1_gpio,0 2>/dev/null
 
 stop() {
 CNF_REAL="ds18b20"
-killall dserr18 2>/dev/null
-killall ds18b20 2>/dev/null
+killall -9 dserr18 2>/dev/null
+killall -9 ds18b20 2>/dev/null
 
 nomer_ds=0
 while [ "$nomer_ds" -ne "10" ]; do
@@ -47,6 +47,7 @@ while [ "$nomer_ds" -ne "10" ]; do
     : $((nomer_ds = $nomer_ds + 1))
 done
 	rm /tmp/zawis.gp &> /dev/null
+	rm /tmp/zawis.tmp &> /dev/null
 	rm /tmp/d_x &> /dev/null
 	rm /tmp/shrzs &> /dev/null
 	rm /tmp/tstatgpio.html &> /dev/null

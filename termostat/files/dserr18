@@ -1,49 +1,65 @@
 #!/bin/sh
 # --- КОНСТАНТИ ТА ПОЧАТКОВЕ СКИДАННЯ ---
-TTESTT="/var/zawis.gp"
+TTESTT="/tmp/zawis.gp"
+TMP_FILE="/tmp/zawis.tmp"
 
-echo "zwser 1" > "$TTESTT"
+# Атомарний запис на старті
+echo "zwser 1" > "$TMP_FILE" && mv "$TMP_FILE" "$TTESTT"
 
 # --- ГОЛОВНИЙ ЦИКЛ МОНІТОРИНГУ ---
 while true; do
-    # Швидке читання значення без grep та awk
     read -r label mrd < "$TTESTT" 2>/dev/null
-    
-    # Захист на випадок, якщо файл виявився порожнім
     [ -z "$mrd" ] && mrd=1
 
     if [ "$mrd" = "10" ]; then
         osb=2
-        # Спроба перезапуску з лічильником аварійного виходу (max 5 спроб)
         retry_count=0
         
         while [ "1" != "$osb" ] && [ "$retry_count" -lt 5 ]; do
-            /etc/init.d/ds18b20_init stop 2>/dev/null
+            /etc/init.d/ds18b20_init stop > /dev/null 2>&1
             sleep 1
             
-            # Перевіряємо, чи процес реально закрився
             if ! pidof ds18b20 > /dev/null; then
-                /etc/init.d/ds18b20_init start 2>/dev/null
+                logger -t dserr18 "ds18b20 stopped. Restarting service, retry #$retry_count"
+                /etc/init.d/ds18b20_init start > /dev/null 2>&1
                 osb=1
                 sleep 10
             else
-                # Якщо процес «зомбі» або завис, пробуємо вбити його примусово
-                killall -9 ds18b20 2>/dev/null
+                logger -t dserr18 "ds18b20 HANGED. Sending SIGKILL -9, retry #$retry_count"
+                killall -9 ds18b20 > /dev/null 2>&1
+                sleep 1
             fi
             retry_count=$((retry_count + 1))
         done
 
-# --- ПРОДОВЖЕННЯ ЦИКЛУ WATCHDOG ---
-        # Після успішного (або вимушеного) перезапуску обнуляємо таймер зависання
-        echo "zwser 1" > "$TTESTT"
+        # --- ПЕРЕВІРКА ЗАВИСАННЯ ШИНИ ЯДРА ---
+        if [ "$osb" != "1" ]; then
+            logger -t dserr18 "CRITICAL: killall -9 failed. Resetting kernel module..."
+            /etc/init.d/ds18b20_init stop > /dev/null 2>&1
+            killall -9 ds18b20 > /dev/null 2>&1
+            sleep 1
+            
+            # Вивантажуємо завислий драйвер шини
+            rmmod w1-gpio-custom > /dev/null 2>&1
+            sleep 1
+            
+            # ЗАХИСТ ВІД ДУБЛЮВАННЯ: Гасимо поточний моніторинг, 
+            # оскільки ds18b20_init start зараз запустить його заново
+            logger -t dserr18 "Reloading hardware. Respawning fresh watchdog instance..."
+            
+            # Запускаємо чистий старт (він підніме драйвер, html, бінарник і НОВИЙ dserr18)
+            /etc/init.d/ds18b20_init start > /dev/null 2>&1
+            
+            # М'яко завершуємо цей (старий) процес, щоб звільнити пам'ять
+            exit 0
+        fi
+
+        echo "zwser 1" > "$TMP_FILE" && mv "$TMP_FILE" "$TTESTT"
     else
-        # Безпечне збільшення лічильника
         mrd=$((mrd + 1))
-        echo "zwser $mrd" > "$TTESTT"
+        echo "zwser $mrd" > "$TMP_FILE" && mv "$TMP_FILE" "$TTESTT"
     fi
     
-    # Інтервал перевірки основного скрипта
     sleep 1
 done
-
 

@@ -1,10 +1,13 @@
 #!/bin/sh
+
 CNF_REAL="ds18b20"
 VIZUAL_HTML="/tmp/tstatgpio.html"
 WWW_HTML="/www/tstatgpio.html"
-VAR_HRZS="/var/hrzs"
+VAR_HRZS="/tmp/hrzs"
 CONF_RAB="/tmp/gpiotemp"
-TTESTT="/var/zawis.gp"
+TTESTT="/tmp/zawis.gp"
+TMP_FILE="/tmp/zawis.tmp"
+DIR_SKRIPT="/usr/sbin/"
 
 outOff() {
     local ds_num=$1
@@ -12,9 +15,9 @@ outOff() {
     local oInvert=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].oInvert")
     [ -z "$out_power" ] && return
     if [ "$oInvert" = "0" ]; then
-        echo 0 > "/sys/class/gpio/gpio${out_power}/value"
+        echo 0 > "/sys/class/gpio/gpio${out_power}/value" 2>/dev/null
     else
-        echo 1 > "/sys/class/gpio/gpio${out_power}/value"
+        echo 1 > "/sys/class/gpio/gpio${out_power}/value" 2>/dev/null
     fi
 }
 
@@ -24,51 +27,54 @@ outOn() {
     local oInvert=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].oInvert")
     [ -z "$out_power" ] && return
     if [ "$oInvert" = "0" ]; then
-        echo 1 > "/sys/class/gpio/gpio${out_power}/value"
+        echo 1 > "/sys/class/gpio/gpio${out_power}/value" 2>/dev/null
     else
-        echo 0 > "/sys/class/gpio/gpio${out_power}/value"
+        echo 0 > "/sys/class/gpio/gpio${out_power}/value" 2>/dev/null
     fi
 }
 
 testAllarm() {
-    local ds_num=$1 tips_p1=$2 conf_Totkl1=$3 t_alarm=$4 t_stat=$5 term_on=$6
-    local Tsn_sor=$(awk -v t="$sen_sor" 'BEGIN {print t*1000}')
+    local ds_num=$1 tips_p1=$2 conf_Totkl1=$3 t_alarm=$4 cur_temp=$5
     
-    if [ "$tips_p1" = "$term_on" ]; then
-        outOff "$ds_num"
-    else
-        local hrzs=$(awk -v ds="ds$ds_num" '$1==ds {print $2}' "$VAR_HRZS")
-        if [ "$tips_p1" = "$t_stat" ]; then
-            if [ "$hrzs" = "1" ]; then    
-                if [ "$Tsn_sor" -le "$conf_Totkl1" ]; then
-                    outOn "$ds_num"
-                else
-                    sed -i "s/ds${ds_num} 1/ds${ds_num} 0/" "$VAR_HRZS"
-                    outOff "$ds_num"
-                fi
-            else
-                if [ "$Tsn_sor" -le "$t_alarm" ]; then
-                    outOn "$ds_num"
-                    sed -i "s/ds${ds_num} 0/ds${ds_num} 1/" "$VAR_HRZS"
-                fi
-            fi
-        else
-            if [ "$hrzs" != "0" ] && [ "$hrzs" != "1" ]; then
+    # Захист від пустих значень
+    [ -z "$cur_temp" ] || [ -z "$conf_Totkl1" ] || [ -z "$t_alarm" ] && return
+    
+    # Переведення поточної температури в ціле число для безпечного порівняння в POSIX sh
+    local Tsn_sor=$(awk -v t="$cur_temp" 'BEGIN {print int(t*1000)}')
+    
+    # Зчитуємо поточний стан (1 - реле працює, 0 - реле відпочиває)
+    local hrzs=$(awk -v ds="ds$ds_num" '$1==ds {print $2}' "$VAR_HRZS")
+    [ -z "$hrzs" ] && hrzs="0"
+
+    if [ "$tips_p1" = "termostat" ]; then
+        # 🟢 РЕЖИМ: Обігрів (t_alarm = уставка - гістерезис)
+        if [ "$hrzs" = "0" ]; then
+            # Реле вимкнене. Чекаємо, поки впаде до нижньої межі (t_alarm), щоб увімкнути
+            if [ "$Tsn_sor" -le "$t_alarm" ]; then
+                outOn "$ds_num"
                 sed -i "s/ds${ds_num} 0/ds${ds_num} 1/" "$VAR_HRZS"
             fi
-            hrzs=$(awk -v ds="ds$ds_num" '$1==ds {print $2}' "$VAR_HRZS")
-            if [ "$hrzs" = "1" ]; then            
-                if [ "$Tsn_sor" -ge "$conf_Totkl1" ]; then
-                    outOn "$ds_num"
-                else
-                    outOff "$ds_num"
-                    sed -i "s/ds${ds_num} 1/ds${ds_num} 0/" "$VAR_HRZS"
-                fi
-            else
-                if [ "$Tsn_sor" -ge "$t_alarm" ]; then
-                    outOn "$ds_num"
-                    sed -i "s/ds${ds_num} 0/ds${ds_num} 1/" "$VAR_HRZS"
-                fi
+        else
+            # Реле увімкнене. Чекаємо, поки прогріється до чистої уставки (conf_Totkl1), щоб вимкнути
+            if [ "$Tsn_sor" -ge "$conf_Totkl1" ]; then
+                outOff "$ds_num"
+                sed -i "s/ds${ds_num} 1/ds${ds_num} 0/" "$VAR_HRZS"
+            fi
+        fi
+        
+    elif [ "$tips_p1" = "kondicioner" ] || [ "$tips_p1" = "send" ]; then
+        # 🔵 РЕЖИМ: Кондиціонер (t_alarm = уставка + гістерезис)
+        if [ "$hrzs" = "0" ]; then
+            # Реле вимкнене. Кімната гріється. Чекаємо, поки підніметься до верхньої межі (t_alarm), щоб увімкнути
+            if [ "$Tsn_sor" -ge "$t_alarm" ]; then
+                outOn "$ds_num"
+                sed -i "s/ds${ds_num} 0/ds${ds_num} 1/" "$VAR_HRZS"
+            fi
+        else
+            # Реле увімкнене. Кондиціонер охолоджує. Чекаємо, поки впаде до чистої уставки (conf_Totkl1), щоб вимкнути
+            if [ "$Tsn_sor" -le "$conf_Totkl1" ]; then
+                outOff "$ds_num"
+                sed -i "s/ds${ds_num} 1/ds${ds_num} 0/" "$VAR_HRZS"
             fi
         fi
     fi
@@ -77,7 +83,7 @@ testAllarm() {
 kollwo=$(find /sys/devices/w1_bus_master1 -maxdepth 1 -name "28-*" -o -name "10-*" 2>/dev/null | wc -l)
 if [ "$kollwo" = "0" ]; then exit 0; fi
 
-enabl=$(uci -q get ds18b20.@Gpio1Wr[0].enabled0)
+enabl=$(uci -q get ${CNF_REAL}.@Gpio1Wr[0].enabled0)
 if [ "$enabl" != "1" ]; then exit 0; fi
 
 init18b20
@@ -85,12 +91,14 @@ ln -sf "$VIZUAL_HTML" "$WWW_HTML"
 sdf=0
 
 true > "$VAR_HRZS"
-for i in 0 1 2 3 4 5 6 7 8 9; do echo "ds$i 1" >> "$VAR_HRZS"; done
+for i in 0 1 2 3 4 5 6 7 8 9; do echo "ds$i 0" >> "$VAR_HRZS"; done
 
 while true; do
     rm -f /tmp/thermgpio "$CONF_RAB" 2>/dev/null
+    pu_Skryp=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].pu_Skryp")
+    cmd=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].imya_skript")
     
-    kollwo=$(uci -q show ds18b20 | grep -c "id_sensor=")
+    kollwo=$(uci -q show ${CNF_REAL} | grep -c "id_sensor=")
     nomer_ds=0
     perem=16
     
@@ -99,53 +107,69 @@ while true; do
         true > "$CONF_RAB"
         out_power=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].pwout")
         
-        nedel=$(date +%u)
-        imDenNed=""
-        if [ "$nedel" = "2" ]; then imDenNed="Tue_"
-        elif [ "$nedel" = "3" ]; then imDenNed="Wed_"
-        elif [ "$nedel" = "4" ]; then imDenNed="Thu_"
-        elif [ "$nedel" = "5" ]; then imDenNed="Fri_"
-        elif [ "$nedel" = "6" ]; then imDenNed="Sat_"
-        elif [ "$nedel" = "7" ]; then imDenNed="Sun_"
-        fi
-        
-        hourTime1=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}t1ime")
-        minuteTime1=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}m1ime")
-        hourTime2=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}t2ime")
-        minuteTime2=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}m2ime")
-        hourTime3=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}t3ime")
-        minuteTime3=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}m3ime")
-        
+        case $(date +%u) in
+            1) imDenNed=""     ;;
+            2) imDenNed="Tue_" ;;
+            3) imDenNed="Wed_" ;;
+            4) imDenNed="Thu_" ;;
+            5) imDenNed="Fri_" ;;
+            6) imDenNed="Sat_" ;;
+            7) imDenNed="Sun_" ;;
+            *) imDenNed=""     ;;
+        esac
+
+        h1=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}t1ime")
+        m1=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}m1ime")
+        h2=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}t2ime")
+        m2=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}m2ime")
+        h3=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}t3ime")
+        m3=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}m3ime")
+
+        eval $(awk -v h1="$h1" -v m1="$m1" -v h2="$h2" -v m2="$m2" -v h3="$h3" -v m3="$m3" '
+            BEGIN {
+                printf "t1=%02d%02d; ", h1, m1;
+                printf "t2=%02d%02d; ", h2, m2;
+                printf "t3=%02d%02d; ", h3, m3;
+            }
+        ')
+
         dadatt=$(date +%H%M)
-        if [ "$dadatt" -ge "${hourTime3}${minuteTime3}" ] 2>/dev/null; then
+        
+        if [ "$dadatt" -ge "$t3" ]; then
             gradusOff=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}gra3dus")
-        elif [ "$dadatt" -ge "${hourTime2}${minuteTime2}" ] 2>/dev/null; then
+        elif [ "$dadatt" -ge "$t2" ]; then
             gradusOff=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}gra2dus")
-        elif [ "$dadatt" -ge "${hourTime1}${minuteTime1}" ] 2>/dev/null; then
+        elif [ "$dadatt" -ge "$t1" ]; then
             gradusOff=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}gradus")
         else
             gradusOff=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].${imDenNed}gra0dus")
         fi
 
         tips_p1=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].tipsensr")
-        term_on="termometr" ; t_stat="termostat" ; s_off="send"
         
-        if [ "$tips_p1" = "$term_on" ]; then
+        if [ "$tips_p1" = "termometr" ]; then
             outOff "$nomer_ds"
+            conf_Totkl1="" ; t_alarm=""
         else
             sdsd_sr=$(cat "/sys/class/gpio/gpio${out_power}/value" 2>/dev/null)
-            if [ -n "$sdsd_sr" ]; then
+            if [ -n "$sdsd_sr" ] || [ -d "/sys/class/gpio/gpio${out_power}" ]; then
                 Hist=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].hister")
-                conf_Hist=$(awk -v h="$Hist" 'BEGIN {print h*1000}')
-                conf_Totkl1=$(awk -v g="$gradusOff" 'BEGIN {print g*1000}')
-                if [ "$tips_p1" = "$t_stat" ]; then
+                [ -z "$Hist" ] && Hist="0"
+                [ -z "$gradusOff" ] && gradusOff="20"
+                
+                conf_Hist=$(awk -v h="$Hist" 'BEGIN {print int(h*1000)}')
+                conf_Totkl1=$(awk -v g="$gradusOff" 'BEGIN {print int(g*1000)}')
+                
+                if [ "$tips_p1" = "termostat" ]; then
                     t_alarm=$((conf_Totkl1 - conf_Hist))
-                else
+                elif [ "$tips_p1" = "termostat" ]; then
                     t_alarm=$((conf_Totkl1 + conf_Hist))
                 fi
             else
-                uci set "ds18b20.@ds18b20_s${nomer_ds}[0].tipsensr=termometr"
-                uci commit ds18b20
+                uci set "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].tipsensr=termometr"
+                uci commit ${CNF_REAL}
+                tips_p1="termometr"
+                outOff "$nomer_ds"
             fi
         fi
         
@@ -157,14 +181,13 @@ while true; do
         echo "sn_sor $ten_sr" >> "$CONF_RAB"
         sen_sor=$ten_sr
         
-        if [ -n "$sen_sor" ]; then
-            testAllarm "$nomer_ds" "$tips_p1" "$conf_Totkl1" "$t_alarm" "$t_stat" "$term_on"
-        else
+        if [ -n "$sen_sor" ] && [ "$tips_p1" != "termometr" ]; then
+            testAllarm "$nomer_ds" "$tips_p1" "$conf_Totkl1" "$t_alarm" "$sen_sor"
+        elif [ "$tips_p1" != "termometr" ]; then
             outOff "$nomer_ds"
         fi
         
-        lcd_on=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].pu_Skryp")
-        if [ "$lcd_on" = "1" ]; then echo "t_sn${nomer_ds} ${sen_sor}" >> /tmp/d_x; fi
+        if [ "$pu_Skryp" = "1" ]; then echo "t_sn${nomer_ds} ${sen_sor}" >> /tmp/d_x; fi
         
         D_minuta=$(date +%M)
         Datata=$(date +%b.%d.%Y)
@@ -172,7 +195,7 @@ while true; do
         logns=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].logns")
         
         if [ "$nomer_ds" -lt "$kollwo" ]; then
-            echo "zwser 1" > "$TTESTT"
+            echo "zwser 1" > "$TMP_FILE" && mv "$TMP_FILE" "$TTESTT"
             perem=$((perem + 1))
             sed -i -r "${perem}s,>[^<]*</,>${logns}: ${Datata} ${Dfdd}</," "$VIZUAL_HTML" 2>/dev/null
             perem=$((perem + 1))
@@ -180,19 +203,21 @@ while true; do
         fi
 
         interv=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].times")
-        Filter=""
-        if [ "$interv" = "2" ]; then Filter="00|02|04|06|08|10|12|14|16|18|20|22|24|26|28|30|32|34|36|38|40|42|44|46|48|50|52|54|56|58"
-        elif [ "$interv" = "5" ]; then Filter="00|05|10|15|20|25|30|35|40|45|50|55"
-        elif [ "$interv" = "10" ]; then Filter="00|10|20|30|40|50"
-        elif [ "$interv" = "15" ]; then Filter="00|15|30|45"
-        elif [ "$interv" = "20" ]; then Filter="00|20|40"
-        elif [ "$interv" = "30" ]; then Filter="00|30"
-        elif [ "$interv" = "60" ]; then Filter="00"
-        fi
-        
+
+        case "$interv" in
+            2)  Filter="00|02|04|06|08|10|12|14|16|18|20|22|24|26|28|30|32|34|36|38|40|42|44|46|48|50|52|54|56|58" ;;
+            5)  Filter="00|05|10|15|20|25|30|35|40|45|50|55" ;;
+            10) Filter="00|10|20|30|40|50" ;;
+            15) Filter="00|15|30|45" ;;
+            20) Filter="00|20|40" ;;
+            30) Filter="00|30" ;;
+            60) Filter="00" ;;
+            *)  Filter="" ;;
+        esac
+
         if [ -n "$Filter" ] && echo "$D_minuta" | grep -qE "^(${Filter})$"; then
             if [ "$nomer_ds" = "$sdf" ]; then
-                if [ "$(uci -q get ds18b20.@Gpio1Wr[0].ftp_svr)" = "1" ]; then
+                if [ "$(uci -q get ${CNF_REAL}.@Gpio1Wr[0].ftp_svr)" = "1" ]; then
                     ALL_string=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].folder")
                     if [ -n "$ALL_string" ]; then
                         NacaloFold_Dir1="${ALL_string%/*}/"
@@ -205,23 +230,24 @@ while true; do
                     fi
                 fi
                 
-                mac_addr=$(ifconfig | grep -E "HWaddr|ether" | awk '{print $5 ? $5 : $2}' | head -n 1 | tr -d ':')
+                mac_addr=$(ifconfig 2>/dev/null | grep -E "HWaddr|ether" | awk '{print $5 ? $5 : $2}' | head -n 1 | tr -d ':')
+                [ -z "$mac_addr" ] && mac_addr="000000000000"
                 
-                echo "#${mac_addr}" > "/var/log/narodgpiomon.Dev${nomer_ds}"
-                echo "#${ID_hex}#${sen_sor}" >> "/var/log/narodgpiomon.Dev${nomer_ds}"
-                echo "##" >> "/var/log/narodgpiomon.Dev${nomer_ds}"
+                echo "#${mac_addr}" > "/tmp/log/narodgpiomon.Dev${nomer_ds}"
+                echo "#${ID_hex}#${sen_sor}" >> "/tmp/log/narodgpiomon.Dev${nomer_ds}"
+                echo "##" >> "/tmp/log/narodgpiomon.Dev${nomer_ds}"
                 
-                if uci -q get ds18b20.@ds18b20_s${nomer_ds}[0].enab_nar | grep -q "1"; then
+                if uci -q get ${CNF_REAL}.@ds18b20_s${nomer_ds}[0].enab_nar | grep -q "1"; then
                     if [ "$sdf" = "0" ]; then
-                        nar_all="/var/log/narodgpiomon_all"
+                        nar_all="/tmp/log/narodgpiomon_all"
                         echo "#${mac_addr}" > "$nar_all"
                         
                         stst=0
                         while [ "$stst" -lt "$kollwo" ]; do
                             if [ "$(uci -q get "${CNF_REAL}.@ds18b20_s${stst}[0].enab_nar")" = "1" ]; then
                                 s_id=$(uci -q get "${CNF_REAL}.@ds18b20_s${stst}[0].id_sensor")
-                                if [ -f "/var/log/narodgpiomon.Dev${stst}" ]; then
-                                    grep "$s_id" "/var/log/narodgpiomon.Dev${stst}" >> "$nar_all"
+                                if [ -f "/tmp/log/narodgpiomon.Dev${stst}" ]; then
+                                    grep "$s_id" "/tmp/log/narodgpiomon.Dev${stst}" >> "$nar_all"
                                 fi
                             fi
                             stst=$((stst + 1))
@@ -232,7 +258,7 @@ while true; do
                         serv_port=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].serv_port")
                         
                         if [ -n "$serv_down" ] && [ -n "$serv_port" ]; then
-                            log_nard="/var/log/narodgpiomon.log"
+                            log_nard="/tmp/log/narodgpiomon.log"
                             cat "$nar_all" | nc "$serv_down" "$serv_port" > "$log_nard" 2>/dev/null
                             
                             tssst_cycl=0
@@ -252,13 +278,12 @@ while true; do
         nomer_ds=$((nomer_ds + 1))
     done
     
-    lcd_on=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].pu_Skryp")
-    cmd=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].imya_skript")
-    if [ "$lcd_on" = "1" ] && [ -f "/usr/sbin/$cmd" ]; then
-        sh "/usr/sbin/$cmd"
+    if [ "$pu_Skryp" = "1" ] && [ -f "${DIR_SKRIPT}$cmd" ]; then
+        sh "${DIR_SKRIPT}$cmd"
     fi
     
     sleep 2
     rm -f /tmp/d_x 2>/dev/null
 done
 exit 0
+
