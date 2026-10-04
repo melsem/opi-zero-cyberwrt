@@ -3,56 +3,63 @@
 
 START=99
 
-
-
 start() {
 CNF_REAL="ds18b20"
-w1_gpio=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].gpio1wr")
-insmod w1-gpio-custom bus0=0,$w1_gpio,0 2>/dev/null
+gpio1wr=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].gpio1wr")
+insmod w1-gpio-custom bus0=0,$gpio1wr,0 2>/dev/null
+    cp -f /usr/bin/tstatgpio.html /tmp/
 
- cp -f /usr/bin/tstatgpio.html /tmp/
- ds18b20 &
- dserr18 &
-
+    if [ "$1" = "1" ]; then
+        ds18b20 &
+    else
+        ds18b20 &
+        dserr18 &
+    fi
 }
 
 stop() {
-CNF_REAL="ds18b20"
-killall -9 dserr18 2>/dev/null
-killall -9 ds18b20 2>/dev/null
-
-nomer_ds=0
-while [ "$nomer_ds" -ne "10" ]; do
-    # Зчитуємо конфігурацію з /tmp за допомогою uci
-    out_power=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].pwout")
-    oInvert=$(uci -q get "${CNF_REAL}.@Gpio1Wr.oInvert")
-    # 1. Перевірка на пусте значення
-    if [ -z "$out_power" ]; then
-        : $((nomer_ds = $nomer_ds + 1))
-        continue
-    fi
-    if [ ! -d "/sys/class/gpio/gpio${out_power}" ]; then
-        rm /tmp/log/narodmon.Dev"$nomer_ds" &> /dev/null
-        : $((nomer_ds = $nomer_ds + 1))
-        continue
-    fi
-    # Керування GPIO залежно від інверсії
-    if [ "$oInvert" = "0" ]; then
-        echo 0 > "/sys/class/gpio/gpio${out_power}/value"
+    CNF_REAL="ds18b20"
+    if [ "$1" = "1" ]; then
+        killall -9 ds18b20 > /dev/null 2>&1
     else
-        echo 1 > "/sys/class/gpio/gpio${out_power}/value"
+        killall -9 dserr18 2>/dev/null
+        killall -9 ds18b20 2>/dev/null
     fi
-    rm /tmp/log/narodmon.Dev"$nomer_ds" &> /dev/null
+
+    nomer_ds=0
+    while [ "$nomer_ds" -ne "10" ]; do
+    # Зчитуємо конфігурацію з /tmp за допомогою uci
+        out_power=$(uci -q get "${CNF_REAL}.@ds18b20_s${nomer_ds}[0].pwout")
+        oInvert=$(uci -q get "${CNF_REAL}.@Gpio1Wr[0].oInvert")
+    # 1. Перевірка на пусте значення
+        if [ -z "$out_power" ]; then
+            nomer_ds=$((nomer_ds + 1))
+            continue
+        fi
+        if [ ! -d "/sys/class/gpio/gpio${out_power}" ]; then
+            rm /tmp/log/narodmon.Dev"$nomer_ds" > /dev/null 2>&1
+            nomer_ds=$((nomer_ds + 1))
+            continue
+        fi
+    # Керування GPIO залежно від інверсії
+        if [ "$oInvert" = "0" ]; then
+            echo 0 > "/sys/class/gpio/gpio${out_power}/value"
+        else
+            echo 1 > "/sys/class/gpio/gpio${out_power}/value"
+        fi
+        rm /tmp/log/narodmon.Dev"$nomer_ds" > /dev/null 2>&1
     # Інкремент лічильника для успішного кроку
-    : $((nomer_ds = $nomer_ds + 1))
-done
-	rm /tmp/zawis.gp &> /dev/null
-	rm /tmp/zawis.tmp &> /dev/null
-	rm /tmp/d_x &> /dev/null
-	rm /tmp/shrzs &> /dev/null
-	rm /tmp/tstatgpio.html &> /dev/null
-	rm /tmp/gpiotemp &> /dev/null
-	rm /tmp/thermgpio &> /dev/null
-	rm /tmp/log/narodgpiomon.log2 &> /dev/null
-	rm /tmp/log/narodgpiomon_all &> /dev/null
+        nomer_ds=$((nomer_ds + 1))
+    done
+    # Стандартне та швидке очищення сміття
+    rm /tmp/zawis.gp > /dev/null 2>&1
+    rm /tmp/zawis.tmp > /dev/null 2>&1
+    rm /tmp/d_x > /dev/null 2>&1
+    rm /tmp/shrzs > /dev/null 2>&1
+    rm /tmp/tstatgpio.html > /dev/null 2>&1
+    rm /tmp/gpiotemp > /dev/null 2>&1
+    rm /tmp/thermgpio > /dev/null 2>&1
+    rm /tmp/log/narodgpiomon.log2 > /dev/null 2>&1
+    rm /tmp/log/narodgpiomon_all > /dev/null 2>&1
 }
+

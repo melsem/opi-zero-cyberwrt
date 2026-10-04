@@ -16,16 +16,16 @@ while true; do
         retry_count=0
         
         while [ "1" != "$osb" ] && [ "$retry_count" -lt 5 ]; do
-            /etc/init.d/ds18b20_init stop > /dev/null 2>&1
+            /etc/init.d/ds18b20_init stop 1 > /dev/null 2>&1
             sleep 1
             
             if ! pidof ds18b20 > /dev/null; then
-                logger -t dserr18 "ds18b20 stopped. Restarting service, retry #$retry_count"
-                /etc/init.d/ds18b20_init start > /dev/null 2>&1
+                logger -t DSERR18 "ds18b20 stopped. Restarting service, retry #$retry_count"
+                /etc/init.d/ds18b20_init start 1 > /dev/null 2>&1
                 osb=1
                 sleep 10
             else
-                logger -t dserr18 "ds18b20 HANGED. Sending SIGKILL -9, retry #$retry_count"
+                logger -t DSERR18 "ds18b20 HANGED. Sending SIGKILL -9, retry #$retry_count"
                 killall -9 ds18b20 > /dev/null 2>&1
                 sleep 1
             fi
@@ -34,23 +34,14 @@ while true; do
 
         # --- ПЕРЕВІРКА ЗАВИСАННЯ ШИНИ ЯДРА ---
         if [ "$osb" != "1" ]; then
-            logger -t dserr18 "CRITICAL: killall -9 failed. Resetting kernel module..."
-            /etc/init.d/ds18b20_init stop > /dev/null 2>&1
-            killall -9 ds18b20 > /dev/null 2>&1
+            logger -t DSERR18 "CRITICAL: Service stop failed. Resetting 1-Wire kernel stack..."
+            /etc/init.d/ds18b20_init stop 1 > /dev/null 2>&1
             sleep 1
             
-            # Вивантажуємо завислий драйвер шини
-            rmmod w1-gpio-custom > /dev/null 2>&1
-            sleep 1
+            logger -t DSERR18 "Hardware W1 stack reloaded. Restarting daemon..."
+            /etc/init.d/ds18b20_init start 1 > /dev/null 2>&1
             
-            # ЗАХИСТ ВІД ДУБЛЮВАННЯ: Гасимо поточний моніторинг, 
-            # оскільки ds18b20_init start зараз запустить його заново
-            logger -t dserr18 "Reloading hardware. Respawning fresh watchdog instance..."
-            
-            # Запускаємо чистий старт (він підніме драйвер, html, бінарник і НОВИЙ dserr18)
-            /etc/init.d/ds18b20_init start > /dev/null 2>&1
-            
-            # М'яко завершуємо цей (старий) процес, щоб звільнити пам'ять
+            # М'яко завершуємо цей процес, щоб уникнути дублювання
             exit 0
         fi
 
