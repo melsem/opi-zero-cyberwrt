@@ -163,12 +163,12 @@ int main(int argc, char *argv[]) {
     char uci_buf[32];
 
     // Зчитуємо UCI. Якщо параметри відсутні — змінні зберігають дефолтні 0x44 та 0
-    get_uci_value("uci -q get tda7313.@tda7313.i2c_adres", uci_buf, sizeof(uci_buf));
+    get_uci_value("uci -q get tda7313.@tda7313[0].i2c_adres", uci_buf, sizeof(uci_buf));
     if (strlen(uci_buf) > 0) {
         i2c_adres = (int)strtol(uci_buf, NULL, 0); 
     }
 
-    get_uci_value("uci -q get tda7313.@tda7313.i2c_dev", uci_buf, sizeof(uci_buf));
+    get_uci_value("uci -q get tda7313.@tda7313[0].i2c_dev", uci_buf, sizeof(uci_buf));
     if (strlen(uci_buf) > 0) {
         i2c_dev = atoi(uci_buf);
     }
