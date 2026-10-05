@@ -6,8 +6,8 @@
 # !!! ЗМІНЕНО: Інтегровано плавний старт (Fade-in) та безшумне перемикання входів
 # Затримка мілісекунд реалізована через швидкий математичний цикл BusyBox
 
-i2c_adres=$(uci get tda7313.@tda7313.i2c_adres)
-i2c_dev=$(uci get tda7313.@tda7313.i2c_dev)
+i2c_adres=$(uci get tda7313.@tda7313[0].i2c_adres)
+i2c_dev=$(uci get tda7313.@tda7313[0].i2c_dev)
 
 tfiles='/tmp/hh'
 
