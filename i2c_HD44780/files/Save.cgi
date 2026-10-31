@@ -29,12 +29,35 @@ for pair in $POST_DATA; do
     val=$(unescape "$val_raw")
 
     case "$key" in
-        # Секція @display[0]
-        device|address|sda_gpio|scl_gpio|lcd_number|gros_simvol|info_banner|read_file)
+        # Секція i2c_HD44780@display[0]
+        device)
+            uci set i2c_HD44780.@display[0]."$key"="$val"
+            uci set hd44780-gpio-custom.@display[0].dev="$val"
+            ;;
+
+        # Секція hd44780-gpio-custom@display[0]
+	dev)
+            uci set hd44780-gpio-custom.@display[0]."$key"="$val"
+            uci set i2c_HD44780.@display[0].device="$val"
+            ;;
+
+        # Секція i2c_HD44780@display[0]
+        address|sda_gpio|scl_gpio)
+            uci set i2c_HD44780.@display[0]."$key"="$val"
+            uci set hd44780-gpio-custom.@display[0]."$key"="$val"
+            ;;
+
+        # Секція i2c_HD44780@display[0]
+        lcd_number|gros_simvol|info_banner|read_file)
             uci set i2c_HD44780.@display[0]."$key"="$val"
             ;;
 
-        # Секція @displ_tip[0]
+        # Секція hd44780-gpio-custom@display[0]
+	hd_rs|hd_rw|hd_e|hd_db4|hd_db5|hd_db6|hd_db7|enabled|i2c_bus_type)
+            uci set hd44780-gpio-custom.@display[0]."$key"="$val"
+            ;;
+
+        # Секція i2c_HD44780@displ_tip[0]
         while|clock|led_on|on_read|on_ds18|tip_ds1|tip_ds2|tip_ds3|tip_ds4)
             uci set i2c_HD44780.@displ_tip[0]."$key"="$val"
             ;;
@@ -65,9 +88,11 @@ for pair in $POST_DATA; do
             ;;
         save_commit)
             uci commit i2c_HD44780
+            uci commit hd44780-gpio-custom
             ;;
         save_com_restart)
             uci commit i2c_HD44780
+            uci commit hd44780-gpio-custom
             /etc/init.d/i2c_HD44780.init stop
             sleep 1
             /etc/init.d/i2c_HD44780.init start

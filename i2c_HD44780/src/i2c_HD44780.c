@@ -27,12 +27,14 @@ void digitalWrite_i2c(char);
 void setclock(void);
 void readd_content_file(void);
 void read_ffile(void);
-
 void print_lcd(void);
 
 /* commands */
 #define LCD_CLEARDISPLAY 0x01
 #define LCD_RETURNHOME 0x02
+
+#define LCD_ENTRYMODESET 0x04
+#define LCD_DISPLAYCONTROL 0x08
 
 #define LCD_SETSTROKA1 0x80	// курсор в начало первой строки
 #define LCD_SETSTROKA2 0xC0	// курсор в начало второй строки
@@ -41,19 +43,29 @@ void print_lcd(void);
 
 #define LCD_SETCGRAMADDR 0x40	// Load user-defined symbol into the CGRAM
 
-#define En 0B00000100  // Enable bit
-//#define Rw 0B00000010  // Read bit/
-#define Rw 0B00000000 // Write bit
-#define Rs 0B00000001  // Register select bit
-
-#define LCD_ENTRYMODESET 0x04
-#define LCD_DISPLAYCONTROL 0x08
+#ifdef LCD_MODE_I2C	/* i2c - PCF8574 */
+#define En 0B00000100	// Enable bit
+//#define Rw 0B00000010	// Read bit/
+#define Rw 0B00000000	// Write bit
+#define Rs 0B00000001	// Register select bit
 
 #define LCD_SENIORCMD 0x04
 #define LCD_JUNIORCMD 0x00
-
 #define LCD_SENIORDATA 0x05
 #define LCD_JUNIORDATA 0x01
+#define LCD_DEV "/dev/i2c-"
+
+#else  			// Native GPIO Driver Mode (hd44780.ko)
+
+/* Стандартні команди HD44780. Налаштування IOCTL команд для зв'язку з драйвером ядра */
+#define LCD_IOC_MAGIC 'k'
+#define LCD_IOC_WRITE_CMD   _IOW(LCD_IOC_MAGIC, 1, unsigned char)
+#define LCD_IOC_WRITE_DATA  _IOW(LCD_IOC_MAGIC, 2, unsigned char)
+#define LCD_IOC_SET_CGRAM   _IOW(LCD_IOC_MAGIC, 3, unsigned char[8])
+#define LCD_IOC_READ_DATA   _IOR(LCD_IOC_MAGIC, 4, unsigned char)
+#define LCD_DEV "/dev/hd44780."
+
+#endif
 
 // flags for backlight control
 #define LCD_BACKLIGHT 0x08
@@ -81,7 +93,6 @@ int	errFl=0,
 	fl_es = 0,
 	colo = 0x00,
 	led = LCD_NOBACKLIGHT,
-//	rw = 0x02,
 	iia = 0,
 	ds_nik = 0,
 	gpioPin_est = 0,
@@ -376,6 +387,7 @@ void clock_plus_ds18() {
 // ******************************************** //
 // LCD initialization
 void lcd_init() {
+#ifdef LCD_MODE_I2C	// Функція виведення через i2c ... //
 	usleep(5000);
 	write_CMD(0x03);
 	usleep(5000);
@@ -387,17 +399,19 @@ void lcd_init() {
 	usleep(5000);
 	write_CMD(0x0C);
 	usleep(5000);
-	write_CMD(LCD_CLEARDISPLAY);
-	usleep(5000);
 	write_CMD(0x06);
 	usleep(5000);
+#endif
 	write_CMD(LCD_RETURNHOME);
+	usleep(5000);
+	write_CMD(LCD_CLEARDISPLAY);
 	usleep(5000);
 	lcd_init_CGRAM();
 }
 // ******************************************** //
 
 
+#ifdef LCD_MODE_I2C
 // ******************************************** //
 // Сложение и write команд для дисплей
 void write_CMD(char c) {
@@ -449,6 +463,39 @@ void digitalWrite_i2c(char buf) {
 }
 // ******************************************** //
 
+#else
+
+// ******************************************** //
+// Функція виведення через i2c більше НЕ потрібна, її можна повністю видалити!
+// Замість неї тепер працює стандартний ioctl напряму в наш /dev/hd44780.0
+// Надсилання команд для дисплея (наприклад, очищення чи зміна рядка)
+void write_CMD(char c) {
+	unsigned char cmd = (unsigned char)c;
+	
+	// Викликаємо ioctl з кодом WRITE_CMD
+	if (ioctl(file, LCD_IOC_WRITE_CMD, &cmd) < 0) {
+		fprintf(stderr, "IOCTL CMD Error: %s\n", strerror(errno));
+		errFl = 1;
+		sprintf(temp_gpOut, "IOCTL CMD Error: %s", strerror(errno));
+		error_log(temp_gpOut);
+	}
+}
+
+// Надсилання чистих даних для дисплея (символи тексту)
+void write_dat(char c) {
+	unsigned char data = (unsigned char)c;
+	
+	// Викликаємо ioctl з кодом WRITE_DATA
+	if (ioctl(file, LCD_IOC_WRITE_DATA, &data) < 0) {
+		fprintf(stderr, "IOCTL DATA Error: %s\n", strerror(errno));
+		errFl = 1;
+		sprintf(temp_gpOut, "IOCTL DATA Error: %s", strerror(errno));
+		error_log(temp_gpOut);
+	}
+}
+// ******************************************** //
+
+#endif
 
 // ******************************************** //
 // Print output string
@@ -917,11 +964,11 @@ int main(int argc, char** argv) {
 	ret,
 	i2c_addr,
 	i,
-	I2C_id=0,
+	arg_dev_bit=0,
 	ic = 0,
 	ccc = 0;
   char	*banner=0,
-	*I2C_Device,
+	*arg_dev_num,
 	*filename,
 	*setlcd,
 	ch;
@@ -929,9 +976,9 @@ int main(int argc, char** argv) {
 	// *************** Get input arguments ************************************************************************* //
 	while((ret = getopt(argc, argv, "d:a:f:u:b:c:p:n:l:s:")) != -1) {
 		switch(ret) {
-			case 'd':		//  /dev/i2c-"0"- d 
-				I2C_Device = strdup(optarg);
-				I2C_id=1;
+			case 'd':		//  LCD_DEV"0"- d 
+				arg_dev_num = strdup(optarg);
+				arg_dev_bit=1;
 				ic++;
 				break;
 			case 'a':		//  option 'address' '0x27' (" -a <address>  address of the PCF8574, e.g. '0x27' (required)\n")
@@ -1026,7 +1073,7 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 		printf("Pins of HD44780:   D7  D6  D5  D4  LED  E   RW  RS\n");
 		printf(" '-----------------------------------------------'\n");
 		printf("Usage: '%s <parameters>'\n", argv[0]);
-		printf(" -d <device>   I2C bus selection, e.g. '/dev/i2c-0' '0' (required)\n");
+		printf(" -d <device>   I2C bus selection, e.g. 'LCD_DEV0' '0' (required)\n");
 		printf(" -a <address I2C device>  address of the PCF8574, e.g. '0x27' (required)\n");
 		printf(" -f <read file>  address of the file NNN (required)\n");
 		printf(" -u 01x0 - start->stop, read file LCD line-1\n");
@@ -1064,24 +1111,30 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 	// Защита от переполнения буфера setlcd_patch (максимум 20 байт)
 	snprintf(setlcd_patch, sizeof(setlcd_patch), "%s", setlcd);
 
-		// I2C device
-	if (I2C_id == 1) sprintf(dev_path, "/dev/i2c-%s", I2C_Device);
-	else sprintf(dev_path, "/dev/i2c-0");
+		// LCD_DEV
+	if (arg_dev_bit == 1) sprintf(dev_path, "%s%s", LCD_DEV, arg_dev_num);
+	else sprintf(dev_path, "%s0", LCD_DEV);
 
 	if ((file = open(dev_path, O_RDWR)) < 0) {
 		errFl = 1;
+#ifdef LCD_MODE_I2C	/* i2c - PCF8574 */
 		fprintf(stderr,"Open I2C_Dev Error: %s (%d)\n",strerror(errno),errno);
 		sprintf(temp_gpOut,"Open I2C_Dev Error: %s (%d)",strerror(errno),errno);
+#else
+		fprintf(stderr,"Open GPIO_Dev Error: %s (%d)\n", strerror(errno), errno);
+		sprintf(temp_gpOut,"Open GPIO_Dev Error: %s (%d)", strerror(errno), errno);
+#endif
 		error_log(temp_gpOut);
 	}
 
-	// address
+#ifdef LCD_MODE_I2C	/* i2c - PCF8574 */	// i2c_address
 	if (ioctl(file,I2C_SLAVE,i2c_addr) < 0) {
 		errFl = 1;
-		fprintf(stderr,"I2C_SLAVE Error: %s (%d)\n",strerror(errno),errno);
-		sprintf(temp_gpOut,"I2C_SLAVE address Error: %s (%d)",strerror(errno),errno);
+		fprintf(stderr,"I2C_SLAVE Error: %s (%d)\n", strerror(errno), errno);
+		sprintf(temp_gpOut,"I2C_SLAVE address Error: %s (%d)", strerror(errno), errno);
 		error_log(temp_gpOut);
-	} 
+	}
+#endif
 	// ********* I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C  I2C ********* //
 	// ************************************************************************************************************ //
 
@@ -1186,10 +1239,7 @@ i2c_HD44780 -a 0x27 -f NNN -u 101010000 -b 28-000002d0797a\28-000002d07b76\28-00
 
 				if (iia == 3) if (BIT_CLOCK == 0 && kollw_sensor < 4 && wide_simvol == '0') write_CMD(LCD_SETSTROKA4);
 
-				if (ds_nik != 1) {
-					// ИСПРАВЛЕНИЕ: Безопасный перевод номера в ASCII без порчи шага цикла iia++
-					temp_sensor_txt[7] = (iia + 1) + 48; 
-				}
+				if (ds_nik != 1) temp_sensor_txt[7] = (iia + 1) + 48;
 				else read_nickname();
 
 				if (iia == 0) t_nick = fopen("/tmp/nick", "w");

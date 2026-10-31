@@ -3,7 +3,7 @@
 // ******************************************** //
 // Print output string
 void stringout_lcd_WideW1(char *c, int a, int b) {
-//	char c[6]={'-', '2', '6', '.', '8', 'C'};		// Test!!!
+//	char c[7]={'-', '2', '6', '.', '8', 'C'};		// Test!!!
 	int i; pos_right_shift=0;
 //	if (c[a] == '-') { simvol_Minus(pos_right_shift); pos_right_shift+=1; probel(pos_right_shift); pos_right_shift+=1; a=1;
 //		if (sizeof(c) < 5) { probel(pos_right_shift); pos_right_shift+=1; } }	// lcd 200x

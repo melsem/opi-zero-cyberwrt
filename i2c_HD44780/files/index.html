@@ -8,6 +8,7 @@ echo "<table align='center' border='0'><tr><td>"
 if [ -f /www/menu.html ]; then
     cat /www/menu.html
 fi
+ERR_LOG="/tmp/Err_i2c_hd44780.log"
 echo "</td></tr></table>"
 
 echo "<script type='text/javascript'>
@@ -111,8 +112,8 @@ echo "</table>"
 echo "<table align='center' border='0'><tr><td><a href='/cgi-bin/modules/i2c_hd44780/Setup.cgi'><input title='Желаете_зайти_в_установки ???' class='b1' type='submit' value='SETUP_i2c_hd44780'></a></td></tr><br></table>"
 
 echo "<table align='center' border='0'><tr><td><b>"
-if [ -f /tmp/Err_i2c_hd44780.log ]; then
-    cat /tmp/Err_i2c_hd44780.log
+if [ -f ${ERR_LOG} ]; then
+    cat ${ERR_LOG}
 fi
 echo "</b></td></tr><br><br><br></table>"
 
