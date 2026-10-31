@@ -1,0 +1,84 @@
+#!/bin/sh /etc/rc.common
+
+# Пріоритет запуску 90 гарантує, що UCI та файлова система вже повністю готові.
+START=90
+STOP=10
+
+# Функція-колбек для розбору параметрів із UCI секції 'display'
+load_pins() {
+	local section="$1"
+	# Оголошуємо абсолютно всі змінні як локальні, щоб уникнути конфліктів у системі
+	local dev lcd_mode_dev i2c_bus_type address sda_gpio scl_gpio
+	local hd_rs hd_rw hd_e hd_db4 hd_db5 hd_db6 hd_db7
+
+	# 1. Читання загальних налаштувань режиму роботи
+	config_get lcd_mode_dev "$section" lcd_mode_dev "LCD_MODE_I2C"
+	config_get dev          "$section" dev          "0"
+
+	# Перевіряємо, чи модуль ядра випадково не завантажений раніше
+	if lsmod | grep -q "hd44780"; then
+		return 0
+	fi
+
+	# 2. РОЗГАЛУЖЕННЯ ЗАЛЕЖНО ВІД РЕЖИМУ ДРАЙВЕРА
+	if [ "$lcd_mode_dev" = "LCD_MODE_I2C" ]; then
+		# === РЕЖИМ I2C EXPANDER (Вбудований або віртуальний) ===
+		config_get i2c_bus_type "$section" i2c_bus_type "virtual"
+		config_get address      "$section" address      "0x27"
+		config_get sda_gpio     "$section" sda_gpio     "0"
+		config_get scl_gpio     "$section" scl_gpio     "0"
+
+		# Завантажуємо універсальний модуль ядра з I2C параметрами
+		insmod hd44780 dev_mode="LCD_MODE_I2C" i2c_bus_type="$i2c_bus_type" dev="$dev" address="$address" sda_gpio="$sda_gpio" scl_gpio="$scl_gpio"
+
+	elif [ "$lcd_mode_dev" = "LCD_MODE_GPIO" ]; then
+		# === РЕЖИМ NATIVE GPIO (ВАШ ЗБЕРЕЖЕНИЙ ЕТАЛОН) ===
+		config_get hd_rs  "$section" hd_rs  "0"
+		config_get hd_rw  "$section" hd_rw  "1"
+		config_get hd_e   "$section" hd_e   "2"
+		config_get hd_db4 "$section" hd_db4 "3"
+		config_get hd_db5 "$section" hd_db5 "15"
+		config_get hd_db6 "$section" hd_db6 "16"
+		config_get hd_db7 "$section" hd_db7 "14"
+
+		# Завантажуємо модуль ядра за вашим оригінальним синтаксисом масиву
+		insmod hd44780 dev_mode="LCD_MODE_GPIO" bus0="$dev","$hd_rs","$hd_rw","$hd_e","$hd_db4","$hd_db5","$hd_db6","$hd_db7"
+	fi
+}
+
+start() {
+
+	# Швидке зчитування без усього циклу, просто перевірити прапорець
+	local is_enabled
+	is_enabled=$(uci -q get hd44780-gpio-custom.@display[0].enabled)
+	
+	if [ "$is_enabled" != "1" ]; then
+		echo "Драйвер hd44780 вимкнено в конфігурації UCI. Автостарт скасовано."
+		return 0
+	fi
+
+	# Підгружаємо стандартну системну бібліотеку OpenWrt для парсингу UCI конфігів
+	if [ -f /lib/functions.sh ]; then
+		. /lib/functions.sh
+	else
+		include /lib/functions
+	fi
+	
+	# Завантажуємо файл конфігурації /etc/config/hd44780-gpio-custom
+	config_load hd44780-gpio-custom
+	
+	# Проходимо циклом по всіх секціях типу 'display' та передаємо їх в load_pins
+	config_foreach load_pins display
+}
+
+stop() {
+	# Безпечно очищаємо екран дисплея (надсилаємо команду \x01) перед вивантаженням модуля
+	if [ -c /dev/hd44780.0 ]; then
+		printf "\x01" > /dev/hd44780.0 2>/dev/null
+	fi
+	
+	# Повністю вивантажуємо модуль ядра із системи
+	if lsmod | grep -q "hd44780"; then
+		rmmod hd44780 2>/dev/null
+	fi
+}
