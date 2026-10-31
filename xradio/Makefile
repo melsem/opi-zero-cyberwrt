@@ -48,7 +48,7 @@ define Build/Compile
 		$(KERNEL_MAKE_FLAGS) \
 		$(PKG_MAKE_FLAGS) \
 		M="$(PKG_BUILD_DIR)" \
-		EXTRA_CFLAGS="$(NOSTDINC_FLAGS)" \
+		EXTRA_CFLAGS="$(NOSTDINC_FLAGS) -include backport/backport.h" \
 		modules
 endef
 
