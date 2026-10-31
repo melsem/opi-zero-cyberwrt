@@ -1,27 +1,58 @@
 #!/bin/sh
 
-# Функція декодування URL (видаляє каретки %0D, міняє + на пробіли, декодує %XX)
+# Функция декодирования URL (удаляет %0D, меняет + на пробелы, декодирует %XX)
+# Дополнительно очищает от UTF-8 BOM и Windows-переносов \r
 unescape() {
-    echo "$1" | sed 's/%0[Dd]//g; s/+/ /g; s/%/\\x/g' | xargs -0 printf "%b"
+    echo "$1" | sed 's/%0[Dd]//g; s/+/ /g; s/%/\\x/g' | xargs -0 printf "%b" 2>/dev/null | sed '1s/^\xEF\xBB\xBF//' | tr -d '\r'
 }
 
-# 1. Обов'язкові HTTP-заголовки
+# 1. Обязательные HTTP-заголовки
 echo "Content-type: text/html; charset=utf-8"
 echo ""
 
-# Ініціалізація змінних (Блок BEGIN)
+# Конфиги
 rckeymaps="/etc/rc_keymaps/keyes"
 triggerhappy="/etc/triggerhappy/triggers.d/example.conf"
 sost=0
 
-# 2. Зчитування POST або GET даних
+# Инициализация переменных (чтобы не было мусора)
+nomerstroki=""
+ircode_star=""
+keyname_star=""
+keysost_star=""
+command_star=""
+ircode=""
+keyname=""
+keysost=""
+command=""
+add_nev_ircode=""
+add_nev_keyname=""
+add_nev_keysost=""
+add_nev_command=""
+exampleconf=""
+webirremoteinit=""
+
+# 2. Чтение POST или GET данных во временный буфер в RAM (защита от падения длинных строк)
+TMP_RAW="/tmp/ir_raw.tmp"
+rm -f "$TMP_RAW"
+
 if [ "$REQUEST_METHOD" = "POST" ] && [ -n "$CONTENT_LENGTH" ] && [ "$CONTENT_LENGTH" -gt 0 ]; then
-    POST_DATA=$(dd bs=1 count=$CONTENT_LENGTH 2>/dev/null)
+    dd bs=1 count=$CONTENT_LENGTH 2>/dev/null > "$TMP_RAW"
 else
-    POST_DATA="$QUERY_STRING"
+    echo -n "$QUERY_STRING" > "$TMP_RAW"
 fi
 
-# 3. Парсинг потоку даних (еквівалент RS="&" та FS="=")
+# Если данных нет вообще - выходим
+if [ ! -s "$TMP_RAW" ]; then
+    rm -f "$TMP_RAW"
+    exit 0
+fi
+
+# Считываем POST_DATA для цикла
+POST_DATA=$(cat "$TMP_RAW")
+rm -f "$TMP_RAW"
+
+# 3. Парсинг потока данных (эквивалент RS="&" и FS="=")
 OLD_IFS=$IFS
 IFS='&'
 
@@ -30,26 +61,22 @@ for pair in $POST_DATA; do
     key="${pair%%=*}"
     val_raw="${pair#*=}"
     
+    # Декодируем значение на лету
     val=$(unescape "$val_raw")
 
     case "$key" in
-        nomerstroki)     nomerstroki="$val" ;;
-        ircode_star)     ircode_star="$val" ;;
-        keyname_star)    keyname_star="$val" ;;
-        keysost_star)    keysost_star="$val" ;;
-        command_star)    command_star="$val" ;;
-        ircode)          ircode="$val" ;;
-        keyname)         keyname="$val" ;;
-        keysost)         keysost="$val" ;;
-        command)         command="$val" ;;
-        add_nev_ircode)  add_nev_ircode="$val" ;;
-        add_nev_keyname) add_nev_keyname="$val" ;;
-        add_nev_keysost) add_nev_keysost="$val" ;;
-        add_nev_command) add_nev_command="$val" ;;
-        exampleconf)     exampleconf="$val" ;;
-        webirremoteinit) webirremoteinit="$val" ;;
+        nomerstroki)    nomerstroki="$val" ;;
+        ircode_star)    ircode_star="$val" ;;
+        keyname_star)   keyname_star="$val" ;;
+        keysost_star)   keysost_star="$val" ;;
+        command_star)   command_star="$val" ;;
+        
+        ircode)         ircode="$val" ;;
+        keyname)        keyname="$val" ;;
+        keysost)        keysost="$val" ;;
+        command)        command="$val" ;;
 
-        # --- ДІЯ: РЕДАГУВАННЯ ---
+        # --- ОБРАБОТКА ДЕЙСТВИЙ (Эквивалент условий в AWK) ---
         edit)
             echo "<br>"
             ir-remote rckeymaps "$ircode_star" "$keyname_star" "$ircode" "$keyname"
@@ -58,16 +85,16 @@ for pair in $POST_DATA; do
             echo "<br>"
             /etc/init.d/web-ir-remote restart
             ;;
-
-        # --- ДІЯ: ВИДАЛЕННЯ ---
         delete)
             ir-remote rckeymapsdelete "$ircode_star" "$keyname_star"
             ir-remote triggerhappydelete "$keyname_star" "$keysost_star" "$command_star" "$nomerstroki"
             echo "DELETE-OK<br>"
             /etc/init.d/web-ir-remote restart
             ;;
-
-        # --- ДІЯ: ЗБЕРЕЖЕННЯ НОВОГО ---
+        add_nev_ircode)  add_nev_ircode="$val" ;;
+        add_nev_keyname) add_nev_keyname="$val" ;;
+        add_nev_keysost) add_nev_keysost="$val" ;;
+        add_nev_command) add_nev_command="$val" ;;
         Save_nev)
             if [ "$add_nev_ircode" = "keyboard" ]; then
                 ir-remote triggerhappy_add "$keyname_star" "$keysost_star" "$command_star" "$add_nev_keyname" "$add_nev_keysost" "$add_nev_command"
@@ -81,36 +108,34 @@ for pair in $POST_DATA; do
                 /etc/init.d/web-ir-remote restart
             fi
             ;;
-
-        # --- КЕРУВАННЯ СЛУЖБОЮ ---
         staron)
             /etc/init.d/web-ir-remote enable
             ;;
         staroff)
             /etc/init.d/web-ir-remote disable
             ;;
-
-        # --- ЗАПИС ТЕКСТУ КОНФІГУ ТРИГЕРІВ ---
+        exampleconf)     exampleconf="$val" ;;
         text)
             sost=1
-            # Передаємо вміст змінної через потік, видаляючи порожні рядки (еквівалент sed '/^$/d')
+            # Запись конфигурации напрямую, убирая пустые строки и \r
             echo "$exampleconf" | sed '/^$/d' > /etc/triggerhappy/triggers.d/example.conf
+            # echo "<b> Save example.conf OK</b><br>"
             /etc/init.d/web-ir-remote restart
             ;;
-
-        # --- ЗАПИС ТЕКСТУ ІНІЦІАЛІЗАЦІЇ (було закоментовано в awk) ---
+        webirremoteinit) webirremoteinit="$val" ;;
         textremoteinit)
-            # Якщо забажаєте розкоментувати логіку:
+            # Раскомментируйте, если логика инциализации инициализации будет нужна:
             # sost=1
             # echo "$webirremoteinit" | sed '/^$/d' > /etc/init.d/web-ir-remote
-            # chmod 755 /etc/init.d/web-ir-remote
+            # echo "<b> Save web-ir-remote-init OK</b><br>"
             ;;
     esac
     IFS='&'
 done
 IFS=$OLD_IFS
 
-# 4. Блок END (Редирект залежно від статусу збереження конфігу)
+# 4. Блок END (эквивалент секции END в AWK)
+sleep 1
 if [ "$sost" -eq 0 ]; then
     /www/cgi-bin/modules/web-ir-remote/Setup.cgi setup_irc
 elif [ "$sost" -eq 1 ]; then
