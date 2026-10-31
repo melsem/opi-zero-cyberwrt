@@ -1,0 +1,60 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+USE_PROCD=1
+PROG=/usr/bin/ir-interceptor
+CONF=/etc/config/ir-interceptor
+
+# Перевірка та підготовка перед запуском
+boot() {
+	 файлу конфігурації взагалі немає — створюємо порожній Failsafe файл
+	if [ ! -f "$CONF" ]; then
+		touch "$CONF"
+		echo "# Failsafe config for ir-interceptor" > "$CONF"
+	fi
+	
+	start
+}
+
+# Головна функція запуску сервісу через procd
+start_service() {
+	if [ ! -x "$PROG" ]; then
+		logger -t ir-interceptor "Помилка: Бінарник $PROG не знайдено або він не виконуваний!"
+		return 1
+	fi
+
+	procd_open_instance "main"
+	
+	# Запуск головного процесу
+	procd_set_param command "$PROG"
+	
+	# respawn: якщо процес впаде, procd підніме його автоматично через 5 секунд.
+	# Якщо впаде 5 разів підряд швидше ніж за 60 секунд — зупинить спроби (захист циклу).
+	procd_set_param respawn 3600 5 5
+	
+	# ХОТ-ФІКС 1: Вказуємо procd завершувати наш демон сигналом SIGTERM (замість жорсткого SIGKILL).
+	# Це дозволить нашому коду в main.c виконати close_all_devices() і красиво закритися.
+	procd_set_param term_timeout 5
+	
+	# Логування помилок у системний лог (logread)
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	
+	procd_close_instance
+}
+
+# Викликається при команді '/etc/init.d/ir-interceptor stop'
+stop_service() {
+	logger -t ir-interceptor "Сервіс отримав команду на зупинку."
+}
+
+# ХОТ-ФІКС 2: Гаряче перезавантаження без перезапуску самого процесу
+# Коли ви напишете 'service ir-interceptor reload', procd не буде вбивати демон.
+# Замість цього він м'яко відправить йому сигнал SIGHUP.
+# Наш C-код зловить його, миттєво оновить налаштування і пересканує /dev/input/.
+reload_service() {
+	logger -t ir-interceptor "Надсилаю сигнал SIGHUP для гарячого оновлення конфігурації..."
+	procd_send_signal "main" HUP
+}# Якщо
