@@ -3,12 +3,9 @@
 	/delete-node/ wifi-wake;
 };
 
-&r_pio {
-	/delete-node/ r-wifi-rst;
-};
-
 &mmc1 {
 	/delete-property/ keep-power-in-suspend;
+	status = "disabled";
 	sdio_wifi@1 {
 		/delete-property/ compatible;
 		/delete-property/ pinctrl-names;
@@ -19,7 +16,15 @@
 	};
 };
 
+&r_pio {
+	/delete-node/ r-wifi-rst;
+};
+
 / {
+	aliases {
+		/delete-property/ ethernet1;
+	};
+	
 	wifi_pwrseq {
 		/delete-property/ pinctrl-names;
 		/delete-property/ pinctrl-0;

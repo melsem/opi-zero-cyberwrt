@@ -1,0 +1,35 @@
+	
+&pio {
+	/delete-node/ wifi-wake;
+};
+
+&mmc1 {
+	/delete-property/ keep-power-in-suspend;
+	status = "disabled";
+	/delete-property/ max-frequency;
+	/delete-property/ allwinner,broken-cd;
+
+	sdio_wifi@1 {
+		/delete-property/ compatible;
+		/delete-property/ pinctrl-names;
+		/delete-property/ pinctrl-0;
+		/delete-property/ interrupt-parent;
+		/delete-property/ interrupts;
+		/delete-property/ interrupt-names;
+	};
+};
+
+&r_pio {
+	/delete-node/ r-wifi-rst;
+};
+
+/ {
+	aliases {
+		/delete-property/ ethernet1;
+	};
+	
+	wifi_pwrseq {
+		/delete-property/ pinctrl-names;
+		/delete-property/ pinctrl-0;
+	};
+};

@@ -1,0 +1,42 @@
+	
+&pio {
+	wifi_wake: wifi-wake {
+		pins = "PG10";
+		function = "gpio_in";
+	};
+};
+
+&mmc1 {
+	keep-power-in-suspend;
+	status = "okay";
+	max-frequency = <20000000>; /* Знижуємо швидкість з 50МГц до 20МГц */
+	allwinner,broken-cd;
+
+	xr819: sdio_wifi@1 {
+		reg = <0x01>;
+		compatible = "st,cw1200";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_wake>;
+		interrupt-parent = <&pio>;
+		interrupts = <6 10 1>;
+		interrupt-names = "host-wake";
+	};
+};
+
+&r_pio {
+	r_wifi_rst: r-wifi-rst {
+		pins = "PL7";
+		function = "gpio_out";
+	};
+};
+
+/ {
+	aliases {
+		ethernet1 = &xr819;
+	};
+
+	wifi_pwrseq {
+		pinctrl-names = "default";
+		pinctrl-0 = <&r_wifi_rst>;
+	};
+};

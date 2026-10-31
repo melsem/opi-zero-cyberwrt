@@ -220,8 +220,9 @@ elif [ "$boardname" == "orangepi-one" ]; then
  spi1_hide='hide'
  sdio='sdio_wifi'
 elif [[ "$boardname" == "orangepi-zero" || "$boardname" == "orangepi-zero-lts" ]]; then
+mod=$(cat $dts | sed -n '/'sdio_wifi@1'/,/\};/p' | sed -n 's/.*compatible.*\"\(.*\)\".*/\1/p')
  powerwifi='Turn on/off the power of the xr819 radio module.'
- pownamwifi='Wifi: xradio, xr819'
+ pownamwifi="Wifi: $mod"
  textpownam='vcc-wifi:'
  usb1='usb1'
  txt_usb1='---'
@@ -397,7 +398,8 @@ if [[ "$sdio" == "sdio_wifi" ]]; then
  mix=$(cat $dts | sed -n '/'wifi-wake'/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p')
  ehci=$(cat $dts | sed -n '/'r-wifi-rst'/,/\};/p' | sed -n 's/.*pins.*\"\(.*\)\".*/\1/p')
  ohci=$(cat $dts | sed -n '/'wifi_pwrseq'/,/\};/p' | sed -n 's/.*pinctrl-names.*\"\(.*\)\".*/\1/p')
- if [[ "$mod" == "xradio,xr819" && "$mix" == "PG10" && "$ehci" == "PL7" && "$ohci" == "default" ]]; then
+# if [[ "$mod" == "st,cw1200" && "$mix" == "PG10" && "$ehci" == "PL7" && "$ohci" == "default" ]]; then
+if [ "$mix" = "PG10" ] && [ "$ehci" = "PL7" ] && [ "$ohci" = "default" ] && { [ "$mod" = "st,cw1200" ] || [ "$mod" = "xradio,xr819" ]; }; then
   mod=$(cat $dts | sed -n '/'$wifi'/,/\};/p' | sed -n 's/.*status.*\"\(.*\)\".*/\1/p')
   stachec
   echo "
@@ -405,7 +407,7 @@ if [[ "$sdio" == "sdio_wifi" ]]; then
   <input type="radio" name="wifi" value="disabled" $sost2 $checked1>OFF
   <input type="radio" name="wifi" value="okay" $sost1 $checked>ON
   </td>
-  <td align="center" bgcolor="$bgcolor">"$pownamwifi"</td>
+  <td align="center" bgcolor="$bgcolor">$pownamwifi</td>
   <td bgcolor="$bgcolor"><b>"$sost2"</b></td>
   <td bgcolor="$bgcolor">"
   if [ "$sost2" == "disabled" ]; then
