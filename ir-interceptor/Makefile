@@ -11,13 +11,10 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
   SECTION:=utils
   CATEGORY:=Utilities
-  TITLE:=Smart Input Interceptor for IR, Rotary Encoders and GPIO
-  DEPENDS:=+kmod-input-core
+  TITLE:=ch-buffer
 endef
 
 define Package/$(PKG_NAME)/description
-  A lightweight input event interceptor for IR remotes, 
-  rotary encoders, and GPIO keys optimized for OpenWrt.
 endef
 
 define Build/Prepare
@@ -32,14 +29,8 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ir-interceptor $(1)/usr/bin/
-
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/ir-interceptor.conf $(1)/etc/config/ir-interceptor
-
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/ir-interceptor.init $(1)/etc/init.d/ir-interceptor
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ch-buffer $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,ir-interceptor))

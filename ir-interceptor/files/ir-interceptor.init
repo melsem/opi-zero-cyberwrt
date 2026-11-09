@@ -9,7 +9,7 @@ CONF=/etc/config/ir-interceptor
 
 # Перевірка та підготовка перед запуском
 boot() {
-	 файлу конфігурації взагалі немає — створюємо порожній Failsafe файл
+	 # Якщо файлу конфігурації взагалі немає — створюємо порожній Failsafe файл
 	if [ ! -f "$CONF" ]; then
 		touch "$CONF"
 		echo "# Failsafe config for ir-interceptor" > "$CONF"
@@ -57,4 +57,4 @@ stop_service() {
 reload_service() {
 	logger -t ir-interceptor "Надсилаю сигнал SIGHUP для гарячого оновлення конфігурації..."
 	procd_send_signal "main" HUP
-}# Якщо
+}

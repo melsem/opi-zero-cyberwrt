@@ -1,8 +1,8 @@
 # Имя финального бинарного файла (OpenWrt ищет именно ir-interceptor)
-TARGET = ir-interceptor
+TARGET = ch-buffer
 
 # Автоматический поиск всех файлов .c в папке src
-SRCS = main.c signals.c ir_handler.c gpio_handler.c keyboard_handler.c
+SRCS = ch-buffer.c
 
 # Превращение списка .c файлов в список объектных файлов .o
 OBJS = $(SRCS:.c=.o)

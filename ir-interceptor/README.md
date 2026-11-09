@@ -7,171 +7,142 @@ Select language / Оберіть мову / Выберите язык:
 
 ## English
 
-# Input Interceptor for OpenWrt
+### ch-buffer
 
-A lightweight, high-performance input event daemon for OpenWrt optimized for
-embedded systems. It intercepts low-level Linux `evdev` events from infrared
-(IR) remotes, rotary encoders, keyboards, and GPIO keys, matching them against
-a configuration file and executing corresponding system commands asynchronously.
+A lightweight, lightning-fast input accumulator and debouncer written in C.
+Specifically engineered for single-board computers (like Orange Pi,
+Raspberry Pi) and routers running **OpenWrt** or Linux with **triggerhappy (thd)**.
 
-### Features
-* **Zero Flash Wear:** Configuration and all mapping rules are parsed into
-  RAM once at startup or on-demand via a `SIGHUP` signal.
-* **Procd Integration:** Full compatibility with the modern OpenWrt process
-  manager (`procd`), providing fail-safe automatic respawning and non-blocking
-  runtime reloads.
-* **Smart IR Channels:** Features a dynamic buffer accumulation system for
-  multidigit channel numbers (e.g., typing `1`, `1`, `1` executes channel `111`
-  command after a custom timeout).
-* **Multi-Remote Support:** Handles identical markers assigned to different
-  physical hardware codes (e.g., combining multiple IR controllers).
-* **Advanced Debouncing:** Separated press and hold debounce intervals to
-  mitigate button contact chatter and encoder noise.
+It acts as an intermediary bridge between raw remote control signals and your
+OS scripts. It queues numeric button presses within a timeout, strips leading
+zeros, prevents key bounce, and effortlessly separates a standard press from
+a long hold command.
 
-### Directory Structure
+#### Key Features
+
+*   **Smart Buffering:** Collects numeric inputs within a user-defined window
+    (e.g., typing `0`, `0`, `5`, `1` naturally executes as channel `51`).
+*   **Advanced Hold Execution:** Fully cancels numeric input upon a long hold
+    and triggers an alternative command (via the `-l` flag), passing the
+    pressed key number dynamically.
+*   **Persistent File Descriptors Strategy:** Bypasses aggressive `tmpfs` RAM
+    cleanup cycles on embedded Linux kernels by holding state file
+    descriptors open during `usleep()`.
+*   **Zero Overhead:** Consumes negligible memory, running smoothly even on
+    tight hardware profiles.
+
+#### Command Line Flags
+
+*   `-s [1|2]` : **(Required)** Triggerhappy input state. `1` for short click, `2` for hold/repeat.
+*   `-c [0-9]` : **(Required)** Digit passed by the key press.
+*   `-k "<command>"` : **(Required)** Base command to execute upon a timed-out
+    numeric string.
+*   `-l "<command>"` : Alternative command to execute on a validated long hold.
+*   `-p <ms>` : Debounce timing to prevent micro-clicks double-firing (Default: 200ms).
+*   `-h <ms>` : Minimum hold threshold duration (Default: 800ms).
+*   `-t <ms>` : Timeout to wait for the next sequential digit (Default: 1000ms).
+
+#### Configuration Example (`/etc/triggerhappy/triggers.d/ir.conf`)
+
 ```text
-ir-interceptor/
-├── Makefile                        # OpenWrt Package Build Recipe
-├── files/
-│   ├── ir-interceptor.conf         # Global Configuration File
-│   └── ir-interceptor.init         # Procd Init Script
-└── src/
-    ├── Makefile                    # Internal Source Compilation Recipe
-    ├── main.c                      # Core Dispatcher & Event Loop
-    ├── signals.c / signals.h       # Linux Signal Management Module
-    ├── ir_handler.c / .h           # Multi-digit IR Channel Processor
-    ├── gpio_handler.c / .h         # GPIO Keys & Rotary Encoder Processor
-    └── keyboard_handler.c / .h     # Standard Input & Key Processor
+KEY_1 1 /usr/local/bin/ch-buffer -s 1 -c 1 -k "/etc/init.d/web-radio2.init reload" -l "/usr/bin/favorites.sh"
+KEY_1 2 /usr/local/bin/ch-buffer -s 2 -c 1 -k "/etc/init.d/web-radio2.init reload" -l "/usr/bin/favorites.sh"
 ```
-
-### Installation & Usage
-
-1. Place the package directory inside your OpenWrt SDK `package/` folder.
-2. Compile using OpenWrt build system:
-   ```bash
-   make package/ir-interceptor/compile V=s
-   ```
-3. Transfer and install the generated `.ipk` binary to your device via `opkg`.
-4. Manage the background service using standard init system commands:
-   ```bash
-   /etc/init.d/ir-interceptor enable
-   /etc/init.d/ir-interceptor start
-   ```
-
-### Debugging & Signals
-
-* **Live logs view:**
-  ```bash
-  logread -f | grep ir-interceptor
-  ```
-* **Hot-reload configuration (RAM refresh):**
-  ```bash
-  /etc/init.d/ir-interceptor reload
-  ```
 
 ---
 
 ## Українська
 
-# Перехоплювач пристроїв введення для OpenWrt
+### ch-buffer
 
-Легковагий, високопродуктивний демон перехоплення подій підсистеми введення
-Linux для OpenWrt, оптимізований для вбудованих систем. Він перехоплює
-низькорівневі події `evdev` від інфрачервоних (ІК) пультів, ротарі-енкодерів,
-клавіатур та GPIO кнопок, зіставляє їх із конфігураційним файлом і асинхронно
-виконує відповідні системні команди.
+Легковажний, блискавичний накопичувач цифрового введення та дебаунсер на C.
+Створений спеціально для одноплатних комп'ютерів (Orange Pi, Raspberry Pi)
+та роутерів під керуванням **OpenWrt** або Linux, які використовують демон
+**triggerhappy (thd)**.
 
-### Особливості
-* **Нульовий знос Flash-пам'яті:** Конфігураційний файл та всі правила маппінгу
-  парсяться в оперативну пам'ять (ОЗУ) один раз при старті або на вимогу
-  через системний сигнал `SIGHUP`.
-* **Інтеграція з Procd:** Повна сумісність із сучасним менеджером процесів
-  OpenWrt (`procd`), що забезпечує автоматичний перезапуск у разі падіння
-  та «гаряче» оновлення без зупинки процесу.
-* **Розумні ІК-канали:** Система накопичення цифрових комбінацій для
-  багатозначних каналів (наприклад, послідовний набір `1`, `1`, `1` виконає
-  команду для каналу `111` після завершення таймауту).
-* **Мультипультовий режим:** Можливість призначення однакових маркерів на
-  різні фізичні коди (наприклад, для одночасної підтримки кількох різних
-  ІК-пультів).
-* **Просунутий Дебаунс:** Розділений захист від брязкіту контактів для
-  одиночного натискання та утримання, а також швидкий дебаунс для енкодерів.
+Він виступає містком між сигналами пульта та скриптами ОС: збирає цифри за
+певний час, прибирає нулі попереду, захищає від брязкоту контактів і
+залізобетонно розділяє короткий клік від тривалого утримання кнопки.
 
-### Інсталяція та Запуск
+#### Основні можливості
 
-1. Скопіюйте директорію пакета до папки `package/` вашого OpenWrt SDK.
-2. Запустіть компіляцію:
-   ```bash
-   make package/ir-interceptor/compile V=s
-   ```
-3. Перенесіть зібраний `.ipk` пакет на роутер та встановіть його через `opkg`.
-4. Керуйте службою за допомогою стандартних команд:
-   ```bash
-   /etc/init.d/ir-interceptor enable
-   /etc/init.d/ir-interceptor start
-   ```
+*   **Розумне накопичення:** Збирає цифри, натиснуті протягом таймауту
+    (наприклад, введення `0`, `0`, `5`, `1` перетвориться на канал `51`).
+*   **Обробка утримання:** Повністю скасовує вибір каналу при довгому
+    затисканні та миттєво запускає альтернативну команду (через прапорець
+    `-l`), підставляючи номер кнопки в кінець.
+*   **Стратегія відкритих дескрипторів:** Утримує файли в пам'яті відкритими
+    під час сну `usleep()`, що повністю захищає їх від агресивного видалення
+    утилітами очищення `tmpfs` у `/dev/shm` на слабких ядрах.
+*   **Максимальна швидкість:** Бінарник оптимізований, не створює зайвих
+    форків процесів та працює на будь-якому «залізі».
 
-### Налагодження та Сигнали
+#### Прапорці командного рядка
 
-* **Перегляд логів у реальному часі:**
-  ```bash
-  logread -f | grep ir-interceptor
-  ```
-* **Гаряче перезавантаження конфігурації в ОЗУ:**
-  ```bash
-  /etc/init.d/ir-interceptor reload
-  ```
+*   `-s [1|2]` : **(Обов'язковий)** Стан кнопки від Triggerhappy.
+    `1` — клік, `2` — утримання/автоповтор.
+*   `-c [0-9]` : **(Обов'язковий)** Цифра, яка відповідає натиснутій кнопці.
+*   `-k "<команда>"` : **(Обов'язковий)** Базова команда, яка виконається з
+    номером каналу після таймауту.
+*   `-l "<команда>"` : Альтернативна команда для тривалого утримання.
+*   `-p <мс>` : Захист від брязкоту контактів пульта (Дефолт: 200 мс).
+*   `-h <мс>` : Поріг часу для детекції тривалого утримання (Дефолт: 800 мс).
+*   `-t <мс>` : Таймаут очікування наступної цифри каналу (Дефолт: 1000 мс).
+
+#### Приклад конфігурації (`/etc/triggerhappy/triggers.d/ir.conf`)
+
+```text
+KEY_1 1 /usr/local/bin/ch-buffer -s 1 -c 1 -k "/etc/init.d/web-radio2.init reload" -l "/usr/bin/favorites.sh"
+KEY_1 2 /usr/local/bin/ch-buffer -s 2 -c 1 -k "/etc/init.d/web-radio2.init reload" -l "/usr/bin/favorites.sh"
+```
 
 ---
 
 ## Русский
 
-# Перехватчик устройств ввода для OpenWrt
+### ch-buffer
 
-Легковесный, высокопроизводительный демон перехвата событий подсистемы ввода
-Linux для OpenWrt, оптимизированный для встраиваемых систем. Он перехватывает
-низкоуровневые события `evdev` от инфракрасных (ИК) пультов, ротационных
-энкодеров, клавиатур и GPIO кнопок, сопоставляет их с конфигурационным
-файлом и асинхронно выполняет соответствующие системные команды.
+Легковесный, молниеносный накопитель цифрового ввода и дебаунсер на C.
+Специально разработан для одноплатных компьютеров (Orange Pi, Raspberry Pi)
+и роутеров под управлением **OpenWrt** или Linux, использующих демон
+**triggerhappy (thd)**.
 
-### Особенности
-* **Нулевой износ Flash-памяти:** Конфигурационный файл и все правила маппинга
-  парсятся в оперативную память (ОЗУ) один раз при старте или по требованию
-  через системный сигнал `SIGHUP`.
-* **Интеграция с Procd:** Полная совместимость с современным менеджером
-  процессов OpenWrt (`procd`), обеспечивающая автоматический перезапуск в
-  случае падения и «горячее» обновление без остановки процесса.
-* **Умные ИК-каналы:** Система динамического накопления цифровых комбинаций
-  для многозначных каналов (например, последовательный набор цифр `1`, `1`, `1`
-  выполнит команду для канала `111` по истечении таймаута).
-* **Мультипультовый режим:** Возможность назначения одинаковых маркеров на
-  разные физические коды (например, для одновременной поддержки нескольких
-  разных ИК-пультов).
-* **Продвинутый Дебаунс:** Раздельная защита от дребезга контактов для
-  одиночного нажатия и удержания, а также быстрый дебаунс для относительных
-  осей энкодеров.
+Программа служит умным буфером между ИК-пультом и системными скриптами:
+собирает последовательно нажатые цифры, отсекает незначащие нули,
+предотвращает дребезг контактов и аппаратно разделяет короткое нажатие
+кнопки от её длительного удержания.
 
-### Инсталляция и Запуск
+#### Ключевые особенности
 
-1. Скопируйте директорию пакета в папку `package/` вашего OpenWrt SDK.
-2. Запустите компиляцию:
-   ```bash
-   make package/ir-interceptor/compile V=s
-   ```
-3. Перенесите собранный `.ipk` пакет на роутер и установите его через `opkg`.
-4. Управляйте службой с помощью стандартных команд инициализации:
-   ```bash
-   /etc/init.d/ir-interceptor enable
-   /etc/init.d/ir-interceptor start
-   ```
+*   **Умное накопление:** Объединяет цифры, введенные в рамках таймаута
+    (например, нажатие `0`, `0`, `5`, `1` выполнится как канал `51`).
+*   **Логика удержания:** Полностью отменяет стандартную команду при зажатии
+    кнопки и мгновенно выполняет альтернативный скрипт (флаг `-l`),
+    автоматически передавая номер зажатой кнопки.
+*   **Иммунитет к очистке tmpfs:** Держит дескрипторы файлов состояния
+    открытыми в памяти во время `usleep()`, предотвращая их уничтожение
+    агрессивными системными сборщиками мусора в `/dev/shm`.
+*   **Высокая энергоэффективность:** Нативный бинарный код выполняется
+    моментально, не нагружая процессор и RAM слабого устройства.
 
-### Отладка и Сигналы
+#### Флаги командной строки
 
-* **Просмотр логов в реальном времени:**
-  ```bash
-  logread -f | grep ir-interceptor
-  ```
-* **Горячая перезагрузка конфигурации в ОЗУ:**
-  ```bash
-  /etc/init.d/ir-interceptor reload
-  ```
+*   `-s [1|2]` : **(Обязательный)** Состояние кнопки от Triggerhappy.
+    `1` — клик, `2` — удержание/автоповтор.
+*   `-c [0-9]` : **(Обязательный)** Цифра, соответствующая нажатой клавише.
+*   `-k "<команда>"` : **(Обязательный)** Базовая команда для переключения
+    каналов по таймауту.
+*   `-l "<команда>"` : Альтернативная команда, вызываемая при удержании
+    кнопки.
+*   `-p <мс>` : Защита от дребезга контактов пульта (По умолчанию: 200 мс).
+*   `-h <мс>` : Минимальное время зажатия для детекции удержания
+    (По умолчанию: 800 мс).
+*   `-t <мс>` : Таймаут ожидания следующей цифры (По умолчанию: 1000 мс).
+
+#### Пример настройки (`/etc/triggerhappy/triggers.d/ir.conf`)
+
+```text
+KEY_1 1 /usr/local/bin/ch-buffer -s 1 -c 1 -k "/etc/init.d/web-radio2.init reload" -l "/usr/bin/favorites.sh"
+KEY_1 2 /usr/local/bin/ch-buffer -s 2 -c 1 -k "/etc/init.d/web-radio2.init reload" -l "/usr/bin/favorites.sh"
+```
+
