@@ -1,0 +1,72 @@
+#!/bin/sh
+
+cat << 'EOF' > /etc/triggerhappy/triggers.d/example.conf
+KEY_1	1	ch-buffer -s 1 -c 1 -k "rc-radio reload"
+KEY_2	1	ch-buffer -s 1 -c 2 -k "rc-radio reload"
+KEY_3	1	ch-buffer -s 1 -c 3 -k "rc-radio reload"
+KEY_4	1	ch-buffer -s 1 -c 4 -k "rc-radio reload"
+KEY_5	1	ch-buffer -s 1 -c 5 -k "rc-radio reload"
+KEY_6	1	ch-buffer -s 1 -c 6 -k "rc-radio reload"
+KEY_7	1	ch-buffer -s 1 -c 7 -k "rc-radio reload"
+KEY_8	1	ch-buffer -s 1 -c 8 -k "rc-radio reload"
+KEY_9	1	ch-buffer -s 1 -c 9 -k "rc-radio reload"
+KEY_0	1	ch-buffer -s 1 -c 0 -k "rc-radio reload"
+KEY_1	2	ch-buffer -s 2 -c 1 -k "rc-radio reload" -l "rc-radio reload 8"
+KEY_2	2	ch-buffer -s 2 -c 2 -k "rc-radio reload" -l "rc-radio reload 55"
+KEY_3	2	ch-buffer -s 2 -c 3 -k "rc-radio reload" -l "rc-radio reload 17"
+KEY_4	2	ch-buffer -s 2 -c 4 -k "rc-radio reload" -l "rc-radio reload 56"
+KEY_5	2	ch-buffer -s 2 -c 5 -k "rc-radio reload" -l "rc-radio reload 86"
+KEY_6	2	ch-buffer -s 2 -c 6 -k "rc-radio reload" -l "rc-radio reload 87"
+KEY_7	2	ch-buffer -s 2 -c 7 -k "rc-radio reload" -l "rc-radio reload 88"
+KEY_8	2	ch-buffer -s 2 -c 8 -k "rc-radio reload" -l "rc-radio reload 89"
+KEY_9	2	ch-buffer -s 2 -c 9 -k "rc-radio reload" -l "rc-radio reload 90"
+KEY_0	2	ch-buffer -s 2 -c 0 -k "rc-radio reload" -l "rc-radio reload 8"
+KEY_VOLUMEUP	1	v-buffer -s 1 -v "vol+" -k "QUERY_STRING=act=up /www/cgi-bin/modules/web-radio2/volume.cgi; tda7313 volume +;"
+KEY_VOLUMEUP	2	v-buffer -s 2 -v "vol+" -l "QUERY_STRING=act=up /www/cgi-bin/modules/web-radio2/volume.cgi; tda7313 volume +;"
+KEY_VOLUMEDOWN	1	v-buffer -s 1 -v "vol-" -k "QUERY_STRING=act=down /www/cgi-bin/modules/web-radio2/volume.cgi; tda7313 volume -;"
+KEY_VOLUMEDOWN	2	v-buffer -s 2 -v "vol-" -l "QUERY_STRING=act=down /www/cgi-bin/modules/web-radio2/volume.cgi; tda7313 volume -;"
+KEY_POWER	1	rc-radio start
+KEY_CHANNELUP	1	rc-radio reload 55
+KEY_CHANNELDOWN	1	rc-radio reload 13
+KEY_OK		1	rc-radio reload 15
+KEY_ENTER	1	tda7313 lound +
+KEY_PLAYPAUSE	1	rc-radio start
+KEY_NEXTSONG	1	rc-radio reload 56
+KEY_UP		1	rc-radio reload 25
+KEY_SYSRQ	1	rc-radio reload 35
+KEY_PREVIOUSSONG	1	rc-radio reload 13
+KEY_TUNER	1	tda7313 lound +
+KEY_MUTE	1	tda7313 volume 0; QUERY_STRING=act=mute /www/cgi-bin/modules/web-radio2/volume.cgi;
+BTN_RIGHT	1	tda7313 streble +
+BTN_RIGHT	2	tda7313 streble +
+BTN_LEFT	1	tda7313 streble -
+BTN_LEFT	2	tda7313 streble 0
+KEY_PAGEUP	1	tda7313 init
+BTN_PINKIE	1	tda7313 treble +
+BTN_PINKIE	2	tda7313 treble +
+KEY_PAGEDOWN	1	tda7313 treble -
+KEY_PAGEDOWN	2	tda7313 treble 0
+BTN_BASE	2	tda7313 sbass 0
+KEY_RIGHT_DOWN	1	tda7313 sbass +
+KEY_RIGHT_DOWN	2	tda7313 sbass +
+KEY_RIGHT_UP	1	tda7313 sbass -
+KEY_RIGHT_UP	2	tda7313 sbass 0
+KEY_KBDINPUTASSIST_PREV	1	tda7313 input 1
+KEY_KBDINPUTASSIST_NEXT	1	tda7313 input 0
+KEY_KBDINPUTASSIST_PREVGROUP	1	tda7313 input 2
+REL_Y	1	tda7313 volume "-"
+REL_Y	-1	tda7313 volume "+"
+EOF
+
+cat << 'EOF' > /etc/init.d/triggerhappy
+#!/bin/sh /etc/rc.common
+START=93
+
+start() {
+	/usr/sbin/thd --socket /tmp/triggerhappy.socket --triggers /etc/triggerhappy/triggers.d/ --daemon /dev/input/event*
+}
+
+stop() {
+	/usr/sbin/th-cmd --socket /tmp/triggerhappy.socket --quit
+}
+EOF

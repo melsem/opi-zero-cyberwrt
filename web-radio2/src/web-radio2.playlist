@@ -9,214 +9,208 @@ https://online.radioroks.ua/RadioROKS
 https://online.kissfm.ua/KissFM
 #EXTINF:-5,"Радіо-Relax"
 https://online.radiorelax.ua/RadioRelax
-#EXTINF:-6,"melodia-ФМ"
+#EXTINF:-6,"Мелодіa-ФМ"
 https://online.melodiafm.ua/MelodiaFM
 #EXTINF:-7,"nashe-Радіо"
 https://online.nasheradio.ua/NasheRadio
-#EXTINF:-8,"Гуляй Радіо"
+#EXTINF:-8,"Гулай Радіо"
 https://tavr.tvstitch.com/GuliayRadio
 #EXTINF:-9,"classic Радіо"
 https://online.classicradio.ua/ClassicRadio
-#EXTINF:-10,"lux-fm"
-https://icecast.luxnet.ua/lux_mp3
-#EXTINF:-11,"Радіо maximum"
-https://icecast.luxnet.ua/maximum_mp3
-#EXTINF:-12,"Радіо nostalgie"
-https://icecast.luxnet.ua/nostalgie_mp3
-#EXTINF:-13,"Радіо nv"
+#EXTINF:-10,"Радіо nv"
 https://online-radio.nv.ua/radionv.mp3
-#EXTINF:-14,"ukrayinske Радіо"
+#EXTINF:-11,"ukrayinske Радіо"
 https://radio.nrcu.gov.ua/ur1-mp3
-#EXTINF:-15,"Радіо promin"
+#EXTINF:-12,"Радіо promin"
 https://radio.nrcu.gov.ua/ur2-mp3
-#EXTINF:-16,"Радіо kultura"
+#EXTINF:-13,"Радіо kultura"
 https://radio.nrcu.gov.ua/ur3-mp3
-#EXTINF:-17,"hromadske Радіо"
+#EXTINF:-14,"hromadske Радіо"
 https://hromadske.radio/radio_https_upstream
-#EXTINF:-18,"shlager-fm"
+#EXTINF:-15,"shlager-fm"
 https://cast.brg.ua/shanson_main_public_mp3_hq
-#EXTINF:-19,"power-fm"
+#EXTINF:-16,"power-fm"
 https://cast.brg.ua/powerfm_main_public_mp3_hq
-#EXTINF:-20,"dj-fm"
+#EXTINF:-17,"dj-fm"
 https://cast.brg.ua/djfm_main_public_mp3_hq
-#EXTINF:-21,"magic Радіо"
+#EXTINF:-18,"magic Радіо"
 https://cast.brg.ua/business_main_public_mp3_hq
-#EXTINF:-22,"Радіо pyatnica"
+#EXTINF:-19,"Радіо pyatnica"
 https://cast.mediaonline.net.ua/radiopyatnica320
-#EXTINF:-23,"avtoradio"
+#EXTINF:-20,"avtoradio"
 https://cast.mediaonline.net.ua/avtoradio320
-#EXTINF:-24,"my-ukraina"
+#EXTINF:-21,"my-ukraina"
 https://cast.mediaonline.net.ua/wau320
-#EXTINF:-25,"Радіо m"
+#EXTINF:-22,"Радіо М"
 https://live.radiom.ua/stream_mp3
-#EXTINF:-26,"fm-galychyna"
+#EXTINF:-23,"fm-galychyna"
 https://stream320.galychyna.fm/RadioPlayer
-#EXTINF:-27,"lvivska-hvylia"
+#EXTINF:-24,"lvivska-hvylia"
 https://onair.lviv.fm:8443/lviv.fm
-#EXTINF:-28,"lux-fm-lviv"
+#EXTINF:-25,"lux-fm-lviv"
 https://icecast.luxnet.ua/luxlviv_mp3_320
-#EXTINF:-29,"duzhe Радіо"
+#EXTINF:-26,"duzhe Радіо"
 https://ipradio.net:8443/duzheHD
-#EXTINF:-30,"Радіо pershe"
+#EXTINF:-27,"Радіо pershe"
 https://live.radio1.com.ua/liveradio320
-#EXTINF:-31,"Радіо trek"
+#EXTINF:-28,"Радіо trek"
 https://audio.radiotrek.rv.ua/
-#EXTINF:-32,"sfera-fm"
+#EXTINF:-29,"Сфера-фм"
 https://cdn-br2.live-tv.cloud/sferarvFM/320k/icecast.audio
-#EXTINF:-33,"zakhidnyi-polyus"
+#EXTINF:-30,"zakhidnyi-polyus"
 https://online.z-polus.info/hq
-#EXTINF:-34,"Радіо c4"
+#EXTINF:-31,"Радіо c4"
 https://radio.c4.com.ua:8443/320
-#EXTINF:-35,"ternopilska-hvylia"
+#EXTINF:-32,"ternopilska-hvylia"
 https://onair.lviv.fm:8443/ternopil.fm
-#EXTINF:-36,"Радіо takt"
+#EXTINF:-33,"Радіо takt"
 https://play.radiotakt.com.ua/
-#EXTINF:-37,"misto-nad-bugom"
+#EXTINF:-34,"misto-nad-bugom"
 https://stream.mistonadbugom.com.ua/radiomistonadbugom
-#EXTINF:-38,"Радіо novaline"
+#EXTINF:-35,"Радіо novaline"
 https://stream.novaline.net.ua/Novaline_128
-#EXTINF:-39,"mfm"
+#EXTINF:-36,"mfm"
 https://radio.mfm.ua/online128
-#EXTINF:-40,"Радіо nakypilo"
+#EXTINF:-37,"Радіо nakypilo"
 https://radiostream.nakypilo.ua/full
-#EXTINF:-41,"slobozhanske-fm"
+#EXTINF:-38,"slobozhanske-fm"
 https://globalic.stream:1810/stream
-#EXTINF:-42,"informator-fm"
+#EXTINF:-39,"informator-fm"
 https://main.inf.fm:8101/;
-#EXTINF:-43,"tim-fm"
+#EXTINF:-40,"tim-fm"
 https://tim-fm.tim.ua/chemp3
-#EXTINF:-44,"Радіо x-on"
+#EXTINF:-41,"Радіо x-on"
 https://audio.x-on.com.ua:8443/x-on.mp3
-#EXTINF:-45,"Радіо bug"
+#EXTINF:-42,"Радіо bug"
 https://radio.bug.fm:8000/radioBug
-#EXTINF:-46,"Радіо megapolis"
+#EXTINF:-43,"Радіо megapolis"
 https://cast.megapolis.fm/listen/kryvyi_rih/radio.mp3
-#EXTINF:-47,"Радіо kryvbas"
+#EXTINF:-44,"Радіо kryvbas"
 https://onair.kryvbas.fm/RadioKryvbas
-#EXTINF:-48,"topradio"
+#EXTINF:-45,"topradio"
 https://stream.topradio.in.ua/topradio.mp3
-#EXTINF:-49,"blits-fm"
+#EXTINF:-46,"blits-fm"
 https://stream.blits-fm.ua/stream128
-#EXTINF:-50,"boguslav-fm"
+#EXTINF:-47,"boguslav-fm"
 https://complex.in.ua/b320
-#EXTINF:-51,"podilske Радіо"
+#EXTINF:-48,"podilske Радіо"
 https://podilske.com:8013/p-radio
-#EXTINF:-52,"tvoe Радіо"
+#EXTINF:-49,"Твоє Радіо"
 https://complex.in.ua/tvoeRadio
-#EXTINF:-53,"stryi-fm"
+#EXTINF:-50,"stryi-fm"
 https://beta.telelan.com.ua/stryi-fm_mp3
-#EXTINF:-54,"fresh-fm"
+#EXTINF:-51,"fresh-fm"
 https://mu.telelan.com.ua/fresh-fm_mp3
-#EXTINF:-55,"holos-stryia"
+#EXTINF:-52,"holos-stryia"
 https://complex.in.ua/struy320
-#EXTINF:-56,"Радіо smak"
+#EXTINF:-53,"Радіо СМАК"
 https://ipradio.net:8443/radiosmakHD
-#EXTINF:-57,"zolochiv-fm"
+#EXTINF:-54,"zolochiv-fm"
 https://ipradio.net:8443/zolochivHD
-#EXTINF:-58,"brody-fm"
+#EXTINF:-55,"brody-fm"
 https://complex.in.ua/brodyHD
-#EXTINF:-59,"vilne-radio-korolivskoho-mista"
+#EXTINF:-56,"Вільне радіо королівського міста"
 https://cast108372.customer.uar.net/live320
-#EXTINF:-60,"zhydachiv-fm"
+#EXTINF:-57,"zhydachiv-fm"
 https://complex.in.ua/zhudachivHD
-#EXTINF:-61,"yantarne-fm"
+#EXTINF:-58,"yantarne-fm"
 https://complex.in.ua/yantarne320
-#EXTINF:-62,"nadvirna-fm"
+#EXTINF:-59,"nadvirna-fm"
 https://trk-nadvirna.com/radio.php
-#EXTINF:-63,"zakhid-fm-plus"
+#EXTINF:-60,"zakhid-fm-plus"
 https://radio.zfm.com.ua:8443/zfm_128
-#EXTINF:-64,"hutsulske Радіо"
+#EXTINF:-61,"hutsulske Радіо"
 https://stream320.galychyna.fm/HutsulFM_RP
-#EXTINF:-65,"hovoryt-novodnistrovsk"
+#EXTINF:-62,"hovoryt-novodnistrovsk"
 https://online-novodnistrovsk.pp.ua:8443/playHD
-#EXTINF:-66,"relife-fm"
+#EXTINF:-63,"relife-fm"
 https://stream.relife.media/mp3-320
-#EXTINF:-67,"radiopikhota"
+#EXTINF:-64,"radiopikhota"
 https://online.pihota.fm/listen/pihota/320
-#EXTINF:-68,"Радіо khartia"
+#EXTINF:-65,"Радіо khartia"
 https://a9.asurahosting.com/listen/radio_khartia/radio.mp3
-#EXTINF:-69,"music Радіо"
+#EXTINF:-66,"music Радіо"
 https://tavr.tvstitch.com/MusicRadio
-#EXTINF:-70,"Радіо gold"
+#EXTINF:-67,"Радіо gold"
 https://tavr.tvstitch.com/RadioGold
-#EXTINF:-71,"Радіо italiana"
+#EXTINF:-68,"Радіо italiana"
 https://tavr.tvstitch.com/RadioItaliana
-#EXTINF:-72,"flash Радіо"
+#EXTINF:-69,"flash Радіо"
 https://tavr.tvstitch.com/FlashRadio
-#EXTINF:-73,"Радіо black"
+#EXTINF:-70,"Радіо black"
 https://tavr.tvstitch.com/RadioBlack
-#EXTINF:-74,"k-pop Радіо"
+#EXTINF:-71,"k-pop Радіо"
 https://tavr.tvstitch.com/KpopRadio
-#EXTINF:-75,"Радіо indie-ua"
+#EXTINF:-72,"Радіо indie-ua"
 https://tavr.tvstitch.com/RadioIndieUA
-#EXTINF:-76,"Радіо ritmo-latino"
+#EXTINF:-73,"Радіо ritmo-latino"
 https://tavr.tvstitch.com/RadioRitmoLatino
-#EXTINF:-77,"radiotochka"
+#EXTINF:-74,"radiotochka"
 https://radio.nrcu.gov.ua/ur5-mp3
-#EXTINF:-78,"Радіо kordon"
+#EXTINF:-75,"Радіо kordon"
 https://radio.dpsu.gov.ua/
-#EXTINF:-79,"Радіо shanson"
+#EXTINF:-76,"Радіо shanson"
 https://cast.brg.ua/newshanson_main_public_mp3_hq
-#EXTINF:-80,"biznes Радіо"
+#EXTINF:-77,"biznes Радіо"
 https://cast.brg.ua/businessradio_main_public_mp3_hq
-#EXTINF:-81,"lounge-fm"
+#EXTINF:-78,"lounge-fm"
 https://cast.mediaonline.net.ua/loungefm320
-#EXTINF:-82,"nrj Радіо"
+#EXTINF:-79,"nrj Радіо"
 https://cast.mediaonline.net.ua/nrj320
-#EXTINF:-83,"Радіо skovoroda"
+#EXTINF:-80,"Радіо skovoroda"
 https://stream.radioskovoroda.com:8443/radioskovoroda
-#EXTINF:-84,"my-z-ukrainy"
+#EXTINF:-81,"my-z-ukrainy"
 https://stream4.nadaje.com:9889/lux
-#EXTINF:-85,"Радіо silpo"
+#EXTINF:-82,"Радіо silpo"
 https://stream.radio.silpo.ua/silpo
-#EXTINF:-86,"hit-fm-ukr-hity"
+#EXTINF:-83,"hit-fm-ukr-hity"
 https://tavr.tvstitch.com/HitFM_Ukr
-#EXTINF:-87,"hit-fm-naybilshi-hity"
+#EXTINF:-84,"hit-fm-naybilshi-hity"
 https://tavr.tvstitch.com/HitFM_Best
-#EXTINF:-88,"hit-fm-suchasni-hity"
+#EXTINF:-85,"hit-fm-suchasni-hity"
 https://tavr.tvstitch.com/HitFM_Top
-#EXTINF:-89,"Радіо roks-ukr-rock"
+#EXTINF:-86,"Радіо roks-ukr-rock"
 https://tavr.tvstitch.com/RadioROKS_Ukr
-#EXTINF:-90,"Радіо roks-new-rock"
+#EXTINF:-87,"Радіо roks-new-rock"
 https://tavr.tvstitch.com/RadioROKS_NewRock
-#EXTINF:-91,"Радіо roks-classic-rock"
+#EXTINF:-88,"Радіо roks-classic-rock"
 https://tavr.tvstitch.com/RadioROKS_ClassicRock
-#EXTINF:-92,"Радіо roks-hard-n-heavy"
+#EXTINF:-89,"Радіо roks-hard-n-heavy"
 https://tavr.tvstitch.com/RadioROKS_HardnHeavy
-#EXTINF:-93,"Радіо roks-rock-ballads"
+#EXTINF:-90,"Радіо roks-rock-ballads"
 https://tavr.tvstitch.com/RadioROKS_Ballads
-#EXTINF:-94,"kiss-fm-ukrainian"
+#EXTINF:-91,"kiss-fm-ukrainian"
 https://tavr.tvstitch.com/KissFM_Ukr
-#EXTINF:-95,"kiss-fm-deep"
+#EXTINF:-92,"kiss-fm-deep"
 https://tavr.tvstitch.com/KissFM_Deep
-#EXTINF:-96,"kiss-fm-digital"
+#EXTINF:-93,"kiss-fm-digital"
 https://tavr.tvstitch.com/KissFM_Digital
-#EXTINF:-97,"Радіо relax-ukr"
+#EXTINF:-94,"Радіо relax-ukr"
 https://tavr.tvstitch.com/RadioRelax_Ukr
-#EXTINF:-98,"Радіо relax-international"
+#EXTINF:-95,"Радіо relax-international"
 https://tavr.tvstitch.com/RadioRelax_Int
-#EXTINF:-99,"Радіо relax-cafe"
+#EXTINF:-96,"Радіо relax-cafe"
 https://tavr.tvstitch.com/RadioRelax_Cafe
-#EXTINF:-100,"Радіо relax-instrumental"
+#EXTINF:-97,"Радіо relax-instrumental"
 https://tavr.tvstitch.com/RadioRelax_Instrumental
-#EXTINF:-101,"melodia-fm-international"
+#EXTINF:-98,"melodia-fm-international"
 https://tavr.tvstitch.com/MelodiaFM_Int
-#EXTINF:-102,"melodia-fm-disco"
+#EXTINF:-99,"melodia-fm-disco"
 https://tavr.tvstitch.com/MelodiaFM_Disco
-#EXTINF:-103,"melodia-fm-romantic"
+#EXTINF:-100,"melodia-fm-romantic"
 https://tavr.tvstitch.com/MelodiaFM_Romantic
-#EXTINF:-104,"nashe-radio-ukrtop100"
+#EXTINF:-101,"nashe-radio-ukrtop100"
 https://online.nasheradio.ua/NasheRadio_Ukr
-#EXTINF:-105,"Радіо jazz-ukr"
+#EXTINF:-102,"Радіо jazz-ukr"
 https://tavr.tvstitch.com/RadioJazz_Ukr
-#EXTINF:-106,"Радіо jazz-gold"
+#EXTINF:-103,"Радіо jazz-gold"
 https://tavr.tvstitch.com/RadioJazz_Gold
-#EXTINF:-107,"Радіо jazz-light"
+#EXTINF:-104,"Радіо jazz-light"
 https://tavr.tvstitch.com/RadioJazz_Light
-#EXTINF:-108,"Радіо jazz-cover"
+#EXTINF:-105,"Радіо jazz-cover"
 https://tavr.tvstitch.com/RadioJazz_Cover
-#EXTINF:-109,"Радіо jazz-groove"
+#EXTINF:-106,"Радіо jazz-groove"
 https://tavr.tvstitch.com/RadioJazz_Groove
-#EXTINF:-110,"dj-fm-dance"
+#EXTINF:-107,"dj-fm-dance"
 https://cast.brg.ua/djfmdance_main_public_mp3_hq
-
+  
