@@ -1,6 +1,6 @@
 --- a/main.c
 +++ b/main.c
-@@ -208,7 +219,7 @@
+@@ -213,7 +219,7 @@
  	.remove_interface	= cw1200_remove_interface,
  	.change_interface	= cw1200_change_interface,
  	.tx			= cw1200_tx,
@@ -9,7 +9,7 @@
  	.hw_scan		= cw1200_hw_scan,
  	.set_tim		= cw1200_set_tim,
  	.sta_notify		= cw1200_sta_notify,
-@@ -251,7 +251,8 @@ static const struct wiphy_wowlan_support
+@@ -255,7 +265,8 @@ static const struct wiphy_wowlan_support
  
  
  static struct ieee80211_hw *cw1200_init_common(const u8 *macaddr,
@@ -19,7 +19,7 @@
  {
  	int i, band;
  	struct ieee80211_hw *hw;
-@@ -267,6 +268,7 @@ static struct ieee80211_hw *cw1200_init_
+@@ -272,6 +288,7 @@ static struct ieee80211_hw *cw1200_init_
  	priv->mode = NL80211_IFTYPE_UNSPECIFIED;
  	priv->rates = cw1200_rates; /* TODO: fetch from FW */
  	priv->mcs_rates = cw1200_n_rates;
@@ -27,7 +27,7 @@
  	if (cw1200_ba_rx_tids != -1)
  		priv->ba_rx_tid_mask = cw1200_ba_rx_tids;
  	else
-@@ -518,7 +520,8 @@ int cw1200_core_probe(const struct hwbus
+@@ -524,7 +530,8 @@ int cw1200_core_probe(const struct hwbus
  		      struct device *pdev,
  		      struct cw1200_common **core,
  		      int ref_clk, const u8 *macaddr,
@@ -37,7 +37,7 @@
  {
  	int err = -EINVAL;
  	struct ieee80211_hw *dev;
-@@ -528,7 +531,7 @@ int cw1200_core_probe(const struct hwbus
+@@ -535,7 +545,7 @@ int cw1200_core_probe(const struct hwbus
  		.disable_more_flag_usage = true,
  	};
  

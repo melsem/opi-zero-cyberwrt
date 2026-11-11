@@ -16,9 +16,16 @@ define Download/xr819
 endef
 $(eval $(call Download,xr819))
 
+CW1200_SRC := $(wildcard $(KERNEL_BUILD_DIR)/mac80211-regular/backports-*/drivers/net/wireless/st/cw1200)
+ifeq ($(CW1200_SRC),)
+  CW1200_SRC := $(wildcard $(KERNEL_BUILD_DIR)/backports-*/drivers/net/wireless/st/cw1200)
+endif
+
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) $(shell ls -d $(KERNEL_BUILD_DIR)/backports-*/drivers/net/wireless/st/cw1200)/* $(PKG_BUILD_DIR)/
+#	$(CP) $(shell ls -d $(KERNEL_BUILD_DIR)/backports-*/drivers/net/*wireless/st/cw1200)/* $(PKG_BUILD_DIR)/
+#	$(CP) $(shell ls -d $(KERNEL_BUILD_DIR)/mac80211-regular/backports-*/drivers/net/wireless/st/cw1200)/* $(PKG_BUILD_DIR)/
+	$(CP) $(CW1200_SRC)/* $(PKG_BUILD_DIR)/
 	$(Build/Patch)
 endef
 
