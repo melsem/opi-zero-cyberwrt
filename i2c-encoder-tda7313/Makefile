@@ -25,16 +25,16 @@ define Package/i2c-encoder-tda7313/description
   for quality audio applications. Custom multi-band amplification control version written in C.
 endef
 
-# Логіка підготовки директорії збірки (створення папки є обов'язковим для SDK)
+# Правильна логіка підготовки: копіюємо вміст локальної папки src у build_dir
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 	$(CP) ./src/* $(PKG_BUILD_DIR)/
 endef
 
-# Логіка компіляції файлу tda7313.c
+# Логіка компіляції файлу tda7313.c (тепер він точно буде в коріні PKG_BUILD_DIR)
 define Build/Compile
 	$(TARGET_CC) $(TARGET_CFLAGS) $(TARGET_CPPFLAGS) \
-		$(SRC_DIR)/tda7313.c -o $(PKG_BUILD_DIR)/tda7313 $(TARGET_LDFLAGS)
+		$(PKG_BUILD_DIR)/tda7313.c -o $(PKG_BUILD_DIR)/tda7313 $(TARGET_LDFLAGS)
 endef
 
 define Package/i2c-encoder-tda7313/install
@@ -42,13 +42,12 @@ define Package/i2c-encoder-tda7313/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tda7313 $(1)/usr/bin/tda7313
 
-	# Копіюємо ваші файли ініціалізації
+	# Копіюємо файли ініціалізації з робочої директорії збірки
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) $(SRC_DIR)/tda7313.init $(1)/etc/init.d/tda7313
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tda7313.init $(1)/etc/init.d/tda7313
 	
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) $(SRC_DIR)/uci_defaults_tda7313 $(1)/etc/uci-defaults/51-tda7313
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uci_defaults_tda7313 $(1)/etc/uci-defaults/51-tda7313
 endef
 
 $(eval $(call BuildPackage,i2c-encoder-tda7313))
-
