@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=hd44780-gpio-custom
-PKG_RELEASE:=3.0
+PKG_RELEASE:=3
 
 include $(INCLUDE_DIR)/package.mk
 

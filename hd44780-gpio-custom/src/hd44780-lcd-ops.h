@@ -36,4 +36,8 @@ extern struct hd44780_custom_bus buses[BUS_COUNT];
 int hd44780_bus_init(int index);
 void hd44780_bus_cleanup(int index);
 
+int hd44780_i2c_bus_init(int index, int dev_num, unsigned short address, int sda, int scl, const char *bus_type);
+void hd44780_i2c_bus_cleanup(int index);
+
+
 #endif /* _HD44780_LCD_OPS_H */

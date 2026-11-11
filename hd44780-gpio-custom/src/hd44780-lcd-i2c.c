@@ -264,7 +264,7 @@ int hd44780_i2c_bus_init(int index, int dev_num, unsigned short address, int sda
 	}
 
 	memset(&info, 0, sizeof(struct i2c_board_info));
-	strlcpy(info.type, "pcf8574", I2C_NAME_SIZE);
+	strscpy(info.type, "pcf8574", I2C_NAME_SIZE);
 	info.addr = address;
 
 	i2c_clients[index] = i2c_new_client_device(adap, &info);
